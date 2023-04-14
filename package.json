@@ -1,0 +1,18 @@
+{
+  "name": "vits-desktoppet",
+  "version": "1.0.0",
+  "description": "DesktopOppet Electron",
+  "main": "background.js",
+  "scripts": {
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^24.1.1",
+    "electron-reloader": "^1.2.3"
+  }
+}
