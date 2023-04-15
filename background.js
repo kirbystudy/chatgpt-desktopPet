@@ -54,27 +54,6 @@ function createWindow () {
 }
 
 function settingWindow(){
-    //设置主窗口
-    // mainWindow = new BrowserWindow({
-    //     width: 350, height: 350,
-    //     frame: false,                //去掉窗口边框和标题栏
-    //     // backgroundColor: "#fff",     //背景色
-    //     //窗体透明属性，实际使用时发现如果窗体一部分，从拐角移出屏幕，再移回来，移出去的透明部分会变黑色
-    //     //如果把整个窗体全染黑，就会回归透明，并且不会再出现染黑现象，原因不明，解决方法不明
-    //     transparent: true,          //窗口透明
-    //     skipTaskbar: true,          //任务栏不显示图标
-    //     resizable: false,            //是否允许改变窗口尺寸
-    //     alwaysOnTop: true,          //窗口是否总是在最前端
-    //     webPreferences: {
-    //         nodeIntegration: true,      //node下所有东西都可以在渲染进程中使用
-    //         enableRemoteModule: true    //允许使用remote
-    //     }
-    // })
-    //窗口鼠标穿透 连同内部内容也会穿透，触发不了任何鼠标事件了
-    // mainWindow.setIgnoreMouseEvents(true)
-    //加载网页
-    //mainWindow.loadFile('index.html')
-    //关闭窗口时初始化主窗口(避免浪费内存)
     //监听到closed事件后执行
     win.on('closed', () => { win = null })
 
