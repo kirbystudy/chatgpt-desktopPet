@@ -4,7 +4,7 @@
   "description": "DesktopOppet Electron",
   "main": "background.js",
   "scripts": {
-    "start": "electron .",
+    "start": "chcp 65001 && electron .",
     "pack": "electron-builder --dir",
     "postinstall": "electron-builder install-app-deps",
     "dist": "electron-builder",

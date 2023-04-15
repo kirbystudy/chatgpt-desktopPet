@@ -1,5 +1,11 @@
 const { app, BrowserWindow, screen, Menu, Tray } = require('electron')
+const dialog = require('electron').dialog
+
 const path = require('path')
+var package = require('./package.json')
+
+// 系统托盘全局对象
+let appTray = null
 
 // 热加载
 if (process.env.NODE_ENV === 'development') {
@@ -48,13 +54,32 @@ function createTrayMenu() {
       label: '关于',
       click: function () {
         // 弹出一个窗口，内容为作品，作者描述
+        dialog.showMessageBox({
+          title: '关于',
+          type: 'info',
+          message: "项目名称: " + package.name + "\n版本号: v" + package.version
+        })
       }
     },
     {
       label: '退出',
       click: function () {
         // 退出程序
-        app.quit()
+        dialog.showMessageBox({
+          type: 'info',
+          buttons: ["我手滑了", "告辞"],
+          title: '退出',
+          message: '真的要退出吗?'
+        }).then((res) => {
+          if(res.response == 1) {
+            console.log("确定")
+            app.quit()
+          } else if(res.response == 0) {
+            console.log("取消")
+          }
+        }).catch((error) => {
+          console.log(error)
+        })
       }
     }
   ]
