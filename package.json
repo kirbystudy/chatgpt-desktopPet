@@ -21,5 +21,23 @@
     "electron-builder": "^23.6.0",
     "electron-reloader": "^1.2.3",
     "express": "^4.18.2"
+  },
+  "build": {
+    "productName": "VITS Live2D桌宠",
+    "appId": "com.disktoppet",
+    "asar": true,
+    "files": [
+      "./src",
+      "model",
+      "node_modules",
+      "package.json",
+      "background.js",
+      "index.html"
+    ],
+    "win": {
+      "target": [
+        "nsis"
+      ]
+    }
   }
 }

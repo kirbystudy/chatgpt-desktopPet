@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DESKTOPPET</title>
-  <link rel="stylesheet" href="css/index.css">
+  <link rel="stylesheet" href="src/style/index.css">
 </head>
 
 <body>
@@ -17,21 +17,24 @@
 </body>
 
 <script src="https://cdn.jsdelivr.net/npm/oh-my-live2d/dist/index.min.js"></script>
+
 <script>
+
   OML2D.loadOhMyLive2D({
     sayHello: false,
     transitionTime: 2000,
-    source: 'http://localhost:3000',
+    source: './',
     models: [
+      { path: '/model/atri/atri_8.model3.json', scale: 2 },
       { path: '/model/桃濑日和/hiyori_pro_t11.model3.json' },
-      { path: '/model/血小板/血小板.model.json' }
+      { path: '/model/血小板/血小板.model.json', x: 50, scale: 1.5 },
     ],
     tips: {
       style: {
         // 提示框向上偏移
         offsetY: 80
-      }
-    }
+      },
+    },
   })
 
 </script>

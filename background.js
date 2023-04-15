@@ -1,16 +1,17 @@
 const { app, BrowserWindow, screen } = require('electron')
-const { spawn } = require('child_process')
-let serverProcess
-
+const path = require('path')
 // 热加载
-const reLoader = require("electron-reloader")
-reLoader(module)
+if (process.env.NODE_ENV === 'development') {
+  try {
+    require('electron-reloader')(module)
+  } catch (_) {}
+}
 
 function createWindow () {
   win = new BrowserWindow({
     x: screen.getPrimaryDisplay().workAreaSize.width - 360,
     y: screen.getPrimaryDisplay().workAreaSize.height - 600,
-    // skipTaskbar: true, // 不显示任务栏
+    skipTaskbar: true, // 不显示任务栏
     frame: false,      // 不显示菜单栏 
     transparent: true, // 界面透明
     alwaysOnTop: true, // 置顶显示
@@ -22,24 +23,21 @@ function createWindow () {
       enableRemoteModule: true,
       nodeIntegration: true,
       contextIsolation: false,
+      webSecurity: false
     }
   })
 
-  win.loadURL(`file:${__dirname}/index.html`)
+  win.loadURL(`file://${path.resolve(__dirname, 'index.html')}`)
   
 }
-
 
 // 当Electron完成时，将调用此方法
 // 初始化，并准备创建浏览器窗口。
 // 某些API只能在此事件发生后使用。
-app.on('ready', () => {
-  // 启动node服务
-  startServices();
+app.on('ready', () => { 
   // 创建窗口
   createWindow()
 })
-
 
 // 当所有窗口都被关闭后退出
 app.on('window-all-closed', () => {
@@ -48,18 +46,4 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit()
   }
-  stopServices()
 })
-
-function startServices() {
-  // 启动服务
-  serverProcess = spawn('node', ['app.js']);
-}
-
-function stopServices() {
-  // 结束服务
-  if (serverProcess) {
-    serverProcess.kill();
-    serverProcess = null
-  }
-}

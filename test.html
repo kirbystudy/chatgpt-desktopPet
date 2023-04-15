@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  
+</body>
+<script src="https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/combine/gh/dylanNew/live2d/webgl/Live2D/lib/live2d.min.js,npm/pixi.js@6.5.2/dist/browser/pixi.min.js,npm/pixi-live2d-display/dist/index.min.js,gh/Weidows-projects/Live2dLoader/dist/Live2dLoader.min.js"></script>
+<script>
+  addEventListener("DOMContentLoaded", function () {
+  let models = [
+    {
+      width: 800,
+      height: 600,
+      left: "0px",
+      bottom: "0px",
+      role: "./model/atri/atri_8.model3.json",
+      background: "",
+      opacity: 1,
+      mobile: false,
+      draggable: true,
+      scale: 1
+    },
+    
+  ];
+  new Live2dLoader(models);
+});
+
+</script>
+</html>

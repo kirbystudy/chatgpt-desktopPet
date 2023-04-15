@@ -1,0 +1,54 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  width: 100vw;
+  height: 100vh;
+}
+
+.topBrag {
+  position: fixed;
+  bottom: 0;
+  left: 80px;
+  padding: 0 20px;
+  height: 400px;
+  width: 12%;
+  /* 既要可以拖动窗口，又不会影响窗口内部的元素 */
+  -webkit-app-region: drag;
+  z-index: 999;
+}
+
+
+#oml-controls {
+  background-color: rgb(111,149,186);
+  border-radius: 5px;
+}
+
+#oml-controls .oml-control-item {
+  display: none;
+}
+
+.control-item1 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 35px;
+  padding: 0 20px;  
+  cursor: pointer;
+  font-size: 18px;
+  color: #fff;
+}
+
+.control-item1:hover {
+  background-color: #58b0fc;
+  color: #fff;
+  box-shadow: 0 0 2px #000;
+}
+
+
+
+
+
