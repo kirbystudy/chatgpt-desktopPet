@@ -14,7 +14,7 @@
     "dist-linux": "electron-builder --linux"
   },
   "keywords": [],
-  "author": "",
+  "author": "kirbystudy and dullwolf",
   "license": "ISC",
   "devDependencies": {
     "electron": "^24.1.1",
@@ -36,7 +36,8 @@
     "win": {
       "target": [
         "nsis"
-      ]
+      ],
+      "icon": "./src/image/app.ico"
     }
   }
 }

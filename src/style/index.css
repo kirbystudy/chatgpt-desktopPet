@@ -21,32 +21,6 @@ html {
 }
 
 
-#oml-controls {
-  background-color: rgb(111,149,186);
-  border-radius: 5px;
-}
-
-#oml-controls .oml-control-item {
-  display: none;
-}
-
-.control-item1 {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 50px;
-  height: 35px;
-  padding: 0 20px;  
-  cursor: pointer;
-  font-size: 18px;
-  color: #fff;
-}
-
-.control-item1:hover {
-  background-color: #58b0fc;
-  color: #fff;
-  box-shadow: 0 0 2px #000;
-}
 
 
 
