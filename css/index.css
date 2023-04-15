@@ -3,3 +3,25 @@
   padding: 0;
 }
 
+html {
+  width: 100vw;
+  height: 100vh;
+}
+
+.topBrag {
+  position: fixed;
+  bottom: 0;
+  left: 80px;
+  padding: 0 20px;
+  height: 400px;
+  width: 12%;
+  /* 既要可以拖动窗口，又不会影响窗口内部的元素 */
+  -webkit-app-region: drag;
+  z-index: 999;
+}
+
+
+
+
+
+

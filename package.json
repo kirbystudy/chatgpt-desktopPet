@@ -4,7 +4,7 @@
   "description": "DesktopOppet Electron",
   "main": "background.js",
   "scripts": {
-    "start": "concurrently \"node app.js\" \"electron .\"",
+    "start": "electron .",
     "pack": "electron-builder --dir",
     "postinstall": "electron-builder install-app-deps",
     "dist": "electron-builder",
@@ -17,7 +17,6 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "concurrently": "^8.0.1",
     "electron": "^24.1.1",
     "electron-builder": "^23.6.0",
     "electron-reloader": "^1.2.3",
