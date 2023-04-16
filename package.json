@@ -4,12 +4,12 @@
   "description": "DesktopOppet Electron",
   "main": "background.js",
   "scripts": {
-    "start": "chcp 65001 && electron .",
+    "start": "chcp 65001 && cross-env NODE_ENV=development electron .",
     "pack": "electron-builder --dir",
     "postinstall": "electron-builder install-app-deps",
     "dist": "electron-builder",
     "dist-win": "electron-builder --win --ia32",
-    "dist-win64": "electron-builder --win --x64",
+    "dist-win64": "cross-env NODE_ENV=production electron-builder --win --x64",
     "dist-mac": "electron-builder --mac",
     "dist-linux": "electron-builder --linux"
   },
@@ -17,6 +17,7 @@
   "author": "kirbystudy and dullwolf",
   "license": "ISC",
   "devDependencies": {
+    "cross-env": "^7.0.3",
     "electron": "^24.1.1",
     "electron-builder": "^23.6.0",
     "electron-reloader": "^1.2.3"

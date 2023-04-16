@@ -1,4 +1,4 @@
-const { app, BrowserWindow, screen, Menu, Tray } = require('electron')
+const { app, BrowserWindow, screen, Menu, Tray, ipcMain } = require('electron')
 const dialog = require('electron').dialog
 
 const path = require('path')
@@ -6,6 +6,9 @@ var package = require('./package.json')
 
 // 系统托盘全局对象
 let appTray = null
+
+// 设置全局对象
+let win = null; let settings = null
 
 // 热加载
 if (process.env.NODE_ENV === 'development') {
@@ -40,6 +43,42 @@ function createWindow () {
 
 }
 
+// 创建设置窗口
+function createSettingShow() {
+  // 设置窗口打开监听
+  var set_windth = screen.getPrimaryDisplay().workAreaSize.width
+
+  // 设置窗口
+  settings = new BrowserWindow({
+    width: parseInt(set_windth / 3),
+    height: parseInt((set_windth / 3) * (14 / 16)),
+    minWidth: 470,
+    minHeight: 320,
+    skipTaskbar: false,
+    alwaysOnTop: false,
+    transparent: false,
+    frame: true,
+    titleBarStyle: "hidden",
+    titleBarOverlay: {
+      color: "#202020",
+      symbolColor: "white"
+    },
+    resizable: true,
+    show: true,
+    webPreferences: {
+      devTools: true,
+      enableRemoteModule: true,
+      nodeIntegration: true,  
+      contextIsolation: false,
+    }
+  })
+
+  // 加载本地文件
+  settings.loadFile('setting.html')
+  // settings.webContents.openDevTools();
+}
+
+
 // 创建系统托盘菜单
 function createTrayMenu() {
   
@@ -48,6 +87,11 @@ function createTrayMenu() {
       label: '设置',
       click: function () {
         // 打开设置页面
+        if( settings == null || settings.isDestroyed()) {
+          createSettingShow()
+        } else {
+          settings
+        }
       }
     },
     {

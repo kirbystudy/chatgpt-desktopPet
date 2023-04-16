@@ -1,0 +1,71 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  width: 100vw;
+  height: 100vh;
+}
+
+.container {
+  margin: 0px;
+  padding: 0;
+  position: absolute;
+  color: aliceblue;
+  background-color: #202020;
+  top: 0px;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  z-index: 50;
+  box-shadow: 0px 0px 10px -1px rgba(170, 170, 170, 0.75);
+  -webkit-box-shadow: 0px 0px 10px -1px rgba(170, 170, 170, 0.75);
+  -moz-box-shadow: 0px 0px 10px -1px rgba(170, 170, 170, 0.75);
+  -webkit-app-region: no-drag;
+}
+
+.topbar {
+  align-items: center;
+  position: absolute;
+  font-size: 15px;
+  font-weight: lighter;
+  color: azure;
+  height: 30px;
+  z-index: 90;
+  text-align: center;
+  width: 100%;
+  background-color: #202020;
+  font-family: bgmUI;
+  -webkit-app-region: drag;
+  user-select: none;
+}
+
+.topbar img {
+  width: 25px;
+  position: absolute;
+  line-height: 26px;
+  left: 0;
+}
+
+.topbar .title {
+  height: 30px;
+  line-height: 30px;
+  position: absolute;
+  left: 30px;
+  font-size: 14px;
+}
+
+.setTab {
+  height: 60px;
+  line-height: 60px;
+  text-align: center;
+  position: absolute;
+  background-color: #272727;
+  border-radius: 7px;
+  top: 45px;
+  left: 16px;
+  right: 16px;
+  z-index: 0;
+  user-select: none;
+}
