@@ -1,6 +1,6 @@
 # vits-desktopPet
 
-基于elctron开发 Live2d模型的桌面宠物
+基于Electron开发 Live2d模型的桌面宠物
 
 ## 开发（develop）：
 
