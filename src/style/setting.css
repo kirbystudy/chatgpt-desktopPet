@@ -43,16 +43,18 @@ html {
 
 .topbar img {
   width: 25px;
+  height: 25px;
   position: absolute;
   line-height: 26px;
-  left: 0;
+  left: 5px;
+  margin: 4px 0 0 5px;
 }
 
 .topbar .title {
   height: 30px;
   line-height: 30px;
   position: absolute;
-  left: 30px;
+  left: 40px;
   font-size: 14px;
 }
 
