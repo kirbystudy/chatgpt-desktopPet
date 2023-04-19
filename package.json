@@ -1,8 +1,8 @@
 {
   "name": "vits-desktoppet",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "DesktopOppet Electron",
-  "main": "background.js",
+  "main": "./src/main/background.js",
   "scripts": {
     "start": "chcp 65001 && cross-env NODE_ENV=development electron .",
     "pack": "electron-builder --dir",
@@ -17,6 +17,7 @@
   "author": "kirbystudy and dullwolf",
   "license": "ISC",
   "devDependencies": {
+    "@electron/remote": "^2.0.9",
     "cross-env": "^7.0.3",
     "electron": "^24.1.1",
     "electron-builder": "^23.6.0",
