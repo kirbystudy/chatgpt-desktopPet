@@ -17,6 +17,18 @@
     cnpm install
   ```
 
+- 启动方式：
+
+  ```shell
+    npm run start
+  ```
+
+- 打包方式
+
+  ```shell
+    npm run dist-win64
+  ```
+
 ## 鸣谢 (Thanks)
 
-- Live2D For Web 组件 [oh-my-live2d](https://github.com/oh-my-live2d/oh-my-live2d)
+- Live2D For Web 组件 [pixi-live2d-display](https://github.com/guansss/pixi-live2d-display)
