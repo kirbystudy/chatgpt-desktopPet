@@ -14,7 +14,7 @@ let mainWindow = null; let settings = null
 
 // 模型窗口大小
 const win_width = 350
-const win_height = 500
+const win_height = 550
 
 // 热加载
 if (process.env.NODE_ENV === 'development') {
@@ -30,7 +30,7 @@ function createWindow () {
     width: win_width,          // 窗口的宽度
     height: win_height,        // 窗口的高度 
     skipTaskbar: false,        // 是否在任务栏中显示窗口
-    frame: false,              // 设置为 false 时可以创建一个无边框窗口  
+    frame: false,               // 设置为 false 时可以创建一个无边框窗口  
     transparent: true,         // 窗口透明
     alwaysOnTop: true,         // 窗口是否永远在别的窗口的上面
     resizable: false,          // 窗口大小是否可调整
@@ -43,8 +43,10 @@ function createWindow () {
 
   // 获取桌面大小
   let size = screen.getPrimaryDisplay().workAreaSize
+
   // 获取窗口大小
   let winSize = mainWindow.getSize()
+  
   // 初始位置为右下角
   mainWindow.setPosition(size.width - winSize[0], size.height - winSize[1])
 
@@ -59,6 +61,7 @@ function createWindow () {
 
   // 监听closed事件后执行
   mainWindow.on('closed', () => { win = null })
+
 }
 
 // 创建设置窗口

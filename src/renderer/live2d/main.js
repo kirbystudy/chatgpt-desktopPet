@@ -4,7 +4,7 @@ class live2d {
     this.canvas = document.getElementById("canvas")
     this.canvas.style.height = "auto"
     this.app = null
-    this.cubism4Model = '../../../model/asuna_01/asuna_01.model.json'
+    this.cubism4Model = '../../../model/桃濑日和/hiyori_pro_t11.model3.json'
   }
 
   async loadingModel () {
@@ -17,13 +17,13 @@ class live2d {
     })
 
     this.model4 = await PIXI.live2d.Live2DModel.from(this.cubism4Model)
-    this.model4.scale.set(0.12)
+    this.model4.scale.set(0.1)
+    this.model4.y = 50
     this.app.stage.addChild(this.model4)
   }
 }
 
 var app = new live2d()
-console.log(app)
 app.loadingModel()
 
 
