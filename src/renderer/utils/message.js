@@ -31,8 +31,15 @@ function init () {
   } else {
     $('#msg').css('display', 'none')
   }
+
+  $('#app').hover(() => {
+    $('.dialog_box').fadeIn(600)
+  }, () => {
+    $('.dialog_box').fadeOut(600)
+  })
 }
 
 window.setInterval(showHitokoto, 20000)
 
+init()
 showHitokoto()
