@@ -1,7 +1,7 @@
 {
   "name": "vits-desktoppet",
   "version": "1.0.1",
-  "description": "DesktopOppet Electron",
+  "description": "DesktopPet Electron",
   "main": "./src/main/background.js",
   "scripts": {
     "start": "chcp 65001 && cross-env NODE_ENV=development electron .",
