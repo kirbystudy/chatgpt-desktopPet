@@ -31,15 +31,13 @@
       "./src",
       "model",
       "node_modules",
-      "package.json",
-      "background.js",
-      "index.html"
+      "package.json"
     ],
     "win": {
       "target": [
         "nsis"
       ],
-      "icon": "./src/image/app.ico"
+      "icon": "./assets/app.ico"
     }
   }
 }

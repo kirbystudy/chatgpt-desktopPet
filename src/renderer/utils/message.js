@@ -37,9 +37,9 @@ function init () {
   }, () => {
     $('.dialog_box').fadeOut(600)
   })
+
+  showHitokoto()
+  window.setInterval(showHitokoto, 20000)
 }
 
-window.setInterval(showHitokoto, 20000)
-
 init()
-showHitokoto()
