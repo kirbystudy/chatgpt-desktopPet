@@ -30,7 +30,7 @@ function createWindow () {
     width: win_width,          // 窗口的宽度
     height: win_height,        // 窗口的高度 
     skipTaskbar: false,        // 是否在任务栏中显示窗口
-    frame: false,               // 设置为 false 时可以创建一个无边框窗口  
+    frame: false,              // 设置为 false 时可以创建一个无边框窗口  
     transparent: true,         // 窗口透明
     alwaysOnTop: true,         // 窗口是否永远在别的窗口的上面
     resizable: false,          // 窗口大小是否可调整
@@ -57,7 +57,6 @@ function createWindow () {
 
   // 加载本地文件
   mainWindow.loadFile('./src/renderer/pages/index.html')
-  mainWindow.webContents.openDevTools()
 
   // 监听closed事件后执行
   mainWindow.on('closed', () => { win = null })
