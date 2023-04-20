@@ -1,5 +1,4 @@
 function showMessage (text, timeout) {
-
   if (Array.isArray(text)) {
     text = text[Math.floor(Math.random() * text.length + 1) - 1]
   }
