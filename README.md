@@ -31,4 +31,4 @@
 
 ## 鸣谢 (Thanks)
 
-- Live2D For Web 组件 [pixi-live2d-display](https://github.com/guansss/pixi-live2d-display)
+- Live2D For Web 组件 [oh-my-live2d](https://github.com/oh-my-live2d/oh-my-live2d)
