@@ -1,19 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Live2D DesktopPet - Setting</title>
-  <link rel="stylesheet" href="src/style/setting.css">
+  <link rel="stylesheet" href="../style/setting.css">
 </head>
+
 <body>
   <div class="container">
     <div class="topbar">
       <img src="../../../assets/app.ico">
       <span class="title">Live2D DesktopPet</a>
     </div>
-    <div class="setTab">设置栏</div>
+    <div class="setting_page">
+      <div class="setting_box">
+        <div class="setting_header">
+          <h3>模型设置</h3>
+          <div id="settingBtn" class="modelBtn">保存设置</div>
+        </div>
+        <div class="setting">
+          <span>模型缩放</span>
+          <div class="slider">
+            <input type="range" min="0" max="2" value="1" step="0.01" class="slider-input">
+            <div class="slider-value">1</div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </body>
+
+<script src="../utils/setting.js"></script>
+
 </html>

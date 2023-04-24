@@ -1,5 +1,5 @@
 const { app, BrowserWindow, Menu, Tray, ipcMain } = require('electron')
-const remote = require('@electron/remote/main');
+const remote = require('@electron/remote/main')
 const dialog = require('electron').dialog
 const screen = require('electron').screen
 
@@ -14,7 +14,7 @@ let mainWindow = null; let settings = null
 
 // 模型窗口大小
 const win_width = 350
-const win_height = 550
+const win_height = 500
 
 // 热加载
 if (process.env.NODE_ENV === 'development') {
@@ -38,7 +38,9 @@ function createWindow () {
       enableRemoteModule: true,   // 允许使用remote
       nodeIntegration: true,      // node下所有东西都可以在渲染进程中使用
       contextIsolation: false,    // 禁用上下文隔离
-    }
+      allowFileAccess: true,      // 允许在本地访问文件
+    },
+    
   })
 
   // 获取桌面大小
@@ -46,7 +48,7 @@ function createWindow () {
 
   // 获取窗口大小
   let winSize = mainWindow.getSize()
-  
+
   // 初始位置为右下角
   mainWindow.setPosition(size.width - winSize[0], size.height - winSize[1])
 
@@ -75,7 +77,7 @@ function createSettingShow () {
     minWidth: 470,
     minHeight: 320,
     skipTaskbar: false,
-    alwaysOnTop: false,
+    alwaysOnTop: true,
     transparent: false,
     frame: true,
     titleBarStyle: "hidden",
@@ -86,15 +88,15 @@ function createSettingShow () {
     resizable: true,
     show: true,
     webPreferences: {
-      enableRemoteModule: true,
       nodeIntegration: true,
+      enableRemoteModule: true,
       contextIsolation: false,
+      zoomFactor: 1
     }
   })
 
   // 加载本地文件
-  settings.loadFile('setting.html')
-
+  settings.loadFile(path.join(__dirname, '../renderer/pages/setting.html'))
 }
 
 // 创建系统托盘菜单
@@ -107,8 +109,6 @@ function createTrayMenu () {
         // 打开设置页面
         if (settings == null || settings.isDestroyed()) {
           createSettingShow()
-        } else {
-          settings
         }
       }
     },
@@ -134,10 +134,7 @@ function createTrayMenu () {
           message: '真的要退出吗?'
         }).then((res) => {
           if (res.response == 1) {
-            console.log("确定")
             app.quit()
-          } else if (res.response == 0) {
-            console.log("取消")
           }
         }).catch((error) => {
           console.log(error)
@@ -187,22 +184,22 @@ ipcMain.on('dragMain', (event, mouseOnPage) => {
   let winPosX_right = newPosX + winSize[0] // 右边
 
   // 窗口上方超出屏幕，重置Y为0
-  if(winPosY_up < 0) {
+  if (winPosY_up < 0) {
     newPosY = 0
   }
 
   // 窗口下方超出屏幕，重置Y为 屏幕高度最大值 - 窗口高度
-  if(winPosY_down > size.height) {
+  if (winPosY_down > size.height) {
     newPosY = size.height - winSize[1]
   }
 
   // 窗口左边超出屏幕，重置X为0
-  if(winPosX_left < 0) {
+  if (winPosX_left < 0) {
     newPosX = 0
   }
 
   // 窗口右边超出屏幕，重置X为 屏幕长度最大值 - 窗口长度
-  if(winPosX_right > size.width) {
+  if (winPosX_right > size.width) {
     newPosX = size.width - winSize[0]
   }
 
@@ -211,6 +208,21 @@ ipcMain.on('dragMain', (event, mouseOnPage) => {
   mainWindow.transparent = true
 })
 
+// ipc监听，打开设置窗口
+ipcMain.on('Setting', (event, arg) => {
+  if (arg == 'Open') {
+    if(settings == null || settings.isDestroyed()) {
+      createSettingShow()
+    }
+  }
+})
+
+// ipc监听，刷新进程
+ipcMain.on('MainPage', (event, value) => {
+  if(value == 'refresh') {
+    mainWindow.reload()
+  }
+})
 
 // 当Electron完成时，将调用此方法
 // 初始化，并准备创建浏览器窗口。

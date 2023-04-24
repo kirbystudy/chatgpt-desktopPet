@@ -13,12 +13,32 @@ let mousedown_left = false
 
 let mouseOnPage
 
-this.window.onload = function () {
-  draggableHandle()
-}
+draggableHandle()
 
 function draggableHandle () {
-  var canvas = document.getElementById('canvas')
+
+  var canvas = document.getElementById('oml-canvas')
+  var controls = document.getElementById('oml-controls')
+  var controlsItem = document.querySelectorAll('.oml-control-item')
+  var levitated = document.getElementById('oml-levitated-btn')
+  levitated.style.display = 'none'
+
+  canvas.addEventListener('mousemove', () => {
+    controlsItem.forEach((item) => {
+      item.style.display = 'none'
+    })
+  })
+
+  const dialog_box = document.createElement('div')
+  dialog_box.classList.add('control_btn')
+  dialog_box.textContent = '对话框'
+  controls.appendChild(dialog_box)
+
+  const setting = document.createElement('div')
+  setting.classList.add('control_btn')
+  setting.setAttribute('id', 'setting')
+  setting.textContent = '设置'
+  controls.appendChild(setting)
 
   // 监听鼠标按下事件
   canvas.addEventListener('mousedown', (event) => {
@@ -54,3 +74,11 @@ function draggableHandle () {
     }
   })
 }
+
+const setting = document.getElementById('setting')
+
+setting.addEventListener('click', () => {
+  ipcRenderer.send('Setting', 'Open')
+})
+
+

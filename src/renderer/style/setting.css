@@ -58,16 +58,109 @@ html {
   font-size: 14px;
 }
 
-.setTab {
-  height: 60px;
-  line-height: 60px;
-  text-align: center;
+.setting_page {
   position: absolute;
   background-color: #272727;
-  border-radius: 7px;
+  border-radius: 3px;
   top: 45px;
   left: 16px;
   right: 16px;
+  bottom: 15px;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.setting_box {
+  width: 100%;
+  height: 100%;
+  overflow-y: scroll;
+  z-index: 0;
+}
+
+.setting_box::-webkit-scrollbar {
+  width: 4px;
+}
+
+.setting_box::-webkit-scrollbar-thumb {
+  box-shadow: inset 0 0 5px rgba(141, 140, 140, 0.2);
+  background-color: #249ffd;
+  border-radius: 10px;
+}
+
+.setting_box::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+  background-color: rgba(160, 160, 160, 0.2);
+}
+
+.setting_header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+}
+
+.modelBtn {
+  width: 90px;
+  height: 40px;
+  line-height: 40px;
+  border-radius: 4px;
+  color: #fff;
+  outline: none;
+  border: 0;
+  overflow: hidden;
+  background-color: #1976d2;
+  font-size: 14px;
+  text-align: center;
+  cursor: pointer;
   z-index: 0;
   user-select: none;
+  transition: all ease 0.3s;
+}
+
+.modelBtn:hover {
+  background-color: #276aac;
+}
+
+.modelBtn:active {
+  transform: scale(0.95);
+}
+
+.setting {
+  width: auto;
+  height: 45px;
+  text-align: left;
+  margin: 8px 13px 8px 13px;
+  padding: 10px;
+  background-color: #313131;
+  border-radius: 7px;
+  box-shadow: 0 0 0 1px #202020;
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  user-select: none;
+}
+
+.slider {
+  position: relative;
+  padding-left: 20px;
+  width: 80%;
+  z-index: 0;
+}
+
+.slider-input {
+  /* 设置滑块高度 */
+  height: 8px;
+  /* 设置滑块宽度 */
+  width: 100%;
+  /* 设置滑块圆角 */
+  border-radius: 6px;
+  /* 取消选中时的默认样式 */
+  outline: none;
+}
+
+.slider-value {
+  position: absolute;
+  bottom: 15px;
+  left: 210px;
 }
