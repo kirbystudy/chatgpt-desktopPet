@@ -1,8 +1,8 @@
+
 OML2D.loadOhMyLive2D({
   source: './',
   models: [
-    { path: '../../../model/桃濑日和/hiyori_pro_t11.model3.json', scale: localStorage.getItem('settingBtn') },
-    // { path: 'model/桃濑日和/hiyori_pro_t11.model3.json'},
+    { path: localStorage.getItem('live2d') == null ? '../../../model/桃濑日和/桃濑日和.model3.json' : localStorage.getItem('live2d') },
   ],
   mobileShow: true,
   tips: {

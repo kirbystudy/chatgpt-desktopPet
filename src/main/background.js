@@ -5,6 +5,7 @@ const screen = require('electron').screen
 
 const path = require('path')
 var package = require('../../package.json')
+var fs = require('fs')
 
 // 系统托盘全局对象
 let appTray = null
@@ -29,7 +30,7 @@ function createWindow () {
   mainWindow = new BrowserWindow({
     width: win_width,          // 窗口的宽度
     height: win_height,        // 窗口的高度 
-    skipTaskbar: false,        // 是否在任务栏中显示窗口
+    skipTaskbar: true,         // 是否在任务栏中显示窗口
     frame: false,              // 设置为 false 时可以创建一个无边框窗口  
     transparent: true,         // 窗口透明
     alwaysOnTop: true,         // 窗口是否永远在别的窗口的上面
@@ -40,7 +41,6 @@ function createWindow () {
       contextIsolation: false,    // 禁用上下文隔离
       allowFileAccess: true,      // 允许在本地访问文件
     },
-    
   })
 
   // 获取桌面大小
@@ -61,7 +61,7 @@ function createWindow () {
   mainWindow.loadFile('./src/renderer/pages/index.html')
 
   // 监听closed事件后执行
-  mainWindow.on('closed', () => { win = null })
+  mainWindow.on('closed', () => { mainWindow = null })
 
 }
 
@@ -79,7 +79,7 @@ function createSettingShow () {
     skipTaskbar: false,
     alwaysOnTop: true,
     transparent: false,
-    frame: true,
+    frame: false,
     titleBarStyle: "hidden",
     titleBarOverlay: {
       color: "#202020",
@@ -97,6 +97,10 @@ function createSettingShow () {
 
   // 加载本地文件
   settings.loadFile(path.join(__dirname, '../renderer/pages/setting.html'))
+  settings.webContents.openDevTools()
+
+  // 监听closed事件后执行
+  settings.on('closed', () => { settings = null })
 }
 
 // 创建系统托盘菜单
@@ -211,7 +215,7 @@ ipcMain.on('dragMain', (event, mouseOnPage) => {
 // ipc监听，打开设置窗口
 ipcMain.on('Setting', (event, arg) => {
   if (arg == 'Open') {
-    if(settings == null || settings.isDestroyed()) {
+    if (settings == null || settings.isDestroyed()) {
       createSettingShow()
     }
   }
@@ -219,10 +223,33 @@ ipcMain.on('Setting', (event, arg) => {
 
 // ipc监听，刷新进程
 ipcMain.on('MainPage', (event, value) => {
-  if(value == 'refresh') {
+  if (value == 'refresh') {
     mainWindow.reload()
   }
 })
+
+var live2dPath = ''
+
+// ipc监听，更换live2d
+ipcMain.on('changeLive2d', (event, arg) => {
+  switchLive2d(arg[0], arg[1])
+  mainWindow.webContents.send('onloadLive2d', live2dPath)
+  mainWindow.reload()
+})
+
+
+function switchLive2d (live2d_text, live2d_val) {
+
+  var modelPath = path.join(__dirname, '../../model/' + live2d_text + '/' + live2d_text + '.model.json')
+  var model3Path = path.join(__dirname, '../../model/' + live2d_text + '/' + live2d_text + '.model3.json')
+  if(fs.existsSync(modelPath)) {
+    live2dPath = '../../../model/' + live2d_text + '/' + live2d_text + '.model.json'
+  }
+
+  if(fs.existsSync(model3Path)) {
+    live2dPath = '../../../model/' + live2d_text + '/' + live2d_text + '.model3.json'
+  }
+}
 
 // 当Electron完成时，将调用此方法
 // 初始化，并准备创建浏览器窗口。

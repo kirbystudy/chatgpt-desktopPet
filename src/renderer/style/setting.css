@@ -58,11 +58,52 @@ html {
   font-size: 14px;
 }
 
+.selection {
+  position: absolute;
+  background-color: #272727;
+  top: 40px;
+  left: 16px;
+  right: 16px;
+  z-index: 0;
+  user-select: nione;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+}
+
+.highlight {
+  position: absolute;
+  width: 70px;
+  height: 5%;
+  top: 85%;
+  left: 15px;
+  background-color: #4299b1;
+  box-shadow: 0 0 1px 1px #4299b1;
+  border-radius: 7px;
+  transition: all 0.5s ease;
+}
+
+.selection_bar {
+  width: 80px;
+  font-size: 15px;    
+  padding: 10px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.selection_bar:hover {
+  background-color: #393939 !important;
+}
+
+.selection_bar {
+  font-weight: 700;
+}
+
 .setting_page {
   position: absolute;
   background-color: #272727;
   border-radius: 3px;
-  top: 45px;
+  top: 95px;
   left: 16px;
   right: 16px;
   bottom: 15px;
@@ -100,67 +141,49 @@ html {
   padding: 10px;
 }
 
-.modelBtn {
-  width: 90px;
-  height: 40px;
-  line-height: 40px;
-  border-radius: 4px;
-  color: #fff;
-  outline: none;
-  border: 0;
-  overflow: hidden;
-  background-color: #1976d2;
-  font-size: 14px;
-  text-align: center;
-  cursor: pointer;
-  z-index: 0;
-  user-select: none;
-  transition: all ease 0.3s;
-}
-
-.modelBtn:hover {
-  background-color: #276aac;
-}
-
-.modelBtn:active {
-  transform: scale(0.95);
-}
-
 .setting {
   width: auto;
-  height: 45px;
-  text-align: left;
-  margin: 8px 13px 8px 13px;
-  padding: 10px;
-  background-color: #313131;
   border-radius: 7px;
-  box-shadow: 0 0 0 1px #202020;
-  display: flex;
-  align-items: center;
-  justify-content: left;
   user-select: none;
 }
 
-.slider {
-  position: relative;
-  padding-left: 20px;
-  width: 80%;
-  z-index: 0;
+.setting .form_selection {
+  padding: 0 15px 0 15px;
+  margin: 15px 0 10px;
 }
 
-.slider-input {
-  /* 设置滑块高度 */
-  height: 8px;
-  /* 设置滑块宽度 */
+.form_selection .title {
+  color: #fff;
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.select {
   width: 100%;
-  /* 设置滑块圆角 */
-  border-radius: 6px;
-  /* 取消选中时的默认样式 */
+  height: 40px;
+  background-color: #a3b5bb;
   outline: none;
+  border: 1px solid #d9dce3;
+  border-radius: 4px;
+  color: #606266;
+  padding: 0 30px 0 15px;
+  font-size: 14px;
 }
 
-.slider-value {
-  position: absolute;
-  bottom: 15px;
-  left: 210px;
+.container_box {
+  width: auto;
+  height: 45px;
+  padding: 10px;
+  box-shadow: 0 0 0 1px #202020;
+  margin: 8px 13px 8px 13px;
+  background-color: #313131;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  user-select: none;
 }
+
+
+

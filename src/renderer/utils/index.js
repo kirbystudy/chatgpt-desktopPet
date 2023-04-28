@@ -16,29 +16,29 @@ let mouseOnPage
 draggableHandle()
 
 function draggableHandle () {
-
+  var stage = document.getElementById('oml-stage')
   var canvas = document.getElementById('oml-canvas')
   var controls = document.getElementById('oml-controls')
-  var controlsItem = document.querySelectorAll('.oml-control-item')
+  controls.style.display = 'none'
   var levitated = document.getElementById('oml-levitated-btn')
   levitated.style.display = 'none'
 
-  canvas.addEventListener('mousemove', () => {
-    controlsItem.forEach((item) => {
-      item.style.display = 'none'
-    })
-  })
+  const control_box = document.createElement('div')
+  control_box.classList.add('control_btn')
+
+  stage.appendChild(control_box)
 
   const dialog_box = document.createElement('div')
-  dialog_box.classList.add('control_btn')
+  dialog_box.classList.add('control_item')
   dialog_box.textContent = '对话框'
-  controls.appendChild(dialog_box)
+  control_box.appendChild(dialog_box)
 
   const setting = document.createElement('div')
-  setting.classList.add('control_btn')
+  setting.classList.add('control_item')
   setting.setAttribute('id', 'setting')
   setting.textContent = '设置'
-  controls.appendChild(setting)
+  control_box.appendChild(setting)
+
 
   // 监听鼠标按下事件
   canvas.addEventListener('mousedown', (event) => {
@@ -81,4 +81,7 @@ setting.addEventListener('click', () => {
   ipcRenderer.send('Setting', 'Open')
 })
 
+ipcRenderer.on('onloadLive2d', (event, data) => {
+  localStorage.setItem('live2d', data)
+})
 

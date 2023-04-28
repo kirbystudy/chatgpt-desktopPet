@@ -9,10 +9,6 @@ body {
   overflow-x: hidden;
 }
 
-.oml-controls {
-  display: none;
-}
-
 #app {
   height: 100%;
   width: 100%;
@@ -21,18 +17,31 @@ body {
 }
 
 .control_btn {
-  position: relative;
-  bottom: 80px;
+  position: absolute;
+  right: 0;
+  bottom: 20%;
   font-size: 14px;
-  padding: 8px;
-  margin-bottom: 10px;
-  border: 1px solid #ccc;
+  z-index: 9999;
+  transition: all 0.3s ease;
+}
+
+.control_item {
+  width: 50px;
+  height: 35px;
   border-radius: 4px;
-  background-color: #60a8c7;
-  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.3s ease;
+  background-color: #1c699d;
+  color: #fff;
   cursor: pointer;
 }
 
-.control_btn:hover {
+.control_item:not(:last-child) {
+  margin-bottom: 10px;
+}
+
+.control_item:hover {
   background-color: #2bb7f5;
 }

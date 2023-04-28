@@ -13,20 +13,65 @@
   <div class="container">
     <div class="topbar">
       <img src="../../../assets/app.ico">
-      <span class="title">Live2D DesktopPet</a>
+      <span class="title">设置</a>
     </div>
-    <div class="setting_page">
+    <div class="selection">
+      <div class="highlight" id="highlight"></div>
+      <div class="selection_bar" id="versionInfoTab">版本信息</div>
+      <div class="selection_bar" id="modelSettingTab">模型设置</div>
+    </div>
+
+    <div class="setting_page" id="versionInfo">
+      <div class="setting_box">
+        <div class="setting_header">
+          <h3>版本信息</h3>
+        </div>
+        <div class="container_box">
+          <span>当前版本</span>
+          <span id="app_version"></span>
+        </div>
+
+        <div class="container_box">
+          <span>Node.js版本</span>
+          <span id="node_version"></span>
+        </div>
+
+        <div class="container_box">
+          <span>Chrome版本</span>
+          <span id="chrome_version"></span>
+        </div>
+
+        <div class="container_box">
+          <span>Electron版本</span>
+          <span id="electron_version"></span>
+        </div>
+
+        <div class="container_box">
+          <span>作者</span>
+          <span>小埋 dullwolf</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="setting_page" id="modelSetting" style="display: none;">
       <div class="setting_box">
         <div class="setting_header">
           <h3>模型设置</h3>
-          <div id="settingBtn" class="modelBtn">保存设置</div>
         </div>
         <div class="setting">
-          <span>模型缩放</span>
-          <div class="slider">
-            <input type="range" min="0" max="2" value="1" step="0.01" class="slider-input">
-            <div class="slider-value">1</div>
-          </div>
+          <form class="form_selection" id="vits">
+            <div class="title">请选择vits模型</span></div>
+            <select class="select" id="vits-show">
+              <option class="option"></option>
+            </select>
+          </form>
+
+          <form class="form_selection" id="live2d">
+            <div class="title">请选择live2d模型</div>
+            <select class="select" id="live2d-show">
+              <option class="option"></option>
+            </select>
+          </form>
         </div>
       </div>
     </div>
