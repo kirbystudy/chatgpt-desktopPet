@@ -26,7 +26,6 @@ async function vitsShow () {
   var result = await res.json()
 
   for (var index in result.data) {
-    console.log(result.data[index].title)
     text += `<option class="option" value="${index}">${result.data[index].title}</option>`
   }
 
