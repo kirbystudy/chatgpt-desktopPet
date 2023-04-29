@@ -29,6 +29,12 @@
     npm run dist-win64
   ```
 
+## 功能 (Function)
+
+- [x] 支持 Live2d moc/moc3
+- [x] 支持 拖拽模型
+- [x] 切换 live2D模型
+
 ## 鸣谢 (Thanks)
 
 - Live2D For Web 组件 [oh-my-live2d](https://github.com/oh-my-live2d/oh-my-live2d)
