@@ -141,7 +141,7 @@
     timetableType: courseType,
     highlightWeek: day,
     gridOnClick: function (e) {
-      alert(e.name + '  ' + e.week + ', 第' + e.index + '节课, 课长' + e.length + '节');
+      alert(e.name + '  ' + e.week + ' ');
       console.log(e);
     },
     styles: {
@@ -171,6 +171,7 @@
       },
       timetableType: courseType,
       gridOnClick: function (e) {
+        alert(e.name + '  周' + e.week + '');
         console.log(e);
       }
     });
