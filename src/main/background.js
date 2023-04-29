@@ -75,9 +75,9 @@ function createScheduleShow() {
     // 设置窗口
     sch = new BrowserWindow({
         width: parseInt(set_windth / 3),
-        height: parseInt((set_windth / 2) * (14 / 16)),
-        minWidth: 570,
-        minHeight: 470,
+        height: parseInt((set_windth / 2) * (15 / 16)),
+        minWidth: 670,
+        minHeight: 570,
         skipTaskbar: false,
         alwaysOnTop: true,
         transparent: false,
