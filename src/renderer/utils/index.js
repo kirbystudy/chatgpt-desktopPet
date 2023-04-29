@@ -27,6 +27,7 @@ window.onload = function () {
 
   const schedule_box = document.createElement('div');
   schedule_box.classList.add('control_item');
+  schedule_box.setAttribute('id', 'schedule');
   schedule_box.textContent = '日程表';
   control_box.appendChild(schedule_box);
 
@@ -45,6 +46,11 @@ window.onload = function () {
 
   setting.addEventListener('click', () => {
     ipcRenderer.send('Setting', 'Open')
+  });
+
+  const schedule = document.getElementById('schedule');
+    schedule.addEventListener('click', () => {
+      ipcRenderer.send('Schedule', 'Open')
   });
 
   draggableHandle();

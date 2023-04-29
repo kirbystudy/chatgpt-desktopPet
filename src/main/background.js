@@ -11,7 +11,8 @@ var fs = require('fs')
 let appTray = null
 
 // 设置全局对象
-let mainWindow = null; let settings = null
+let mainWindow = null; let settings = null;
+let sch = null;
 
 // 模型窗口大小
 const win_width = 350
@@ -23,6 +24,7 @@ if (process.env.NODE_ENV === 'development') {
     require('electron-reloader')(module)
   } catch (_) { }
 }
+
 
 // 创建并控制浏览器窗口
 function createWindow () {
@@ -63,6 +65,43 @@ function createWindow () {
   // 监听closed事件后执行
   mainWindow.on('closed', () => { mainWindow = null })
 
+}
+
+// 创建日程表窗口
+function createScheduleShow() {
+    // 设置窗口打开监听
+    var set_windth = screen.getPrimaryDisplay().workAreaSize.width
+
+    // 设置窗口
+    sch = new BrowserWindow({
+        width: parseInt(set_windth / 3),
+        height: parseInt((set_windth / 2) * (14 / 16)),
+        minWidth: 570,
+        minHeight: 470,
+        skipTaskbar: false,
+        alwaysOnTop: true,
+        transparent: false,
+        frame: false,
+        titleBarStyle: "hidden",
+        titleBarOverlay: {
+            color: "#202020",
+            symbolColor: "white"
+        },
+        resizable: true,
+        show: true,
+        webPreferences: {
+            nodeIntegration: true,
+            enableRemoteModule: true,
+            contextIsolation: false,
+            zoomFactor: 1
+        }
+    })
+
+    // 加载本地文件
+    sch.loadFile(path.join(__dirname, '../renderer/pages/schedule/index.html'))
+
+    // 监听closed事件后执行
+    sch.on('closed', () => { sch = null })
 }
 
 // 创建设置窗口
@@ -218,6 +257,15 @@ ipcMain.on('Setting', (event, arg) => {
       createSettingShow()
     }
   }
+})
+
+// ipc监听，打开日程表窗口
+ipcMain.on('Schedule', (event, arg) => {
+    if (arg == 'Open') {
+        if (sch == null || sch.isDestroyed()) {
+            createScheduleShow()
+        }
+    }
 })
 
 // ipc监听，刷新进程
