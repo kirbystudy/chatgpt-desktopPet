@@ -3,9 +3,7 @@ const fs = require('fs')
 const path = require('path')
 window.$ = window.jQuery = require('../utils/jquery.min.js')
 
-window.onload = function() {
-  showItem()
-}
+showItem()
 
 function showItem () {
 
