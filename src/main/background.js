@@ -89,6 +89,7 @@ function createScheduleShow() {
         },
         resizable: true,
         show: true,
+        icon: path.join(__dirname, '../../assets/app.ico'),
         webPreferences: {
             nodeIntegration: true,
             enableRemoteModule: true,
@@ -126,6 +127,7 @@ function createSettingShow () {
     },
     resizable: true,
     show: true,
+    icon: path.join(__dirname, '../../assets/app.ico'),
     webPreferences: {
       nodeIntegration: true,
       enableRemoteModule: true,
