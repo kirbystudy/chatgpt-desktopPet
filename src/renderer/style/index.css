@@ -17,12 +17,13 @@ body {
 }
 
 .control_btn {
+  opacity: 0;
   position: absolute;
   right: 0;
   bottom: 20%;
   font-size: 14px;
   z-index: 9999;
-  transition: all 0.3s ease;
+  transition: all 0.3s ease-in-out;
 }
 
 .control_item {
