@@ -54,15 +54,14 @@ window.onload = function () {
 
   draggableHandle()
 
-  const live2d_main = document.getElementById('oml-canvas')
 
   const control_btn = document.querySelector('.control_btn')
 
-  live2d_main.addEventListener('mouseover', () => {
+  stage.addEventListener('mouseover', () => {
     control_btn.style.opacity = 1
   })
 
-  live2d_main.addEventListener('mouseout', () => {
+  stage.addEventListener('mouseout', () => {
     control_btn.style.opacity = 0
   })
 
