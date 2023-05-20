@@ -34,7 +34,7 @@
 - [x] 支持 Live2d moc/moc3
 - [x] 支持 拖拽模型
 - [x] 切换 live2D模型
-- [ ] 日程表
+- [x] 日程表
 - [ ] ChatGPT聊天
 
 ## 鸣谢 (Thanks)
