@@ -33,7 +33,6 @@
 
 - [x] 支持 Live2d moc/moc3
 - [x] 支持 拖拽模型
-- [x] 切换 live2D模型
 - [x] 日程表
 - [x] ChatGPT聊天
 
