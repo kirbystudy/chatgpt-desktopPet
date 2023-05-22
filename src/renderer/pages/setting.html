@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Live2D DesktopPet - Setting</title>
+  <title>Live2D DesktopPet</title>
   <link rel="stylesheet" href="../style/setting.css">
 </head>
 
@@ -18,7 +18,7 @@
     <div class="selection">
       <div class="highlight" id="highlight"></div>
       <div class="selection_bar" id="versionInfoTab">版本信息</div>
-      <div class="selection_bar" id="modelSettingTab">模型设置</div>
+      <!-- <div class="selection_bar" id="modelSettingTab">语音设置</div> -->
     </div>
 
     <div class="setting_page" id="versionInfo">
@@ -32,23 +32,19 @@
         </div>
 
         <div class="container_box">
-          <span>Node.js版本</span>
-          <span id="node_version"></span>
-        </div>
-
-        <div class="container_box">
-          <span>Chrome版本</span>
-          <span id="chrome_version"></span>
-        </div>
-
-        <div class="container_box">
-          <span>Electron版本</span>
-          <span id="electron_version"></span>
-        </div>
-
-        <div class="container_box">
           <span>作者</span>
-          <span>小埋 dullwolf</span>
+          <span>小埋iwn、dullwolf蠢狼</span>
+        </div>
+
+        <div class="container_box">
+          <span>live2d画师</span>
+          <span>Candya</span>
+        </div>
+
+        <div class="setting_bottom">
+          <h3>留言反馈</h3>
+          <textarea class="feedback" id="feedback_content" cols="30" rows="10"></textarea>
+          <div class="feedback_commit" id="feedback_button">匿名提交</div>
         </div>
       </div>
     </div>
@@ -56,16 +52,9 @@
     <div class="setting_page" id="modelSetting" style="display: none;">
       <div class="setting_box">
         <div class="setting_header">
-          <h3>模型设置</h3>
+          <h3>语音设置</h3>
         </div>
         <div class="setting">
-          <form class="form_selection" id="vits">
-            <div class="title">请选择vits模型</span></div>
-            <select class="select" id="vits-show">
-              <option class="option"></option>
-            </select>
-          </form>
-
           <form class="form_selection" id="live2d">
             <div class="title">请选择live2d模型</div>
             <select class="select" id="live2d-show">

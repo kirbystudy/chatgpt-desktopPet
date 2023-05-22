@@ -1,6 +1,6 @@
 {
   "name": "vits-desktoppet",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "DesktopPet Electron",
   "main": "./src/main/background.js",
   "scripts": {
@@ -24,7 +24,7 @@
     "electron-reloader": "^1.2.3"
   },
   "build": {
-    "productName": "VITS Live2D桌宠",
+    "productName": "秋蒂桌宠",
     "appId": "com.disktoppet",
     "asar": true,
     "files": [

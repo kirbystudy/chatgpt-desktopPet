@@ -12,11 +12,12 @@ let appTray = null
 
 // 设置全局对象
 let mainWindow = null; let settings = null;
-let sch = null;
+let sch = null; let chat = null
 
 // 模型窗口大小
 const win_width = 350
 const win_height = 500
+
 
 // 热加载
 if (process.env.NODE_ENV === 'development') {
@@ -27,7 +28,7 @@ if (process.env.NODE_ENV === 'development') {
 
 
 // 创建并控制浏览器窗口
-function createWindow () {
+function createWindow() {
 
   mainWindow = new BrowserWindow({
     width: win_width,          // 窗口的宽度
@@ -69,51 +70,96 @@ function createWindow () {
 
 // 创建日程表窗口
 function createScheduleShow() {
-    // 设置窗口打开监听
-    var set_windth = screen.getPrimaryDisplay().workAreaSize.width
+  // 设置窗口打开监听
+  var set_windth = screen.getPrimaryDisplay().workAreaSize.width
 
-    // 设置窗口
-    sch = new BrowserWindow({
-        width: parseInt(set_windth / 3),
-        height: parseInt((set_windth / 2) * (15 / 16)),
-        minWidth: 670,
-        minHeight: 570,
-        skipTaskbar: false,
-        alwaysOnTop: true,
-        transparent: false,
-        frame: false,
-        titleBarStyle: "hidden",
-        titleBarOverlay: {
-            color: "#202020",
-            symbolColor: "white"
+  // 设置窗口
+  sch = new BrowserWindow({
+    width: parseInt(set_windth / 3),
+    height: parseInt(set_windth / 2) * 0.875,
+    minWidth: 670,
+    minHeight: 570,
+    skipTaskbar: false,
+    alwaysOnTop: false,
+    transparent: false,
+    frame: false,
+    resizable: true,
+    icon: path.join(__dirname, '../../assets/app.ico'),
+    webPreferences: {
+      nodeIntegration: true,
+      enableRemoteModule: true,
+      contextIsolation: false,
+      zoomFactor: 1
+    }
+  })
+
+
+  // 加载本地文件
+  sch.loadFile(path.join(__dirname, '../renderer/pages/schedule/index.html'))
+
+  // 监听closed事件后执行
+  sch.on('closed', () => { sch = null })
+}
+
+// 创建chatting聊天窗口
+function createChattingShow() {
+
+  // 设置窗口
+  chat = new BrowserWindow({
+    width: 480,
+    height: 680,
+    skipTaskbar: false,
+    alwaysOnTop: false,
+    transparent: true,
+    frame: false,
+    resizable: false,
+    icon: path.join(__dirname, '../../assets/app.ico'),
+    webPreferences: {
+      nodeIntegration: true,
+      enableRemoteModule: true,
+      contextIsolation: false,
+      zoomFactor: 1
+    }
+  })
+
+  // 加载本地文件
+  chat.loadFile(path.join(__dirname, '../renderer/pages/chatting.html'))
+
+  chat.webContents.on('did-finish-load', (event) => {
+    // 发送消息给渲染进程chat
+    chat.webContents.send('openChatting', [
+        {
+          'user': 'TA',
+          'time': '00:00',
+          'text': '你好'
         },
-        resizable: true,
-        show: true,
-        icon: path.join(__dirname, '../../assets/app.ico'),
-        webPreferences: {
-            nodeIntegration: true,
-            enableRemoteModule: true,
-            contextIsolation: false,
-            zoomFactor: 1
-        }
-    })
+        {
+          'user': 'ME',
+          'time': '00:00',
+          'text': '你吃饭了吗'
+        },
+        {
+          'user': 'TA',
+          'time': '00:00',
+          'text': '吃了'
+        },
+      ]
+    )
+  })
 
-    // 加载本地文件
-    sch.loadFile(path.join(__dirname, '../renderer/pages/schedule/index.html'))
-
-    // 监听closed事件后执行
-    sch.on('closed', () => { sch = null })
+  // 监听closed事件后执行
+  chat.on('closed', () => { chat = null })
 }
 
 // 创建设置窗口
-function createSettingShow () {
+function createSettingShow() {
   // 设置窗口打开监听
   var set_windth = screen.getPrimaryDisplay().workAreaSize.width
 
   // 设置窗口
   settings = new BrowserWindow({
     width: parseInt(set_windth / 3),
-    height: parseInt((set_windth / 3) * (14 / 16)),
+    height: parseInt(set_windth / 3) * 0.875,
     minWidth: 470,
     minHeight: 320,
     skipTaskbar: false,
@@ -144,7 +190,7 @@ function createSettingShow () {
 }
 
 // 创建系统托盘菜单
-function createTrayMenu () {
+function createTrayMenu() {
 
   var trayMenuTemplate = [
     {
@@ -263,11 +309,36 @@ ipcMain.on('Setting', (event, arg) => {
 
 // ipc监听，打开日程表窗口
 ipcMain.on('Schedule', (event, arg) => {
-    if (arg == 'Open') {
-        if (sch == null || sch.isDestroyed()) {
-            createScheduleShow()
-        }
+  if (arg == 'Open') {
+    if (sch == null || sch.isDestroyed()) {
+      createScheduleShow()
     }
+  }
+})
+
+// ipc监听，关闭r
+ipcMain.on('closeSchedule', (event, arg) => {
+  if (arg == 'Close') {
+    sch.close()
+  }
+})
+
+// ipc监听，打开chat聊天窗口
+ipcMain.on('Chatting', (event, arg) => {
+  if (arg == 'Open') {
+    if (chat == null || chat.isDestroyed()) {
+      createChattingShow()
+    }
+  }
+})
+
+
+
+// ipc监听，关闭chat聊天窗口
+ipcMain.on('closeChatting', (event, arg) => {
+  if (arg == 'Close') {
+    chat.close()
+  }
 })
 
 // ipc监听，刷新进程
@@ -287,29 +358,32 @@ ipcMain.on('changeLive2d', (event, arg) => {
 })
 
 
-function switchLive2d (live2d_text, live2d_val) {
+function switchLive2d(live2d_text, live2d_val) {
 
   var modelPath = path.join(__dirname, '../../model/' + live2d_text + '/' + live2d_text + '.model.json')
   var model3Path = path.join(__dirname, '../../model/' + live2d_text + '/' + live2d_text + '.model3.json')
-  if(fs.existsSync(modelPath)) {
+  if (fs.existsSync(modelPath)) {
     live2dPath = '../../../model/' + live2d_text + '/' + live2d_text + '.model.json'
   }
 
-  if(fs.existsSync(model3Path)) {
+  if (fs.existsSync(model3Path)) {
     live2dPath = '../../../model/' + live2d_text + '/' + live2d_text + '.model3.json'
   }
 }
+
 
 // 当Electron完成时，将调用此方法
 // 初始化，并准备创建浏览器窗口。
 // 某些API只能在此事件发生后使用。
 app.on('ready', () => {
+
   // 创建窗口
   createWindow()
 
   // 创建系统托盘
   createTrayMenu()
 })
+
 
 // 当所有窗口都被关闭后退出
 app.on('window-all-closed', () => {

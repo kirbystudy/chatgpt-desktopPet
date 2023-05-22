@@ -5,34 +5,12 @@ window.$ = window.jQuery = require('../utils/jquery.min.js')
 
 showItem()
 
-function showItem () {
-
-  vitsShow()
+function showItem() {
   live2dShow()
 }
 
-async function vitsShow () {
 
-  var text = ''
-  
-  const res = await fetch('http://soundai.natapp1.cc/vits/getAllMod',
-  {
-    method: 'get',
-    headers: {
-      'uId': '3014085426',
-      'token': 'ef60cc9e-ab8f-463f-93dd-9969e7109f5b'
-    }
-  })
-  var result = await res.json()
-
-  for (var index in result.data) {
-    text += `<option class="option" value="${index}">${result.data[index].title}</option>`
-  }
-
-  $('#vits-show').html(text)
-}
-
-function live2dShow () {
+function live2dShow() {
   var text = ''
   var index = 0
   var live2dPath = path.join(__dirname, '../../../model/')
@@ -68,22 +46,47 @@ versionInfoTab.addEventListener('click', () => {
   highlight.style.width = '70px'
 })
 
-modelSettingTab.addEventListener('click', () => {
-  versionInfo.style.display = 'none'
-  modelSetting.style.display = 'block'
-  highlight.style.left = '115px'
-  highlight.style.width = '70px'
+// modelSettingTab.addEventListener('click', () => {
+//   versionInfo.style.display = 'none'
+//   modelSetting.style.display = 'block'
+//   highlight.style.left = '115px'
+//   highlight.style.width = '70px'
+// })
+
+const feedbackBtn = document.getElementById('feedback_button')
+
+// 发送内容
+var message = document.getElementById('feedback_content')
+
+feedbackBtn.addEventListener('click', () => {
+  var str = message.value
+  if (str.length > 0) {
+    const formData = new FormData();
+    formData.append('content', str);
+
+    fetch('http://osu.natapp1.cc/qd/feedBack', {
+      method: 'POST',
+      body: formData
+    })
+      .then(response => {
+        // 处理响应
+        return response.text()
+      })
+      .then(response => {
+        console.log(response)
+      })
+      .catch(error => {
+        // 处理错误
+        console.log(error)
+      });
+  }
+
+
 })
 
 window.onload = function () {
   var package = require('../../../package.json')
   const app_version = document.getElementById('app_version')
-  const node_version = document.getElementById('node_version')
-  const chrome_version = document.getElementById('chrome_version')
-  const electron_version = document.getElementById('electron_version')
+  app_version.innerText = 'v' + package.version
 
-  app_version.innerText = package.name + ' v' + package.version
-  node_version.innerText = process.versions['node']
-  chrome_version.innerText = process.versions['chrome']
-  electron_version.innerText = process.versions['electron']  
 }

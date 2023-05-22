@@ -1,217 +1,52 @@
 <!doctype html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
-    <script src="exampel/Timetables.min.js"></script>
     <title>秋蒂日程表</title>
-    <style>
-        #coursesTable {
-            padding: 15px 10px;
-        }
-
-        .Courses-head {
-            background-color: #edffff;
-        }
-
-        .Courses-head > div {
-            text-align: center;
-            font-size: 14px;
-            line-height: 28px;
-        }
-
-        .left-hand-TextDom, .Courses-head {
-            background-color: #f2f6f7;
-        }
-
-        .Courses-leftHand {
-            background-color: #f2f6f7;
-            font-size: 12px;
-        }
-
-        .Courses-leftHand .left-hand-index {
-            color: #9c9c9c;
-            margin-bottom: 4px !important;
-        }
-
-        .Courses-leftHand .left-hand-name {
-            color: #666;
-        }
-
-        .Courses-leftHand p {
-            text-align: center;
-            font-weight: 900;
-        }
-
-        .Courses-head > div {
-            border-left: none !important;
-        }
-
-        .Courses-leftHand > div {
-            padding-top: 5px;
-            border-bottom: 1px dashed rgb(219, 219, 219);
-        }
-
-        .Courses-leftHand > div:last-child {
-            border-bottom: none !important;
-        }
-
-        .left-hand-TextDom, .Courses-head {
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
-        }
-
-        .Courses-content > ul {
-            border-bottom: 1px dashed rgb(219, 219, 219);
-            box-sizing: border-box;
-        }
-
-        .Courses-content > ul:last-child {
-            border-bottom: none !important;
-        }
-
-        .highlight-week {
-            color: #02a9f5 !important;
-        }
-
-        .Courses-content li {
-            text-align: center;
-            color: #666666;
-            font-size: 14px;
-            line-height: 50px;
-        }
-
-        .Courses-content li span {
-            padding: 6px 2px;
-            box-sizing: border-box;
-            line-height: 18px;
-            border-radius: 4px;
-            white-space: normal;
-            word-break: break-all;
-            cursor: pointer;
-        }
-
-        .grid-active {
-            z-index: 9999;
-        }
-
-        .grid-active span {
-            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
-        }
-    </style>
+    <link rel="stylesheet" href="./index.css">
+    <link rel="stylesheet" href="../../style/popup.css">
 </head>
+
 <body>
-<div id="coursesTable"></div>
-<button onclick="onChange()"
-        style="background-color: #00a2ae; color: #fff; padding: 5px 10px; border-radius: 4px;border: none">
-    显示周末
-</button>
+    <div class="schedule_comment">
+        <div class="schedule_top">
+            <div class="title">秋蒂日程表</div>
+            <div class="close_btn" id="close_btn">
+                <img src="../../image/window-close.png" alt="">
+            </div>
+        </div>
+        <div id="coursesTable"></div>
+
+        <button onclick="onChange()"
+            style="background-color: #00a2ae; color: #fff; padding: 5px 10px; border-radius: 4px;border: none">
+            显示周末
+        </button>
+    </div>
+
+    <div id="overlay">
+        <div id="popup">
+            <div id="popup-header">
+                <h3 id="popup-title">
+                    </h2>
+                    <button id="close-button">
+                        <img src="../../image/window-close.png" alt="">
+                    </button>
+            </div>
+            <div id="popup-content">
+                <p></p>
+            </div>
+        </div>
+    </div>
+ 
+</body>
+
+</html>
+
+<script src="./index.js"></script>
 <script src="../../utils/jquery.min.js"></script>
-<script>
-    var courseList = [];
-
-    // 这部分到时候保持之前周一到周五不变的数据，增加周六日的，逻辑需要改
-    var courseListOther = [];
-    var week = window.innerWidth > 360 ? ['周一', '周二', '周三', '周四', '周五'] :
-        ['一', '二', '三', '四', '五'];
-    var day = new Date().getDay();
-    var courseType = [
-        [{index: '1', name: '8:30'}, 1],
-        [{index: '2', name: '9:30'}, 1],
-        [{index: '3', name: '10:30'}, 1],
-        [{index: '4', name: '11:30'}, 1],
-        [{index: '5', name: '12:30'}, 1],
-        [{index: '6', name: '14:30'}, 1],
-        [{index: '7', name: '15:30'}, 1],
-        [{index: '8', name: '16:30'}, 1],
-        [{index: '9', name: '17:30'}, 1],
-        [{index: '10', name: '18:30'}, 1],
-        [{index: '11', name: '19:30'}, 1],
-        [{index: '12', name: '20:30'}, 1],
-        [{index: '13', name: '21:30'}, 1],
-        [{index: '14', name: '22:30'}, 1],
-        [{index: '15', name: '23:30'}, 1]
-    ];
-    var wType = [
-        {index: '1', name: '8:30'},
-        {index: '2', name: '9:30'},
-        {index: '3', name: '10:30'},
-        {index: '4', name: '11:30'},
-        {index: '5', name: '12:30'},
-        {index: '6', name: '14:30'},
-        {index: '7', name: '15:30'},
-        {index: '8', name: '16:30'},
-        {index: '9', name: '17:30'},
-        {index: '10', name: '18:30'},
-        {index: '11', name: '19:30'},
-        {index: '12', name: '20:30'},
-        {index: '13', name: '21:30'},
-        {index: '14', name: '22:30'},
-        {index: '15', name: '23:30'},
-    ];
-    var Timetable = null;
-
-    $(function () {
-        $.get('http://osu.natapp1.cc/qd/sch', function (resp) {
-            var data = JSON.parse(resp);
-            for (let w = 1; w <= 7; w++) {
-                var c = data[w + ""];
-                var we = [];
-                for (let i = 0; i < 15; i++) {
-                    we.push(c[i].content)
-                }
-                if (w <= 5) {
-                    courseList.push(we);
-                    courseListOther.push(we);
-                } else {
-                    courseListOther.push(we);
-                }
-            }
-
-            // 实例化(初始化课表)
-            Timetable = new Timetables({
-                el: '#coursesTable',
-                timetables: courseList,
-                week: week,
-                timetableType: courseType,
-                highlightWeek: day,
-                gridOnClick: function (e) {
-                    var num = e.index - 1;
-                    //var test = JSON.stringify(wType[num]);
-                    //alert(test);
-                    alert(e.name + '  ' + e.week + ' '+wType[num].name);
-                    console.log(e);
-                },
-                styles: {
-                    Gheight: 50
-                }
-            });
-
-        })
-    });
-
-
-    //切换课表
-    function onChange() {
-
-
-        Timetable.setOption({
-            timetables: courseListOther,
-            week: ['一', '二', '三', '四', '五', '六', '日'],
-            styles: {
-                palette: ['#dedcda', '#ff4081']
-            },
-            timetableType: courseType,
-            gridOnClick: function (e) {
-                var num = e.index - 1;
-                //var test = JSON.stringify(wType[num]);
-                //alert(test);
-                alert(e.name + '  周' + e.week + ' '+wType[num].name);
-                console.log(e);
-            }
-        });
-
-    };
+<script src="../../utils/popup.js"></script>
+<script src="./schedule.js"></script>
 
 </script>
-</body>
-</html>

@@ -32,17 +32,17 @@ window.onload = function () {
 
   const dialog_box = document.createElement('div')
   dialog_box.classList.add('control_item')
+  dialog_box.setAttribute('id', 'chatting')
   dialog_box.textContent = '对话框'
   control_box.appendChild(dialog_box)
 
   const setting_box = document.createElement('div')
   setting_box.classList.add('control_item')
   setting_box.setAttribute('id', 'setting')
-  setting_box.textContent = '设置'
+  setting_box.textContent = '关于'
   control_box.appendChild(setting_box)
 
   const setting = document.getElementById('setting')
-
   setting.addEventListener('click', () => {
     ipcRenderer.send('Setting', 'Open')
   })
@@ -51,6 +51,12 @@ window.onload = function () {
   schedule.addEventListener('click', () => {
     ipcRenderer.send('Schedule', 'Open')
   })
+
+  const chatting = document.getElementById('chatting')
+  chatting.addEventListener('click', () => {
+    ipcRenderer.send('Chatting', 'Open')
+  })
+
 
   draggableHandle()
 
@@ -106,8 +112,6 @@ function draggableHandle () {
     }
   })
 }
-
-
 
 
 ipcRenderer.on('onloadLive2d', (event, data) => {
