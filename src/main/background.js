@@ -83,7 +83,7 @@ function createScheduleShow() {
     alwaysOnTop: false,
     transparent: false,
     frame: false,
-    resizable: true,
+    resizable: false,
     icon: path.join(__dirname, '../../assets/app.ico'),
     webPreferences: {
       nodeIntegration: true,
@@ -184,6 +184,7 @@ function createSettingShow() {
 
   // 加载本地文件
   settings.loadFile(path.join(__dirname, '../renderer/pages/setting.html'))
+  settings.webContents.openDevTools()
 
   // 监听closed事件后执行
   settings.on('closed', () => { settings = null })
@@ -331,8 +332,6 @@ ipcMain.on('Chatting', (event, arg) => {
     }
   }
 })
-
-
 
 // ipc监听，关闭chat聊天窗口
 ipcMain.on('closeChatting', (event, arg) => {

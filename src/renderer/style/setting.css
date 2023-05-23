@@ -206,6 +206,29 @@ html {
   border-radius: 7px;
 }
 
+.word_count {
+  font-size: 14px;
+  padding-top: 5px;
+  padding-left: 5px;
+}
+
+.clear_text {
+  width: 100px;
+  height: 50px;
+  color: white;
+  background-color: #4F7cff;
+  line-height: 50px;
+  text-align: center;
+  border-radius: 8px;
+  cursor: pointer;
+  position: absolute;
+  right: 130px;
+}
+
+.clear_text:active {
+  transform: scale(0.98);
+}
+
 .feedback_commit {
   width: 100px;
   height: 50px;
@@ -214,9 +237,12 @@ html {
   line-height: 50px;
   text-align: center;
   border-radius: 8px;
-  margin-top: 10px;
   margin-right: 10px;
   cursor: pointer;
   position: absolute;
   right: 0;
+}
+
+.feedback_commit:active {
+  transform: scale(0.98);
 }

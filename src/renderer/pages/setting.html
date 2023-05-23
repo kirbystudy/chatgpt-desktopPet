@@ -7,6 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Live2D DesktopPet</title>
   <link rel="stylesheet" href="../style/setting.css">
+  <link rel="stylesheet" href="../style/popup.css">
 </head>
 
 <body>
@@ -44,6 +45,8 @@
         <div class="setting_bottom">
           <h3>留言反馈</h3>
           <textarea class="feedback" id="feedback_content" cols="30" rows="10"></textarea>
+          <div class="word_count">已输入<span id="wordCount">0</span>个字</div>
+          <div class="clear_text" id="clear_text">清空内容</div>
           <div class="feedback_commit" id="feedback_button">匿名提交</div>
         </div>
       </div>
@@ -65,8 +68,24 @@
       </div>
     </div>
   </div>
+
+  <div id="overlay">
+    <div id="popup">
+      <div id="popup-header">
+        <h3 id="popup-title">
+          </h2>
+          <button id="close-button">
+            <img src="../image/window-close.png" alt="">
+          </button>
+      </div>
+      <div id="popup-content">
+        <p></p>
+      </div>
+    </div>
+  </div>
 </body>
 
-<script src="../utils/setting.js"></script>
-
 </html>
+
+<script src="../utils/popup.js"></script>
+<script src="../utils/setting.js"></script>

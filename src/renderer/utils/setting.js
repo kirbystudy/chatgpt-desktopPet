@@ -57,9 +57,30 @@ const feedbackBtn = document.getElementById('feedback_button')
 
 // 发送内容
 var message = document.getElementById('feedback_content')
+const wordCount = document.getElementById('wordCount')
+const clearText = document.getElementById('clear_text')
+
+message.addEventListener('input', () => {
+  const count = message.value.length
+  wordCount.textContent = count
+})
+
+clearText.addEventListener('click', () => {
+  message.value = ''
+  wordCount.textContent = 0
+})
 
 feedbackBtn.addEventListener('click', () => {
+  const count = message.value.length
+  if (count > 200) {
+    openPopup('秋蒂桌宠', '字数超过了200字')
+  }
   var str = message.value
+
+  if (str.length == 0) {
+    openPopup('秋蒂桌宠', '文本为空不能提交!')
+  }
+
   if (str.length > 0) {
     const formData = new FormData();
     formData.append('content', str);
@@ -73,20 +94,21 @@ feedbackBtn.addEventListener('click', () => {
         return response.text()
       })
       .then(response => {
-        console.log(response)
+        if (response == 'SUCCESS') {
+          openPopup('秋蒂桌宠', '感谢您的留言!')
+        }
+        message.value = ''
+        wordCount.textContent = 0
       })
       .catch(error => {
         // 处理错误
         console.log(error)
       });
   }
-
-
 })
 
 window.onload = function () {
   var package = require('../../../package.json')
   const app_version = document.getElementById('app_version')
   app_version.innerText = 'v' + package.version
-
 }
