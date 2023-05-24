@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Menu, Tray, ipcMain } = require('electron')
+const { app, BrowserWindow, Menu, Tray, ipcMain, globalShortcut } = require('electron')
 const remote = require('@electron/remote/main')
 const dialog = require('electron').dialog
 const screen = require('electron').screen
@@ -63,6 +63,16 @@ function createWindow() {
   // 加载本地文件
   mainWindow.loadFile('./src/renderer/pages/index.html')
 
+  // 注册快捷键
+  const ret = globalShortcut.register('Alt+F12', () => {
+    // 当前窗口打开 DevTools
+    mainWindow.webContents.openDevTools()
+  })
+
+  if(!ret) {
+    console.log("注册快捷键失败")
+  }
+
   // 监听closed事件后执行
   mainWindow.on('closed', () => { mainWindow = null })
 
@@ -70,9 +80,7 @@ function createWindow() {
 
 // 创建日程表窗口
 function createScheduleShow() {
-  // 设置窗口打开监听
-  var set_windth = screen.getPrimaryDisplay().workAreaSize.width
-
+  
   // 设置窗口
   sch = new BrowserWindow({
     width: 670,
@@ -122,6 +130,7 @@ function createChattingShow() {
 
   // 加载本地文件
   chat.loadFile(path.join(__dirname, '../renderer/pages/chatting.html'))
+  chat.webContents.openDevTools()
 
   chat.webContents.on('did-finish-load', (event) => {
     // 发送消息给渲染进程chat
@@ -199,17 +208,6 @@ function createTrayMenu() {
         if (settings == null || settings.isDestroyed()) {
           createSettingShow()
         }
-      }
-    },
-    {
-      label: '关于',
-      click: function () {
-        // 弹出一个窗口，内容为作品，作者描述
-        dialog.showMessageBox({
-          title: '关于',
-          type: 'info',
-          message: "项目名称: " + package.name + "\n版本号: v" + package.version
-        })
       }
     },
     {
@@ -390,3 +388,8 @@ app.on('window-all-closed', () => {
     app.quit()
   }
 })
+
+app.on('will-quit', () => {
+  // 注销所有全局快捷键
+  globalShortcut.unregisterAll();
+});

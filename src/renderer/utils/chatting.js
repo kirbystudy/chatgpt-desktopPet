@@ -215,13 +215,16 @@ function showReply(str) {
             time = hour + ':' + minute
         }
 
-        const regex = /```([^\`]+)```/;
+        const regex = /^([^\n]+)\n\n([\s\S]+)\n\n([^\n]+)\n\n([^\n]+)/
         const match = str.match(regex)
-
+ 
         var answer = ''
 
         if (match) {
-            const conetnt = match[1]
+            const content_1 = match[1]   
+            const code = match[2]
+            const content_2 = match[3]
+            const content_3 = match[4]
             answer +=
                 `
             <div class="chat_left_item_1">
@@ -230,7 +233,10 @@ function showReply(str) {
             <div class="chat_left_item_2">
                 <div class="chat_left_time">${time}</div>
                 <div class="chat_left_content">
-                    <pre><code>${conetnt}</code></pre>
+                    <pre><code>${content_1}</code></pre>
+                    <pre><code>${code}</code></pre>
+                    <pre><code>${content_2}</code></pre>
+                    <pre><code>${content_3}</code></pre>
                 </div>
             </div>
             `
