@@ -75,10 +75,8 @@ function createScheduleShow() {
 
   // 设置窗口
   sch = new BrowserWindow({
-    width: parseInt(set_windth / 3),
-    height: parseInt(set_windth / 2) * 0.875,
-    minWidth: 670,
-    minHeight: 570,
+    width: 670,
+    height: 600,
     skipTaskbar: false,
     alwaysOnTop: false,
     transparent: false,
@@ -166,6 +164,7 @@ function createSettingShow() {
     alwaysOnTop: true,
     transparent: false,
     frame: false,
+    resizable: false,
     titleBarStyle: "hidden",
     titleBarOverlay: {
       color: "#202020",
@@ -184,7 +183,6 @@ function createSettingShow() {
 
   // 加载本地文件
   settings.loadFile(path.join(__dirname, '../renderer/pages/setting.html'))
-  settings.webContents.openDevTools()
 
   // 监听closed事件后执行
   settings.on('closed', () => { settings = null })

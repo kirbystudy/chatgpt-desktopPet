@@ -65,7 +65,7 @@ html {
   left: 16px;
   right: 16px;
   z-index: 0;
-  user-select: nione;
+  user-select: none;
   border-radius: 3px;
   display: flex;
   align-items: center;

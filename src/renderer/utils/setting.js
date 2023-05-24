@@ -1,36 +1,45 @@
 const { ipcRenderer } = require('electron')
+// 引入 fs 和 path 模块
 const fs = require('fs')
 const path = require('path')
 window.$ = window.jQuery = require('../utils/jquery.min.js')
 
-showItem()
 
-function showItem() {
-  live2dShow()
-}
+// 读取config.json
+const configPath = path.resolve(__dirname, '../../../config/config.json')
+const jsonContent = fs.readFileSync(configPath, 'utf-8')
+
+// 解析JSON
+const config = JSON.parse(jsonContent)
+
+// showItem()
+
+// function showItem() {
+//   live2dShow()
+// }
 
 
-function live2dShow() {
-  var text = ''
-  var index = 0
-  var live2dPath = path.join(__dirname, '../../../model/')
-  let files = fs.readdirSync(live2dPath)
-  for (var item in files) {
-    let stat = fs.statSync(live2dPath + files[item])
-    if (stat.isDirectory()) {
-      text += `<option class="option" value="${index}">${files[item]}</option>`
-      index++
-    }
-  }
+// function live2dShow() {
+//   var text = ''
+//   var index = 0
+//   var live2dPath = path.join(__dirname, '../../../model/')
+//   let files = fs.readdirSync(live2dPath)
+//   for (var item in files) {
+//     let stat = fs.statSync(live2dPath + files[item])
+//     if (stat.isDirectory()) {
+//       text += `<option class="option" value="${index}">${files[item]}</option>`
+//       index++
+//     }
+//   }
 
-  $('#live2d-show').html(text)
-}
+//   $('#live2d-show').html(text)
+// }
 
-$('#live2d-show').on('change', () => {
-  var live2d_text = $('#live2d-show option:selected').text()
-  var live2d_val = $('#live2d-show option:selected').val()
-  ipcRenderer.send('changeLive2d', [live2d_text, live2d_val])
-})
+// $('#live2d-show').on('change', () => {
+//   var live2d_text = $('#live2d-show option:selected').text()
+//   var live2d_val = $('#live2d-show option:selected').val()
+//   ipcRenderer.send('changeLive2d', [live2d_text, live2d_val])
+// })
 
 
 const versionInfoTab = document.getElementById('versionInfoTab')
@@ -78,14 +87,14 @@ feedbackBtn.addEventListener('click', () => {
   var str = message.value
 
   if (str.length == 0) {
-    openPopup('秋蒂桌宠', '文本为空不能提交!')
+    openPopup('秋蒂桌宠', '留言内容不能为空!')
   }
 
   if (str.length > 0) {
     const formData = new FormData();
     formData.append('content', str);
 
-    fetch('http://osu.natapp1.cc/qd/feedBack', {
+    fetch(`${config.feedBack.url}`, {
       method: 'POST',
       body: formData
     })

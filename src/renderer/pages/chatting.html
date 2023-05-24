@@ -8,6 +8,7 @@
     <title>chatgpt聊天</title>
     <link rel="stylesheet" href="../style/prism.css">
     <link rel="stylesheet" href="../style/chatting.css">
+    <link rel="stylesheet" href="../style/popup.css">
 </head>
 
 <body>
@@ -29,9 +30,25 @@
         <audio id="playAudio"></audio>
     </div>
 
+    <div id="overlay">
+        <div id="popup">
+          <div id="popup-header">
+            <h3 id="popup-title">
+              </h2>
+              <button id="close-button">
+                <img src="../image/window-close.png" alt="">
+              </button>
+          </div>
+          <div id="popup-content">
+            <p></p>
+          </div>
+        </div>
+      </div>
+
 </body>
 
 </html>
 
 <script src="../utils/prism.js"></script>
+<script src="../utils/popup.js"></script>
 <script src="../utils/chatting.js"></script>

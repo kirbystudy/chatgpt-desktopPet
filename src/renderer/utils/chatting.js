@@ -44,20 +44,33 @@ function showChatting(text) {
     sending()
 }
 
+
 function sending() {
     var send_message = document.getElementById('chat_middle_item')
-    var send_btn = document.getElementById('send_button')
-
+    const send_btn = document.getElementById('send_button')
+    
     // 发送内容
     var message = document.getElementById('chat_context_item')
 
     // 回车键发送消息
-    message.addEventListener('keydown', (event) => {
+    message.addEventListener('keydown', (event) => { 
+
         if (event.key === 'Enter') {
+
             // 阻止默认的回车键行为，以避免换行
-            event.preventDefault()
+            event.preventDefault() 
 
             var str = message.value
+            if(str.length == 0) {
+                openPopup('秋蒂桌宠', '文本内容不能为空!')
+                return
+            }
+
+            send_btn.classList.add('disabled')  
+            send_btn.innerHTML = ''
+            send_btn.classList.add("loading");
+
+           
             if (str.length > 0) {
                 var date = new Date()
                 var hour = date.getHours()
@@ -103,7 +116,17 @@ function sending() {
 
     // 鼠标点击发送消息
     send_btn.addEventListener('click', () => {
+
         var str = message.value
+        if(str.length == 0) {
+            openPopup('秋蒂桌宠', '文本内容不能为空!')
+            return
+        }
+
+        send_btn.classList.add('disabled')  
+        send_btn.innerHTML = ''
+        send_btn.classList.add("loading");
+
         if (str.length > 0) {
             var date = new Date()
             var hour = date.getHours()
@@ -149,25 +172,36 @@ function sending() {
 
 // 获取回复
 function getReply(str) {
+
+    const send_btn = document.getElementById('send_button')
+
     const formData = new FormData();
     formData.append('ruleType', config.gpt.ruleType);
     formData.append('command', str);
 
-    fetch(`${config.gpt.url}`, {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => {
-        // 处理响应
-        return response.text()
-    })
-    .then(data => {
-        showReply(data)
-    })
-    .catch(error => {
-        // 处理错误
-        console.log(error)
-    });
+    setTimeout(() => {
+        fetch(`${config.gpt.url}`, {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => {
+                // 处理响应
+                return response.text()
+            })
+            .then(data => {
+                showReply(data)
+            })
+            .catch(error => {
+                // 处理错误
+                console.log(error)
+            })
+            .finally(() => {
+                send_btn.classList.remove('disabled')
+                send_btn.innerHTML = '发送'
+                send_btn.classList.remove('loading')
+            })
+    }, 5000)
+
 }
 
 // 显示回复
