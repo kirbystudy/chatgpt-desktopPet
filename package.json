@@ -34,7 +34,9 @@
       "./src",
       "model",
       "node_modules",
-      "package.json"
+      "package.json",
+      "assets",
+      "config"
     ],
     "win": {
       "target": [
