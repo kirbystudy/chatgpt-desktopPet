@@ -215,7 +215,7 @@ function showReply(str) {
             time = hour + ':' + minute
         }
 
-        const regex = /^([^\n]+)\n\n([\s\S]+)\n\n([^\n]+)\n\n([^\n]+)/
+        const regex = /^([^\n]+)\n([\s\S]+)\n([^\n]+)\n([^\n]+)/
         const match = str.match(regex)
  
         var answer = ''

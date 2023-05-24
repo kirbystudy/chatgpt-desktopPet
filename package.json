@@ -10,7 +10,7 @@
     "dist": "electron-builder",
     "dist-win": "electron-builder --win --ia32",
     "dist-win64": "cross-env NODE_ENV=production electron-builder --win --x64",
-    "dist-mac": "electron-builder --mac",
+    "dist-mac": "electron-builder build --mac",
     "dist-linux": "electron-builder --linux"
   },
   "keywords": [],
@@ -43,6 +43,26 @@
         "nsis"
       ],
       "icon": "./assets/app_256.ico"
+    },
+    "mac": {
+      "target": {
+        "target": "default"
+      },
+      "icon": "./assets/app_256.ico"
+    },
+    "dmg": {
+      "contents": [
+        {
+          "x": 130,
+          "y": 220
+        },
+        {
+          "x": 410,
+          "y": 220,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
     }
   }
 }
