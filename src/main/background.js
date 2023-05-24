@@ -90,7 +90,7 @@ function createScheduleShow() {
     transparent: false,
     frame: false,
     resizable: false,
-    icon: path.join(__dirname, '../../assets/app.ico'),
+    icon: path.join(__dirname, '../../assets/app_128.ico'),
     webPreferences: {
       nodeIntegration: true,
       enableRemoteModule: true,
@@ -119,7 +119,7 @@ function createChattingShow() {
     transparent: true,
     frame: false,
     resizable: false,
-    icon: path.join(__dirname, '../../assets/app.ico'),
+    icon: path.join(__dirname, '../../assets/app_128.ico'),
     webPreferences: {
       nodeIntegration: true,
       enableRemoteModule: true,
@@ -180,7 +180,7 @@ function createSettingShow() {
     },
     resizable: true,
     show: true,
-    icon: path.join(__dirname, '../../assets/app.ico'),
+    icon: path.join(__dirname, '../../assets/app_128.ico'),
     webPreferences: {
       nodeIntegration: true,
       enableRemoteModule: true,
@@ -230,7 +230,7 @@ function createTrayMenu() {
   ]
 
   // 系统托盘图标目录
-  appTray = new Tray(path.join(__dirname, '../../assets/app.ico'))
+  appTray = new Tray(path.join(__dirname, '../../assets/app_128.ico'))
 
   // 设置此托盘图标的悬停提示内容
   appTray.setToolTip('Live2D DeskTopPet')

@@ -23,6 +23,9 @@
     "electron-builder": "^23.6.0",
     "electron-reloader": "^1.2.3"
   },
+  "dependencies": {
+    "@electron/remote": "^2.0.9"
+  },
   "build": {
     "productName": "秋蒂桌宠",
     "appId": "com.disktoppet",
@@ -37,7 +40,7 @@
       "target": [
         "nsis"
       ],
-      "icon": "./assets/app.ico"
+      "icon": "./assets/app_256.ico"
     }
   }
 }
