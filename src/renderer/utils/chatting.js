@@ -288,7 +288,7 @@ function getVoice(str) {
     // 将英文字符替换为空
     var result = str.replace(pattern, '');
 
-    if (result.length < 25) {
+    if (result.length <= 35) {
         if (chineseReg.test(result)) {
             fetch(`${config.vits.url}?text=[ZH]${result}[ZH]&uId=${config.vits.uid}&token=${config.vits.token}&mId=${config.vits.modelId}&rId=${config.vits.roleId}&ar=${config.vits.ar}&domin=${config.vits.domin}&va=${config.vits.va}`, {
                 headers: {
