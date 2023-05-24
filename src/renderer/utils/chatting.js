@@ -153,7 +153,7 @@ function getReply(str) {
     formData.append('ruleType', config.gpt.ruleType);
     formData.append('command', str);
 
-    fetch(config.gpt.url, {
+    fetch(`${config.gpt.url}`, {
         method: 'POST',
         body: formData
     })
