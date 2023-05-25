@@ -11,10 +11,10 @@
     "dist-win": "electron-builder --win --ia32",
     "dist-win64": "cross-env NODE_ENV=production electron-builder --win --x64",
     "dist-mac": "electron-builder build --mac",
-    "dist-linux": "electron-builder --linux"
+    "dist-linux": "electron-builder build --linux"
   },
   "keywords": [],
-  "author": "kirbystudy and dullwolf",
+  "author": "kirbystudy dullwolf",
   "license": "ISC",
   "devDependencies": {
     "@electron/remote": "^2.0.9",
@@ -29,7 +29,9 @@
   "build": {
     "productName": "秋蒂桌宠",
     "appId": "com.disktoppet",
-    "asar": true,
+    "directories": {
+      "output": "dist"
+    },
     "files": [
       "./src",
       "model",
@@ -39,30 +41,28 @@
       "config"
     ],
     "win": {
-      "target": [
-        "nsis"
-      ],
-      "icon": "./assets/app_256.ico"
-    },
-    "mac": {
+      "icon": "./assets/app_256.ico",
       "target": {
-        "target": "default"
-      },
-      "icon": "./assets/app_256.ico"
+        "target": "nsis",
+        "arch": [
+          "x64",
+          "ia32"
+        ]
+      }
     },
-    "dmg": {
-      "contents": [
-        {
-          "x": 130,
-          "y": 220
-        },
-        {
-          "x": 410,
-          "y": 220,
-          "type": "link",
-          "path": "/Applications"
-        }
-      ]
-    }
+    "nsis": {
+      "oneClick": false,
+      "language": "2052",
+      "perMachine": true,
+      "allowElevation": false,
+      "allowToChangeInstallationDirectory": true,
+      "installerIcon": "./assets/app_256.ico",
+      "uninstallerIcon": "./assets/app_256.ico",
+      "installerHeaderIcon": "./assets/app_256.ico",
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "秋蒂桌宠"
+    },
+    "extends": null
   }
 }
