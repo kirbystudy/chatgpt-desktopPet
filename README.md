@@ -33,6 +33,7 @@
 
 - [x] 支持 Live2d moc/moc3
 - [x] 支持 拖拽模型
+- [x] 语音口型同步
 - [x] 日程表
 - [x] ChatGPT聊天
 
