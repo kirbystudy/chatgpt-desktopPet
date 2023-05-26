@@ -1,6 +1,9 @@
 // 获取remote
 const remote = require('@electron/remote')
 const { ipcRenderer } = require('electron')
+const fs = require('fs')
+const path = require('path')
+window.$ = window.jQuery = require('../utils/jquery.min.js')
 
 // 获取 screen模块
 const screen = remote.screen
@@ -13,16 +16,13 @@ let mousedown_left = false
 
 let mouseOnPage
 
-window.onload = function () {
-  const stage = document.getElementById('oml-stage')
-  const controls = document.getElementById('oml-controls')
-  const levitated = document.getElementById('oml-levitated-btn')
-  controls.style.display = 'none'
-  levitated.style.display = 'none'
+const app = document.getElementById('app')
+const canvas = document.getElementById('canvas')
 
+window.onload = function () {
   const control_box = document.createElement('div')
   control_box.classList.add('control_btn')
-  stage.appendChild(control_box)
+  app.appendChild(control_box)
 
   const schedule_box = document.createElement('div')
   schedule_box.classList.add('control_item')
@@ -60,23 +60,20 @@ window.onload = function () {
 
   draggableHandle()
 
-
   const control_btn = document.querySelector('.control_btn')
 
-  stage.addEventListener('mouseover', () => {
+  app.addEventListener('mouseover', () => {
     control_btn.style.opacity = 1
   })
 
-  stage.addEventListener('mouseout', () => {
+  app.addEventListener('mouseout', () => {
     control_btn.style.opacity = 0
   })
 
 }
 
 
-function draggableHandle () {
-
-  var canvas = document.getElementById('oml-canvas')
+function draggableHandle() {
 
   // 监听鼠标按下事件
   canvas.addEventListener('mousedown', (event) => {
@@ -113,8 +110,12 @@ function draggableHandle () {
   })
 }
 
+canvas.addEventListener('click', () => {
+  // 每次点击都会创建一个音频对象，待解决
+  getWav(path.resolve(__dirname, "../../../assets/1.wav"))
+})
 
 ipcRenderer.on('onloadLive2d', (event, data) => {
   localStorage.setItem('live2d', data)
-});
+})
 

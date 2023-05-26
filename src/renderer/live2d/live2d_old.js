@@ -18,6 +18,3 @@ OML2D.loadOhMyLive2D({
     }
   }
 })
-
-
-

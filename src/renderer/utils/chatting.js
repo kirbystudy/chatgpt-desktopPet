@@ -303,7 +303,7 @@ function getVoice(str) {
                 playAudio.play()
             })
         } else if (chineseAndJapaneseReg.test(str)) {
-            fetch(`${config.vits.url}?text=[ZH]${result}[ZH]&uId=${config.vits.uid}&token=${config.vits.token}&mId=${config.vits.modelId}&rId=${config.vits.roleId}&ar=${config.vits.ar}&domin=${config.vits.domin}&va=${config.vits.va}`, {
+            fetch(`${config.vits.url}?text=[JA]${result}[JA]&uId=${config.vits.uid}&token=${config.vits.token}&mId=${config.vits.modelId}&rId=${config.vits.roleId}&ar=${config.vits.ar}&domin=${config.vits.domin}&va=${config.vits.va}`, {
                 headers: {
                     'Content-Disposition': 'inline'
                 }

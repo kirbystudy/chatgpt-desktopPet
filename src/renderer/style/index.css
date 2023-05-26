@@ -6,7 +6,7 @@
 html,
 body {
   height: 100%;
-  overflow-x: hidden;
+  overflow: hidden;
 }
 
 #app {
@@ -20,7 +20,7 @@ body {
   opacity: 0;
   position: absolute;
   right: 0;
-  bottom: 20%;
+  bottom: 30%;
   font-size: 14px;
   z-index: 9999;
   transition: all 0.3s ease-in-out;

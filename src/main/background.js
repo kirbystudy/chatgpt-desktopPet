@@ -15,8 +15,8 @@ let mainWindow = null; let settings = null;
 let sch = null; let chat = null
 
 // 模型窗口大小
-const win_width = 350
-const win_height = 500
+const win_width = 300
+const win_height = 450
 
 
 // 热加载
