@@ -1,10 +1,8 @@
 /* 口型同步 */ 
 
-let analyser
+let audioCtx; let analyser; let frequencyData; 
 
-let playing
-
-let o = 80
+let playing = false; let o = 80;
 
 // 获取音频
 async function getWav(file, store) {

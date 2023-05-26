@@ -112,7 +112,7 @@ function draggableHandle() {
 
 canvas.addEventListener('click', () => {
   // 每次点击都会创建一个音频对象，待解决
-  getWav(path.resolve(__dirname, "../../../assets/1.wav"))
+  getWav(path.resolve(__dirname, "../../../assets/1.wav"), store.state)
 })
 
 ipcRenderer.on('onloadLive2d', (event, data) => {

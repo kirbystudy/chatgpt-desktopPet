@@ -1,6 +1,6 @@
 # vits-desktopPet
 
-基于Electron开发 Live2D模型的桌面宠物
+使用 Live2D 模型开发的 Electron 桌面宠物应用程序。用户可以将其喜欢的动漫角色或宠物放置在桌面上，并通过语音和文本与它进行互动。
 
 ## 开发 (Develop)
 
@@ -39,4 +39,4 @@
 
 ## 鸣谢 (Thanks)
 
-- Live2D For Web 组件 [oh-my-live2d](https://github.com/oh-my-live2d/oh-my-live2d)
+- Live2D For Web 组件 [pixi-live2d-display](https://github.com/guansss/pixi-live2d-display)
