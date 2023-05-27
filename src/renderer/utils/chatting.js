@@ -287,8 +287,6 @@ function getVoice(str) {
     // 将英文字符替换为空
     var result = str.replace(pattern, '');
 
-    let objectURL;
-
     if (result.length <= 35) {
         if (chineseReg.test(result)) {
 
