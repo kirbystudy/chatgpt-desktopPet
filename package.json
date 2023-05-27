@@ -19,8 +19,8 @@
   "devDependencies": {
     "@electron/remote": "^2.0.9",
     "cross-env": "^7.0.3",
-    "electron": "^24.1.1",
-    "electron-builder": "^23.6.0",
+    "electron": "24.1.1",
+    "electron-builder": "23.6.0",
     "electron-reloader": "^1.2.3"
   },
   "dependencies": {

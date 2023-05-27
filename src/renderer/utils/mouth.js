@@ -8,11 +8,23 @@ async function loadAudio(buffer, store) {
     createAnalyser()
     audioCtx.decodeAudioData(buffer)
         .then((decodeData) => {
+
+            // 创建音频控制节点
+            const gainNode = audioCtx.createGain();
+
+            // 将增益节点连接到输出设备
+            gainNode.connect(audioCtx.destination);
+
+            // 设置音量级别在 0 到 1 之间
+            gainNode.gain.value = 0.5
+
             // 新建Buffer源
             const source = audioCtx.createBufferSource()
             source.buffer = decodeData
-            // 连接到 audioCtx
-            source.connect(audioCtx.destination)
+
+            // 将缓冲区源节点连接到音量控制节点和输出设备
+            source.connect(gainNode);
+
             // 连接 音频分析器
             source.connect(analyser)
 
@@ -52,7 +64,7 @@ function setMouthOpenY(v) {
 }
 
 function createAnalyser() {
-    // 创建 AudioContext 对象
+    // 创建音频上下文
     audioCtx = new AudioContext();
 
     // 新建分析仪
