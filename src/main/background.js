@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Menu, Tray, ipcMain, globalShortcut, ipcRenderer } = require('electron')
+const { app, BrowserWindow, Menu, Tray, ipcMain, globalShortcut } = require('electron')
 const remote = require('@electron/remote/main')
 const dialog = require('electron').dialog
 const screen = require('electron').screen
@@ -312,7 +312,7 @@ ipcMain.on('Schedule', (event, arg) => {
   }
 })
 
-// ipc监听，关闭r
+// ipc监听，关闭日程表
 ipcMain.on('closeSchedule', (event, arg) => {
   if (arg == 'Close') {
     sch.close()
