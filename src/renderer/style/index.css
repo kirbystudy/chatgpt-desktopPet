@@ -16,6 +16,19 @@ body {
   transition: all 0.3s ease-in-out;
 }
 
+#app canvas {
+  display: block;
+  margin: 0 auto;
+  opacity: 0;
+  transform: translate3d(0, 100%, 0) scale(0.8);
+  transition: opacity .5s, transform .8s cubic-bezier(.22,.69,.72,.88); 
+}
+
+#app.show canvas{
+  opacity: 1;
+  transform: translate3d(0, 0, 0) scale(1);
+}
+
 .control_btn {
   opacity: 0;
   position: absolute;

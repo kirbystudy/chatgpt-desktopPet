@@ -19,7 +19,6 @@ const canvas = document.getElementById('canvas')
 
 window.onload = function () {
   loadLive2D()
-
   const control_box = document.createElement('div')
   control_box.classList.add('control_btn')
   app.appendChild(control_box)
@@ -78,6 +77,12 @@ window.onload = function () {
 function loadLive2D() {
   createModel(store.state, canvas)
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => {
+    app.classList.add("show")
+  }, 1000)
+})
 
 // 鼠标拖拽事件
 function draggableHandle() {
