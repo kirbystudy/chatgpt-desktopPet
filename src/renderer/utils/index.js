@@ -19,6 +19,7 @@ const canvas = document.getElementById('canvas')
 
 window.onload = function () {
   loadLive2D()
+
   const control_box = document.createElement('div')
   control_box.classList.add('control_btn')
   app.appendChild(control_box)
@@ -78,10 +79,49 @@ function loadLive2D() {
   createModel(store.state, canvas)
 }
 
+// 显示消息框
+function showMessage(text, timeout, flag) {
+  $('#message_box').html(text).fadeTo(200, 1)
+  if (timeout === undefined) timeout = 5000
+  hideMessage(timeout)
+}
+
+// 隐藏消息框
+function hideMessage(timeout) {
+  $('#message_box').stop().css('opacity', 1)
+  if (timeout === undefined) timeout = 5000
+  $('#message_box').delay(timeout).fadeTo(200, 0)
+}
+
+function getGreeting() {
+  // 获取当前时间的小时数
+  const hour = new Date().getHours();
+
+  if (hour >= 0 && hour <= 5) {
+    return '凌晨好'
+  } else if (hour > 5 && hour <= 11) {
+    return '早上好'
+  } else if (hour > 11 && hour <= 13) {
+    return '中午好'
+  } else if (hour > 13 && hour <= 18) {
+    return '下午好'
+  } else if (hour > 18 && hour <= 22) {
+    return '晚上好'
+  } else {
+    return '夜深了，注意休息'
+  }
+}
+
+// DOM内容解析完成后触发事件
 document.addEventListener('DOMContentLoaded', () => {
   setTimeout(() => {
     app.classList.add("show")
   }, 1000)
+ 
+  setTimeout(() => {
+    const greeting = getGreeting()
+    showMessage(greeting)
+  }, 2000) 
 })
 
 // 鼠标拖拽事件
