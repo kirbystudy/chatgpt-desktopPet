@@ -1,39 +1,35 @@
-/* 口型同步 */ 
-
-let audioCtx; let analyser; let frequencyData; 
+/* 口型同步 */
+let audioCtx; let analyser; let frequencyData;
 
 let playing = false; let o = 80;
 
 // 获取音频
-async function getWav(file, store) {
+async function loadAudio(buffer, store) {
     createAnalyser()
-    fs.readFile(file, (err, data) => {
-        if (err) throw err
-        audioCtx.decodeAudioData(data.buffer)
-            .then((decodeData) => {
-                // 新建Buffer源
-                const source = audioCtx.createBufferSource()
-                source.buffer = decodeData
-                // 连接到 audioCtx
-                source.connect(audioCtx.destination)
-                // 连接 音频分析器
-                source.connect(analyser)
+    audioCtx.decodeAudioData(buffer)
+        .then((decodeData) => {
+            // 新建Buffer源
+            const source = audioCtx.createBufferSource()
+            source.buffer = decodeData
+            // 连接到 audioCtx
+            source.connect(audioCtx.destination)
+            // 连接 音频分析器
+            source.connect(analyser)
 
-                // 开始播放
-                playing = true
-                run()
-                setTimeout(() => {
-                    source.start(0)
-                }, 0.5)
+            // 开始播放
+            playing = true
+            run()
+            setTimeout(() => {
+                source.start(0)
+            }, 0.5)
 
-                source.onended = () => {
-                    // 停止播放
-                    playing = false
-                }
-            }).catch(error => {
-                console.log(error)
-            })
-    })
+            source.onended = () => {
+                // 停止播放
+                playing = false
+            }
+        }).catch(error => {
+            console.log(error)
+        })
 }
 
 function run() {

@@ -1,8 +1,6 @@
 // 获取remote
 const remote = require('@electron/remote')
 const { ipcRenderer } = require('electron')
-const fs = require('fs')
-const path = require('path')
 window.$ = window.jQuery = require('../utils/jquery.min.js')
 
 // 获取 screen模块
@@ -20,6 +18,8 @@ const app = document.getElementById('app')
 const canvas = document.getElementById('canvas')
 
 window.onload = function () {
+  loadLive2D()
+
   const control_box = document.createElement('div')
   control_box.classList.add('control_btn')
   app.appendChild(control_box)
@@ -57,7 +57,6 @@ window.onload = function () {
     ipcRenderer.send('Chatting', 'Open')
   })
 
-
   draggableHandle()
 
   const control_btn = document.querySelector('.control_btn')
@@ -70,9 +69,17 @@ window.onload = function () {
     control_btn.style.opacity = 0
   })
 
+  ipcRenderer.on('playAudio', (event, buffer) => {
+    loadAudio(buffer, store.state)
+  })
 }
 
+// 初始化live2d模型
+function loadLive2D() {
+  createModel(store.state, canvas)
+}
 
+// 鼠标拖拽事件
 function draggableHandle() {
 
   // 监听鼠标按下事件
@@ -109,13 +116,3 @@ function draggableHandle() {
     }
   })
 }
-
-canvas.addEventListener('click', () => {
-  // 每次点击都会创建一个音频对象，待解决
-  getWav(path.resolve(__dirname, "../../../assets/1.wav"), store.state)
-})
-
-ipcRenderer.on('onloadLive2d', (event, data) => {
-  localStorage.setItem('live2d', data)
-})
-

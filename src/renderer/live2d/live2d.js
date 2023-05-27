@@ -1,8 +1,7 @@
-const live2d = document.getElementById("canvas")
-
 async function createModel(store, view) {
 
     store.model4 = await PIXI.live2d.Live2DModel.from(store.live2d);
+    
     const app = new PIXI.Application({
         view: view,
         autoStart: true,
@@ -25,6 +24,6 @@ async function createModel(store, view) {
     if (store.model4.internalModel.coreModel._parameterIds.includes("ParamMouthA")) {
         store.parameterIndex = store.model4.internalModel.coreModel.getParameterIndex("ParamMouthA")
     }
-}
 
-createModel(store.state, live2d)
+    return app
+}

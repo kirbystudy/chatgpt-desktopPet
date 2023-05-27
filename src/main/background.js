@@ -1,11 +1,10 @@
-const { app, BrowserWindow, Menu, Tray, ipcMain, globalShortcut } = require('electron')
+const { app, BrowserWindow, Menu, Tray, ipcMain, globalShortcut, ipcRenderer } = require('electron')
 const remote = require('@electron/remote/main')
 const dialog = require('electron').dialog
 const screen = require('electron').screen
 
-const path = require('path')
-var package = require('../../package.json')
 var fs = require('fs')
+const path = require('path')
 
 // 系统托盘全局对象
 let appTray = null
@@ -130,6 +129,7 @@ function createChattingShow() {
 
   // 加载本地文件
   chat.loadFile(path.join(__dirname, '../renderer/pages/chatting.html'))
+  chat.webContents.openDevTools()
 
   chat.webContents.on('did-finish-load', (event) => {
     // 发送消息给渲染进程chat
@@ -335,36 +335,10 @@ ipcMain.on('closeChatting', (event, arg) => {
   }
 })
 
-// ipc监听，刷新进程
-ipcMain.on('MainPage', (event, value) => {
-  if (value == 'refresh') {
-    mainWindow.reload()
-  }
+// ipc监听，发送vits语音
+ipcMain.on('sendBuffer', (event, buffer) => {
+  mainWindow.webContents.send('playAudio', buffer)
 })
-
-var live2dPath = ''
-
-// ipc监听，更换live2d
-ipcMain.on('changeLive2d', (event, arg) => {
-  switchLive2d(arg[0], arg[1])
-  mainWindow.webContents.send('onloadLive2d', live2dPath)
-  mainWindow.reload()
-})
-
-
-function switchLive2d(live2d_text, live2d_val) {
-
-  var modelPath = path.join(__dirname, '../../model/' + live2d_text + '/' + live2d_text + '.model.json')
-  var model3Path = path.join(__dirname, '../../model/' + live2d_text + '/' + live2d_text + '.model3.json')
-  if (fs.existsSync(modelPath)) {
-    live2dPath = '../../../model/' + live2d_text + '/' + live2d_text + '.model.json'
-  }
-
-  if (fs.existsSync(model3Path)) {
-    live2dPath = '../../../model/' + live2d_text + '/' + live2d_text + '.model3.json'
-  }
-}
-
 
 // 当Electron完成时，将调用此方法
 // 初始化，并准备创建浏览器窗口。

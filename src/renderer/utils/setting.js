@@ -12,36 +12,6 @@ const jsonContent = fs.readFileSync(configPath, 'utf-8')
 // 解析JSON
 const config = JSON.parse(jsonContent)
 
-// showItem()
-
-// function showItem() {
-//   live2dShow()
-// }
-
-
-// function live2dShow() {
-//   var text = ''
-//   var index = 0
-//   var live2dPath = path.join(__dirname, '../../../model/')
-//   let files = fs.readdirSync(live2dPath)
-//   for (var item in files) {
-//     let stat = fs.statSync(live2dPath + files[item])
-//     if (stat.isDirectory()) {
-//       text += `<option class="option" value="${index}">${files[item]}</option>`
-//       index++
-//     }
-//   }
-
-//   $('#live2d-show').html(text)
-// }
-
-// $('#live2d-show').on('change', () => {
-//   var live2d_text = $('#live2d-show option:selected').text()
-//   var live2d_val = $('#live2d-show option:selected').val()
-//   ipcRenderer.send('changeLive2d', [live2d_text, live2d_val])
-// })
-
-
 const versionInfoTab = document.getElementById('versionInfoTab')
 const modelSettingTab = document.getElementById('modelSettingTab')
 const versionInfo = document.getElementById('versionInfo')

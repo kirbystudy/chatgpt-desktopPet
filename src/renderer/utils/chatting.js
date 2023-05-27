@@ -217,11 +217,11 @@ function showReply(str) {
 
         const regex = /^([^\n]+)\n([\s\S]+)\n([^\n]+)\n([^\n]+)/
         const match = str.match(regex)
- 
+
         var answer = ''
 
         if (match) {
-            const content_1 = match[1]   
+            const content_1 = match[1]
             const code = match[2]
             const content_2 = match[3]
             const content_3 = match[4]
@@ -274,7 +274,6 @@ function showReply(str) {
 
 // 语音功能
 function getVoice(str) {
-    const playAudio = document.getElementById('playAudio')
 
     // 匹配中文字符的正则表达式
     var chineseReg = /[^\x00-\xff]+/g
@@ -288,33 +287,35 @@ function getVoice(str) {
     // 将英文字符替换为空
     var result = str.replace(pattern, '');
 
+    let objectURL;
+
     if (result.length <= 35) {
         if (chineseReg.test(result)) {
+
             fetch(`${config.vits.url}?text=[ZH]${result}[ZH]&uId=${config.vits.uid}&token=${config.vits.token}&mId=${config.vits.modelId}&rId=${config.vits.roleId}&ar=${config.vits.ar}&domin=${config.vits.domin}&va=${config.vits.va}`, {
                 headers: {
                     'Content-Disposition': 'inline'
                 }
-            }).then(res => {
-                return res.blob()
-            }).then(blob => {
-                const objectURL = URL.createObjectURL(blob)
-                playAudio.src = objectURL
-                playAudio.volume = 0.4
-                playAudio.play()
-            })
+            }).then(response => {
+                return response.arrayBuffer()
+            }).then(buffer => {
+                ipcRenderer.send('sendBuffer', buffer)
+            }).catch(error => {
+                console.log(error)
+            }).finally(() => {})
         } else if (chineseAndJapaneseReg.test(str)) {
             fetch(`${config.vits.url}?text=[JA]${result}[JA]&uId=${config.vits.uid}&token=${config.vits.token}&mId=${config.vits.modelId}&rId=${config.vits.roleId}&ar=${config.vits.ar}&domin=${config.vits.domin}&va=${config.vits.va}`, {
                 headers: {
                     'Content-Disposition': 'inline'
                 }
-            }).then(res => {
-                return res.blob()
-            }).then(blob => {
-                const objectURL = URL.createObjectURL(blob)
-                playAudio.src = objectURL
-                playAudio.volume = 0.4
-                playAudio.play()
-            })
+            }).then(response => {
+                return response.arrayBuffer()
+            }).then(buffer => {
+                ipcRenderer.send('sendBuffer', buffer)
+                loadAudio(objectURL, store.state)
+            }).catch(error => {
+                console.log(error)
+            }).finally(() => {})
         } else {
             console.log('英文字符不处理!')
         }
