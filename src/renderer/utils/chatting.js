@@ -312,7 +312,6 @@ function getVoice(str) {
                 return response.arrayBuffer()
             }).then(buffer => {
                 ipcRenderer.send('sendBuffer', buffer)
-                loadAudio(objectURL, store.state)
             }).catch(error => {
                 console.log(error)
             }).finally(() => {})
