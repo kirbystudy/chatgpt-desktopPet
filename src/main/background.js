@@ -3,7 +3,6 @@ const remote = require('@electron/remote/main')
 const dialog = require('electron').dialog
 const screen = require('electron').screen
 
-var fs = require('fs')
 const path = require('path')
 
 // 系统托盘全局对象
@@ -11,11 +10,11 @@ let appTray = null
 
 // 设置全局对象
 let mainWindow = null; let settings = null;
-let sch = null; let chat = null
+let sch = null; let chat = null; let hoverBox = null
 
 // 模型窗口大小
 const win_width = 300
-const win_height = 450
+const win_height = 500
 
 
 // 热加载
@@ -68,7 +67,7 @@ function createWindow() {
     mainWindow.webContents.openDevTools()
   })
 
-  if(!ret) {
+  if (!ret) {
     console.log("注册快捷键失败")
   }
 
@@ -79,7 +78,7 @@ function createWindow() {
 
 // 创建日程表窗口
 function createScheduleShow() {
-  
+
   // 设置窗口
   sch = new BrowserWindow({
     width: 670,
@@ -97,7 +96,6 @@ function createScheduleShow() {
       zoomFactor: 1
     }
   })
-
 
   // 加载本地文件
   sch.loadFile(path.join(__dirname, '../renderer/pages/schedule/index.html'))
@@ -133,22 +131,22 @@ function createChattingShow() {
   chat.webContents.on('did-finish-load', (event) => {
     // 发送消息给渲染进程chat
     chat.webContents.send('openChatting', [
-        {
-          'user': 'TA',
-          'time': '00:00',
-          'text': '你好'
-        },
-        {
-          'user': 'ME',
-          'time': '00:00',
-          'text': '你吃饭了吗'
-        },
-        {
-          'user': 'TA',
-          'time': '00:00',
-          'text': '吃了'
-        },
-      ]
+      {
+        'user': 'TA',
+        'time': '00:00',
+        'text': '你好'
+      },
+      {
+        'user': 'ME',
+        'time': '00:00',
+        'text': '你吃饭了吗'
+      },
+      {
+        'user': 'TA',
+        'time': '00:00',
+        'text': '吃了'
+      },
+    ]
     )
   })
 
@@ -199,6 +197,26 @@ function createSettingShow() {
 function createTrayMenu() {
 
   var trayMenuTemplate = [
+    {
+      label: '点击穿透',
+      submenu: [
+        {
+          label: '关闭点击穿透',
+          click: function () {
+            mainWindow.setIgnoreMouseEvents(false)
+          },
+          type: 'radio'
+        },
+        {
+          label: '开启点击穿透',
+          click: function () {
+            // 开启穿透后，鼠标拖拽事件会失效
+            mainWindow.setIgnoreMouseEvents(true)
+          },
+          type: 'radio'
+        },
+      ]
+    },
     {
       label: '设置',
       click: function () {
@@ -338,6 +356,51 @@ ipcMain.on('closeChatting', (event, arg) => {
 ipcMain.on('sendBuffer', (event, buffer) => {
   mainWindow.webContents.send('playAudio', buffer)
 })
+
+// ipc监听，显示悬浮球
+ipcMain.on('hoverBox', (event, data) => {
+  if (data == 'Open') {
+    // 设置窗口
+    hoverBox = new BrowserWindow({
+      width: 70,
+      height: 70,
+      x: screen.getPrimaryDisplay().workAreaSize.width - 100,
+      y: screen.getPrimaryDisplay().workAreaSize.height - 80,
+      skipTaskbar: true,
+      alwaysOnTop: true,
+      transparent: true,
+      frame: false,
+      resizable: false,
+      webPreferences: {
+        nodeIntegration: true,
+        enableRemoteModule: true,
+        contextIsolation: false,
+        zoomFactor: 1
+      }
+    })
+
+    // 加载本地文件
+    hoverBox.loadFile(path.join(__dirname, '../renderer/pages/hoverbox.html'))
+
+    // 监听closed事件后执行
+    hoverBox.on('closed', () => { chat = null })
+  } else if(data == 'Close') {
+    event.preventDefault()
+    hoverBox.hide()
+  }
+})
+
+// ipc监听，主界面隐藏
+ipcMain.on('MainPage', (event, data) => {
+  if (data == 'Hide') {
+    event.preventDefault()
+    mainWindow.hide()
+  } else if(data == 'Show') {
+    mainWindow.show()
+  }
+})
+
+
 
 // 当Electron完成时，将调用此方法
 // 初始化，并准备创建浏览器窗口。

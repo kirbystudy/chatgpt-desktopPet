@@ -11,7 +11,7 @@ async function createModel(store, view) {
 
     app.stage.addChild(store.model4);
 
-    store.model4.y = 30
+    store.model4.y = 50
     store.model4.scale.set(store.scale);
 
     if (store.model4.internalModel.coreModel._parameterIds.includes("ParamMouthOpenY")) {

@@ -1,0 +1,56 @@
+#hover_box {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    z-index: 10;
+    bottom: 10px;
+    right: 10px; 
+    background-image: url(../image/qiudi.jpg);
+    background-size: cover;
+    overflow: hidden;
+    border-radius: 25px;
+    box-shadow: 0 0 10px #818181;
+    cursor: pointer;
+    /* 淡入动画 */
+    animation: fade-in; 
+    /* 动画持续时间 */
+    animation-duration: 0.5s;
+    /* 针对webkit内核 */
+    -webkit-animation: fade-in 0.5s;
+}
+
+/* 淡入特效 */
+@keyframes fade-in {
+    0% {
+        /* 初始状态 透明度为0 */
+        opacity: 0;
+    }
+
+    40% {
+        /* 过渡状态 透明度为0 */
+        opacity: 0;
+    }
+
+    100% {
+        /* 结束状态 透明度为1 */
+        opacity: 1;
+    }
+}
+
+/* 针对webkit内核 */
+@-webkit-keyframes fade-in {
+    0% {
+        /* 初始状态 透明度为0 */
+        opacity: 0;
+    }
+
+    40% {
+        /* 过渡状态 透明度为0 */
+        opacity: 0;
+    }
+
+    100% {
+        /* 结束状态 透明度为1 */
+        opacity: 1;
+    }
+}

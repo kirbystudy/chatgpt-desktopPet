@@ -42,6 +42,12 @@ window.onload = function () {
   setting_box.textContent = '关于'
   control_box.appendChild(setting_box)
 
+  const hide_box = document.createElement('div')
+  hide_box.classList.add('control_item')
+  hide_box.setAttribute('id', 'hide')
+  hide_box.textContent = '隐藏'
+  control_box.appendChild(hide_box)
+
   const setting = document.getElementById('setting')
   setting.addEventListener('click', () => {
     ipcRenderer.send('Setting', 'Open')
@@ -55,6 +61,18 @@ window.onload = function () {
   const chatting = document.getElementById('chatting')
   chatting.addEventListener('click', () => {
     ipcRenderer.send('Chatting', 'Open')
+  })
+
+  const hide = document.getElementById('hide')
+  hide.addEventListener('click', () => {
+    showMessage("(o゜▽゜)o☆要进入专注模式吗? 专注模式下，秋蒂将缩小至右下角悬浮球，避免遮挡屏幕~")
+    setTimeout(() => {
+      ipcRenderer.send('MainPage', 'Hide')
+    }, 1300)
+
+    setTimeout(() => {
+      ipcRenderer.send('hoverBox', 'Open')
+    }, 1300)
   })
 
   draggableHandle()
@@ -117,11 +135,11 @@ document.addEventListener('DOMContentLoaded', () => {
   setTimeout(() => {
     app.classList.add("show")
   }, 1000)
- 
+
   setTimeout(() => {
     const greeting = getGreeting()
     showMessage(greeting)
-  }, 2000) 
+  }, 2000)
 })
 
 // 鼠标拖拽事件
@@ -148,7 +166,8 @@ function draggableHandle() {
     dragging = false
   })
 
-  window.addEventListener('mousemove', () => {
+  window.addEventListener('mousemove', (event) => {
+    
     // 按下鼠标并移动, 拖动操作为true
     if (mousedown_left) {
       dragging = true
