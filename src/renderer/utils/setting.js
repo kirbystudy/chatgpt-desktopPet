@@ -99,14 +99,20 @@ const isToggleOn = localStorage.getItem('isToggleOn') === 'true'
 isToggleOn ? toggle_power.checked = true : toggle_power.checked = false
 
 toggle_power.addEventListener('click', () => {
-  const newToggleOn = !isToggleOn;
-  localStorage.setItem('isToggleOn', newToggleOn);
+  
+  let newToggleOn = !isToggleOn;
   const enabled = toggle_power.checked
   ipcRenderer.send('toggle_power', enabled)
   newToggleOn ? toggle_power.checked = true : toggle_power.checked = false
+  localStorage.setItem('isToggleOn', newToggleOn);
 })
 
 // 监听主进程反馈以更新开关状态
 ipcRenderer.on('toggle_power_status', (event, isEnabled) => {
   toggle_power.checked = isEnabled
+  if(isEnabled) {
+    openPopup('秋蒂桌宠', '已成功开启')
+  } else {
+    openPopup('秋蒂桌宠', '已成功关闭')
+  }
 })
