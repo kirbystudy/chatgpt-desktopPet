@@ -92,6 +92,12 @@ window.onload = function () {
   app_version.innerText = 'v' + package.version
 
   var toggle_power = document.getElementById('toggle_power')
+
+  const status = localStorage.getItem('toggle_power_status')
+  if(status != null) {
+    toggle_power.checked = status
+  }
+
   toggle_power.addEventListener('click', () => {
     const enabled = toggle_power.checked
     ipcRenderer.send('toggle_power', enabled)
@@ -100,6 +106,7 @@ window.onload = function () {
   // 监听主进程反馈以更新开关状态
   ipcRenderer.on('toggle_power_status', (event, isEnabled) => {
     toggle_power.checked = isEnabled
+    localStorage.setItem('toggle_power_status', isEnabled)
   })
   
 }

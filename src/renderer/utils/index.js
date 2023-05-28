@@ -65,7 +65,7 @@ window.onload = function () {
 
   const hide = document.getElementById('hide')
   hide.addEventListener('click', () => {
-    showMessage("(o゜▽゜)o☆要进入专注模式吗? 专注模式下，秋蒂将缩小至右下角悬浮球，避免遮挡屏幕~")
+    showMessage("已进入专注模式，右下角有悬浮小球")
     setTimeout(() => {
       ipcRenderer.send('MainPage', 'Hide')
     }, 1300)

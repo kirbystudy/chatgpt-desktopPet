@@ -71,8 +71,12 @@ body {
     border-radius: 8px; 
     width: 250px;
     height: 80px;
+    line-height: 80px;
     text-align: center;
+    font-size: 15px;
     color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
     text-overflow: ellipsis;
     animation-delay: 5s;
     animation-duration: 50s;
