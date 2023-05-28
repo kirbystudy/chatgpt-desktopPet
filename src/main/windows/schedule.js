@@ -6,7 +6,6 @@ let sch = null;
 // 创建日程表窗口
 function createScheduleShow() {
 
-    // 设置窗口
     sch = new BrowserWindow({
         width: 670,
         height: 600,

@@ -25,12 +25,12 @@ versionInfoTab.addEventListener('click', () => {
   highlight.style.width = '70px'
 })
 
-// modelSettingTab.addEventListener('click', () => {
-//   versionInfo.style.display = 'none'
-//   modelSetting.style.display = 'block'
-//   highlight.style.left = '115px'
-//   highlight.style.width = '70px'
-// })
+modelSettingTab.addEventListener('click', () => {
+  versionInfo.style.display = 'none'
+  modelSetting.style.display = 'block'
+  highlight.style.left = '115px'
+  highlight.style.width = '70px'
+})
 
 const feedbackBtn = document.getElementById('feedback_button')
 
@@ -90,4 +90,16 @@ window.onload = function () {
   var package = require('../../../package.json')
   const app_version = document.getElementById('app_version')
   app_version.innerText = 'v' + package.version
+
+  var toggle_power = document.getElementById('toggle_power')
+  toggle_power.addEventListener('click', () => {
+    const enabled = toggle_power.checked
+    ipcRenderer.send('toggle_power', enabled)
+  })
+
+  // 监听主进程反馈以更新开关状态
+  ipcRenderer.on('toggle_power_status', (event, isEnabled) => {
+    toggle_power.checked = isEnabled
+  })
+  
 }

@@ -72,7 +72,9 @@ ipcMain.on('dragMain', (event, mouseOnPage) => {
 // ipc监听，打开设置窗口
 ipcMain.on('Setting', (event, arg) => {
   if (arg == 'Open') {
-    global.settings = createSettingShow()
+    if(global.settings == null || global.settings.isDestroyed()) {
+      global.settings = createSettingShow()
+    }
   }
 })
 
@@ -127,6 +129,23 @@ ipcMain.on('MainPage', (event, data) => {
   } else if (data == 'Show') {
     global.mainWindow.show()
   }
+})
+
+// ipc监听，开机自启动
+ipcMain.on('toggle_power', (event, enabled) => {
+    if(!app.getLoginItemSettings().openAtLogin && enabled) {
+      app.setLoginItemSettings({
+        openAtLogin: true
+      })
+    } else if (app.getLoginItemSettings().openAtLogin && !enabled) {
+      app.setLoginItemSettings({
+        openAtLogin: false
+      })
+    }
+
+    // 发送反馈消息以更新开关状态
+    const isEnabled = app.getLoginItemSettings().openAtLogin
+    global.settings.webContents.send('toggle_power_status', isEnabled)
 })
 
 // 当Electron完成时，将调用此方法

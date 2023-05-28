@@ -5,10 +5,10 @@ let settings = null;
 
 // 创建设置窗口
 function createSettingShow() {
+    
     // 设置窗口打开监听
     var set_windth = screen.getPrimaryDisplay().workAreaSize.width
 
-    // 设置窗口
     settings = new BrowserWindow({
         width: parseInt(set_windth / 3),
         height: parseInt(set_windth / 3) * 0.875,

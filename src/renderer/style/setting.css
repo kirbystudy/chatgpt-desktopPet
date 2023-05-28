@@ -183,6 +183,77 @@ html {
   align-items: center;
   justify-content: space-between;
   user-select: none;
+  position: relative;
+}
+
+/* 设置开关标签容器的通用样式 */
+.switch {
+  position: absolute;
+  display: inline-block;
+  right: 20px;
+  width: 45px;
+  height: 20px;
+}
+
+/* 隐藏复选框 */
+.switch input {
+  display: none;
+}
+
+/* 设置滑块的基本样式 */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #313131;
+  box-shadow: 0 0 0 1px #ccc;
+  /* 添加动画过渡效果 */
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+/* 设置滑块的圆形按钮 */
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 15px;
+  width: 15px;
+  left: 4px;
+  bottom: 2px;
+  background-color: white;
+  /* 添加动画过渡效果 */
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+/* 当复选框处于选中状态时，滑块为蓝色 */
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+/* 当滑块处于焦点状态时，添加阴影效果 */
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+/* 当复选框处于选中状态时，将滑块设置为右侧状态 */
+input:checked + .slider:before {
+  -webkit-transform: translateX(22px);
+  -ms-transform: translateX(22px);
+  transform: translateX(22px);
+}
+
+/* 将滑块样式设置为圆形 */
+.slider.round {
+  border-radius: 34px;
+}
+
+/* 将圆形按钮样式设置为圆形 */
+.slider.round:before {
+  border-radius: 50%;
 }
 
 .setting_bottom {

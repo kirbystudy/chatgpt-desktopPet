@@ -6,7 +6,6 @@ let chatting = null;
 // 创建chatting聊天窗口
 function createChattingShow() {
 
-    // 设置窗口
     chatting = new BrowserWindow({
         width: 480,
         height: 680,

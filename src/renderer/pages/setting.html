@@ -19,7 +19,7 @@
     <div class="selection">
       <div class="highlight" id="highlight"></div>
       <div class="selection_bar" id="versionInfoTab">版本信息</div>
-      <!-- <div class="selection_bar" id="modelSettingTab">语音设置</div> -->
+      <div class="selection_bar" id="modelSettingTab">启动设置</div>
     </div>
 
     <div class="setting_page" id="versionInfo">
@@ -55,15 +55,14 @@
     <div class="setting_page" id="modelSetting" style="display: none;">
       <div class="setting_box">
         <div class="setting_header">
-          <h3>语音设置</h3>
+          <h3>启动设置</h3>
         </div>
-        <div class="setting">
-          <form class="form_selection" id="live2d">
-            <div class="title">请选择live2d模型</div>
-            <select class="select" id="live2d-show">
-              <option class="option"></option>
-            </select>
-          </form>
+        <div class="container_box">
+          <span>开机自启动</span>
+          <label class="switch">
+            <input type="checkbox" id="toggle_power">
+            <span class="slider round"></span>
+          </label>
         </div>
       </div>
     </div>

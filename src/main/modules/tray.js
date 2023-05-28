@@ -13,7 +13,9 @@ function createTrayMenu() {
         {
             label: '设置',
             click: function () {
-                createSettingShow()
+                if (global.settings == null || global.settings.isDestroyed()) {
+                    createSettingShow()
+                }
             }
         },
         {
