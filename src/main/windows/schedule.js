@@ -33,5 +33,4 @@ function createScheduleShow() {
     return sch
 }
 
-
 module.exports = createScheduleShow

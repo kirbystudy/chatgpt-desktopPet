@@ -49,9 +49,4 @@ function createTrayMenu() {
     appTray.setContextMenu(contextMenu)
 }
 
-
-function sendMsgToMainProcess() {
-    global.mainWindow.webContents.send('Setting', 'Open')
-}
-
 module.exports = createTrayMenu
