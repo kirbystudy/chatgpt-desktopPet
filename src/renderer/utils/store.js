@@ -15,7 +15,6 @@ const state = {
     scale: 0.1,
     percentage: parseFloat(13.0),
     parameterIndex: "",
-    toggle: false
 };
 
 const mutations = {}

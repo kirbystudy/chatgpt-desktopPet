@@ -22,35 +22,34 @@ ipcMain.on('getMainPos', (event) => {
 // ipc监听，拖拽主窗体
 ipcMain.on('dragMain', (event, mouseOnPage) => {
 
-  const win_width = 300
-  const win_height = 500
+  const winWidth = 300
+  const winHeight = 500
+
+  // 获取鼠标在目标屏幕上的位置
+  const { x, y } = screen.getCursorScreenPoint()
 
   // 获取所有屏幕的信息
   const displays = screen.getAllDisplays()
 
-  // 获取当前鼠标在哪个显示器上
-  const display = displays.find(display => {
-    const bounds = display.bounds
-    return (
-      mouseOnPage[0] >= bounds.x &&
-      mouseOnPage[0] <= bounds.x + bounds.width &&
-      mouseOnPage[1] >= bounds.y &&
-      mouseOnPage[1] <= bounds.y + bounds.height
-    )
-  })
+  // 查询包含鼠标位置的屏幕
+  let display = null
+  for (let i = 0; i < displays.length; i++) {
+    const bounds = displays[i].bounds
+    if (x >= bounds.x && x <= bounds.x + bounds.width && y >= bounds.y && y <= bounds.y + bounds.height) {
+      display = displays[i]
+      break
+    }
+  }
 
   // 如果没有任何屏幕包含的鼠标，则退出
-  if(!display) return
-
-  // 获取鼠标在目标屏幕上的位置
-  const mouseOnScreen = screen.getCursorScreenPoint(display)
+  if (!display) {
+    // 如果找不到包含鼠标位置的屏幕，则使用当前窗口所在的屏幕
+    display = screen.getDisplayMatching(global.mainWindow.getBounds())
+  }
 
   // 计算窗口新坐标
-  let newPosX = mouseOnScreen.x - mouseOnPage[0]
-  let newPosY = mouseOnScreen.y - mouseOnPage[1]
-
-  // 获取目标屏幕工作区大小
-  let size = display.workAreaSize
+  let newPosX = x - mouseOnPage[0] - display.bounds.x
+  let newPosY = y - mouseOnPage[1] - display.bounds.y
 
   // 获取窗口大小
   let winSize = global.mainWindow.getSize()
@@ -62,27 +61,27 @@ ipcMain.on('dragMain', (event, mouseOnPage) => {
   let winPosX_right = newPosX + winSize[0] // 右边
 
   // 窗口上方超出屏幕，重置Y为0
-  if (winPosY_up < display.bounds.y) {
-    newPosY = display.bounds.y
+  if (winPosY_up < 0) {
+    newPosY = 0
   }
 
   // 窗口下方超出屏幕，重置Y为 屏幕高度最大值 - 窗口高度
-  if (winPosY_down > (display.bounds.y + size.height)) {
-    newPosY = (display.bounds.y + size.height) - winSize[1]
+  if (winPosY_down > display.bounds.height) {
+    newPosY = display.bounds.height - winSize[1]
   }
 
   // 窗口左边超出屏幕，重置X为0
-  if (winPosX_left < display.bounds.x) {
-    newPosX = display.bounds.x
+  if (winPosX_left < 0) {
+    newPosX = 0
   }
 
   // 窗口右边超出屏幕，重置X为 屏幕长度最大值 - 窗口长度
-  if (winPosX_right > (display.bounds.x + size.width)) {
-    newPosX = (display.bounds.x + size.width) - winSize[0]
+  if (winPosX_right > display.bounds.width) {
+    newPosX = display.bounds.width - winSize[0]
   }
 
-  global.mainWindow.setPosition(newPosX, newPosY)
-  global.mainWindow.setSize(win_width, win_height)
+  global.mainWindow.setPosition(display.bounds.x + newPosX, display.bounds.y + newPosY)
+  global.mainWindow.setSize(winWidth, winHeight)
   global.mainWindow.transparent = true
 })
 
