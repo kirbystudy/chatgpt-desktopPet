@@ -1,21 +1,10 @@
-const { app, BrowserWindow, Menu, Tray, ipcMain, globalShortcut } = require('electron')
-const remote = require('@electron/remote/main')
-const dialog = require('electron').dialog
-const screen = require('electron').screen
-
-const path = require('path')
-
-// 系统托盘全局对象
-let appTray = null
-
-// 设置全局对象
-let mainWindow = null; let settings = null;
-let sch = null; let chat = null; let hoverBox = null
-
-// 模型窗口大小
-const win_width = 300
-const win_height = 500
-
+const { app, ipcMain, globalShortcut, screen } = require('electron')
+const createWindow = require('./windows/mainWindow')
+const createTrayMenu = require('./modules/tray')
+const createSettingShow = require('./windows/setting')
+const createScheduleShow = require('./windows/schedule')
+const createChattingShow = require('./windows/chatting')
+const createHoverBox = require('./windows/hoverbox')
 
 // 热加载
 if (process.env.NODE_ENV === 'development') {
@@ -24,249 +13,18 @@ if (process.env.NODE_ENV === 'development') {
   } catch (_) { }
 }
 
-
-// 创建并控制浏览器窗口
-function createWindow() {
-
-  mainWindow = new BrowserWindow({
-    width: win_width,          // 窗口的宽度
-    height: win_height,        // 窗口的高度 
-    skipTaskbar: true,         // 是否在任务栏中显示窗口
-    frame: false,              // 设置为 false 时可以创建一个无边框窗口  
-    transparent: true,         // 窗口透明
-    alwaysOnTop: true,         // 窗口是否永远在别的窗口的上面
-    resizable: false,          // 窗口大小是否可调整
-    webPreferences: {
-      enableRemoteModule: true,   // 允许使用remote
-      nodeIntegration: true,      // node下所有东西都可以在渲染进程中使用
-      contextIsolation: false,    // 禁用上下文隔离
-      allowFileAccess: true,      // 允许在本地访问文件
-    },
-  })
-
-  // 获取桌面大小
-  let size = screen.getPrimaryDisplay().workAreaSize
-
-  // 获取窗口大小
-  let winSize = mainWindow.getSize()
-
-  // 初始位置为右下角
-  mainWindow.setPosition(size.width - winSize[0], size.height - winSize[1])
-
-  // 主进程和渲染进程之间可以共享 JavaScript 对象
-  remote.initialize()
-  // 允许在渲染进程中访问主进程的 JavaScript 对象
-  remote.enable(mainWindow.webContents)
-
-  // 加载本地文件
-  mainWindow.loadFile('./src/renderer/pages/index.html')
-
-  // 注册快捷键
-  const ret = globalShortcut.register('Alt+F12', () => {
-    // 当前窗口打开 DevTools
-    mainWindow.webContents.openDevTools()
-  })
-
-  if (!ret) {
-    console.log("注册快捷键失败")
-  }
-
-  // 监听closed事件后执行
-  mainWindow.on('closed', () => { mainWindow = null })
-
-}
-
-// 创建日程表窗口
-function createScheduleShow() {
-
-  // 设置窗口
-  sch = new BrowserWindow({
-    width: 670,
-    height: 600,
-    skipTaskbar: false,
-    alwaysOnTop: false,
-    transparent: false,
-    frame: false,
-    resizable: false,
-    icon: path.join(__dirname, '../../assets/app_128.ico'),
-    webPreferences: {
-      nodeIntegration: true,
-      enableRemoteModule: true,
-      contextIsolation: false,
-      zoomFactor: 1
-    }
-  })
-
-  // 加载本地文件
-  sch.loadFile(path.join(__dirname, '../renderer/pages/schedule/index.html'))
-
-  // 监听closed事件后执行
-  sch.on('closed', () => { sch = null })
-}
-
-// 创建chatting聊天窗口
-function createChattingShow() {
-
-  // 设置窗口
-  chat = new BrowserWindow({
-    width: 480,
-    height: 680,
-    skipTaskbar: false,
-    alwaysOnTop: false,
-    transparent: true,
-    frame: false,
-    resizable: false,
-    icon: path.join(__dirname, '../../assets/app_128.ico'),
-    webPreferences: {
-      nodeIntegration: true,
-      enableRemoteModule: true,
-      contextIsolation: false,
-      zoomFactor: 1
-    }
-  })
-
-  // 加载本地文件
-  chat.loadFile(path.join(__dirname, '../renderer/pages/chatting.html'))
-
-  chat.webContents.on('did-finish-load', (event) => {
-    // 发送消息给渲染进程chat
-    chat.webContents.send('openChatting', [
-      {
-        'user': 'TA',
-        'time': '00:00',
-        'text': '你好'
-      },
-      {
-        'user': 'ME',
-        'time': '00:00',
-        'text': '你吃饭了吗'
-      },
-      {
-        'user': 'TA',
-        'time': '00:00',
-        'text': '吃了'
-      },
-    ]
-    )
-  })
-
-  // 监听closed事件后执行
-  chat.on('closed', () => { chat = null })
-}
-
-// 创建设置窗口
-function createSettingShow() {
-  // 设置窗口打开监听
-  var set_windth = screen.getPrimaryDisplay().workAreaSize.width
-
-  // 设置窗口
-  settings = new BrowserWindow({
-    width: parseInt(set_windth / 3),
-    height: parseInt(set_windth / 3) * 0.875,
-    minWidth: 470,
-    minHeight: 320,
-    skipTaskbar: false,
-    alwaysOnTop: true,
-    transparent: false,
-    frame: false,
-    resizable: false,
-    titleBarStyle: "hidden",
-    titleBarOverlay: {
-      color: "#202020",
-      symbolColor: "white"
-    },
-    resizable: true,
-    show: true,
-    icon: path.join(__dirname, '../../assets/app_128.ico'),
-    webPreferences: {
-      nodeIntegration: true,
-      enableRemoteModule: true,
-      contextIsolation: false,
-      zoomFactor: 1
-    }
-  })
-
-  // 加载本地文件
-  settings.loadFile(path.join(__dirname, '../renderer/pages/setting.html'))
-
-  // 监听closed事件后执行
-  settings.on('closed', () => { settings = null })
-}
-
-// 创建系统托盘菜单
-function createTrayMenu() {
-
-  var trayMenuTemplate = [
-    {
-      label: '点击穿透',
-      submenu: [
-        {
-          label: '关闭点击穿透',
-          click: function () {
-            mainWindow.setIgnoreMouseEvents(false)
-          },
-          type: 'radio'
-        },
-        {
-          label: '开启点击穿透',
-          click: function () {
-            // 开启穿透后，鼠标拖拽事件会失效
-            mainWindow.setIgnoreMouseEvents(true)
-          },
-          type: 'radio'
-        },
-      ]
-    },
-    {
-      label: '设置',
-      click: function () {
-        // 打开设置页面
-        if (settings == null || settings.isDestroyed()) {
-          createSettingShow()
-        }
-      }
-    },
-    {
-      label: '退出',
-      click: function () {
-        // 退出程序
-        dialog.showMessageBox({
-          type: 'info',
-          buttons: ["我手滑了", "告辞"],
-          title: '退出',
-          message: '真的要退出吗?'
-        }).then((res) => {
-          if (res.response == 1) {
-            app.quit()
-          }
-        }).catch((error) => {
-          console.log(error)
-        })
-      }
-    }
-  ]
-
-  // 系统托盘图标目录
-  appTray = new Tray(path.join(__dirname, '../../assets/app_128.ico'))
-
-  // 设置此托盘图标的悬停提示内容
-  appTray.setToolTip('Live2D DeskTopPet')
-
-  // 图标的上下文菜单
-  let contextMenu = Menu.buildFromTemplate(trayMenuTemplate)
-
-  // 设置此图标的上下文菜单
-  appTray.setContextMenu(contextMenu)
-}
-
 // ipc监听，获取主窗体位置
 ipcMain.on('getMainPos', (event) => {
-  const pos = mainWindow.getPosition()
+  const pos = global.mainWindow.getPosition()
   event.returnValue = pos
 })
 
 // ipc监听，拖拽主窗体
 ipcMain.on('dragMain', (event, mouseOnPage) => {
+
+  const win_width = 300
+  const win_height = 500
+
   // 获取鼠标的位置
   const { x, y } = screen.getCursorScreenPoint()
 
@@ -278,7 +36,7 @@ ipcMain.on('dragMain', (event, mouseOnPage) => {
   let size = screen.getPrimaryDisplay().workAreaSize
 
   // 获取窗口大小
-  let winSize = mainWindow.getSize()
+  let winSize = global.mainWindow.getSize()
 
   // 窗口四个代表性边缘坐标值
   let winPosY_up = newPosY // 上边
@@ -306,87 +64,58 @@ ipcMain.on('dragMain', (event, mouseOnPage) => {
     newPosX = size.width - winSize[0]
   }
 
-  mainWindow.setPosition(newPosX, newPosY)
-  mainWindow.setSize(win_width, win_height)
-  mainWindow.transparent = true
+  global.mainWindow.setPosition(newPosX, newPosY)
+  global.mainWindow.setSize(win_width, win_height)
+  global.mainWindow.transparent = true
 })
 
 // ipc监听，打开设置窗口
 ipcMain.on('Setting', (event, arg) => {
   if (arg == 'Open') {
-    if (settings == null || settings.isDestroyed()) {
-      createSettingShow()
-    }
+    global.settings = createSettingShow()
   }
 })
 
 // ipc监听，打开日程表窗口
 ipcMain.on('Schedule', (event, arg) => {
   if (arg == 'Open') {
-    if (sch == null || sch.isDestroyed()) {
-      createScheduleShow()
-    }
+    global.schedule = createScheduleShow()
   }
 })
 
 // ipc监听，关闭日程表
 ipcMain.on('closeSchedule', (event, arg) => {
   if (arg == 'Close') {
-    sch.close()
+    global.schedule.close()
   }
 })
 
 // ipc监听，打开chat聊天窗口
 ipcMain.on('Chatting', (event, arg) => {
   if (arg == 'Open') {
-    if (chat == null || chat.isDestroyed()) {
-      createChattingShow()
-    }
+    global.chatting = createChattingShow()
   }
 })
 
 // ipc监听，关闭chat聊天窗口
 ipcMain.on('closeChatting', (event, arg) => {
   if (arg == 'Close') {
-    chat.close()
+    global.chatting.close()
   }
 })
 
 // ipc监听，发送vits语音
 ipcMain.on('sendBuffer', (event, buffer) => {
-  mainWindow.webContents.send('playAudio', buffer)
+  global.mainWindow.webContents.send('playAudio', buffer)
 })
 
 // ipc监听，显示悬浮球
 ipcMain.on('hoverBox', (event, data) => {
   if (data == 'Open') {
-    // 设置窗口
-    hoverBox = new BrowserWindow({
-      width: 70,
-      height: 70,
-      x: screen.getPrimaryDisplay().workAreaSize.width - 100,
-      y: screen.getPrimaryDisplay().workAreaSize.height - 80,
-      skipTaskbar: true,
-      alwaysOnTop: true,
-      transparent: true,
-      frame: false,
-      resizable: false,
-      webPreferences: {
-        nodeIntegration: true,
-        enableRemoteModule: true,
-        contextIsolation: false,
-        zoomFactor: 1
-      }
-    })
-
-    // 加载本地文件
-    hoverBox.loadFile(path.join(__dirname, '../renderer/pages/hoverbox.html'))
-
-    // 监听closed事件后执行
-    hoverBox.on('closed', () => { chat = null })
-  } else if(data == 'Close') {
+    global.hoverBox = createHoverBox()
+  } else if (data == 'Close') {
     event.preventDefault()
-    hoverBox.hide()
+    global.hoverBox.hide()
   }
 })
 
@@ -394,13 +123,11 @@ ipcMain.on('hoverBox', (event, data) => {
 ipcMain.on('MainPage', (event, data) => {
   if (data == 'Hide') {
     event.preventDefault()
-    mainWindow.hide()
-  } else if(data == 'Show') {
-    mainWindow.show()
+    global.mainWindow.hide()
+  } else if (data == 'Show') {
+    global.mainWindow.show()
   }
 })
-
-
 
 // 当Electron完成时，将调用此方法
 // 初始化，并准备创建浏览器窗口。
@@ -408,12 +135,11 @@ ipcMain.on('MainPage', (event, data) => {
 app.on('ready', () => {
 
   // 创建窗口
-  createWindow()
+  global.mainWindow = createWindow()
 
   // 创建系统托盘
   createTrayMenu()
 })
-
 
 // 当所有窗口都被关闭后退出
 app.on('window-all-closed', () => {
