@@ -41,7 +41,6 @@ ipcMain.on('dragMain', (event, mouseOnPage) => {
     }
   }
 
-  // 如果没有任何屏幕包含的鼠标，则退出
   if (!display) {
     // 如果找不到包含鼠标位置的屏幕，则使用当前窗口所在的屏幕
     display = screen.getDisplayMatching(global.mainWindow.getBounds())
@@ -97,7 +96,9 @@ ipcMain.on('Setting', (event, arg) => {
 // ipc监听，打开日程表窗口
 ipcMain.on('Schedule', (event, arg) => {
   if (arg == 'Open') {
-    global.schedule = createScheduleShow()
+    if (global.schedule == null || global.schedule.isDestroyed()) {
+      global.schedule = createScheduleShow()
+    }
   }
 })
 
@@ -111,7 +112,9 @@ ipcMain.on('closeSchedule', (event, arg) => {
 // ipc监听，打开chat聊天窗口
 ipcMain.on('Chatting', (event, arg) => {
   if (arg == 'Open') {
-    global.chatting = createChattingShow()
+    if (global.chatting == null || global.chatting.isDestroyed()) {
+      global.chatting = createChattingShow()
+    }
   }
 })
 
@@ -137,7 +140,7 @@ ipcMain.on('hoverBox', (event, data) => {
   }
 })
 
-// ipc监听，主界面隐藏
+// ipc监听，主界面隐藏和显示
 ipcMain.on('MainPage', (event, data) => {
   if (data == 'Hide') {
     event.preventDefault()

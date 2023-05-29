@@ -2,11 +2,32 @@ const ipcRenderer = require('electron').ipcRenderer
 
 var courseList = [];
 
-// 这部分到时候保持之前周一到周五不变的数据，增加周六日的，逻辑需要改
 var courseListOther = [];
-var week = window.innerWidth > 360 ? ['周一', '周二', '周三', '周四', '周五'] :
-    ['一', '二', '三', '四', '五'];
-var day = new Date().getDay();
+
+// 获取当前日期时间
+let date = new Date();
+
+// 获取当前日期
+let weekDay = date.getDay();
+
+// 计算本周周一到周日的日期
+let monday = new Date(date.getTime() - (weekDay - 1) * 24 * 60 * 60 * 1000); // 本周周一的日期
+let tuesday = new Date(monday.getTime() + 1 * 24 * 60 * 60 * 1000); // 本周周二的日期
+let wednesday = new Date(monday.getTime() + 2 * 24 * 60 * 60 * 1000); // 本周周三的日期
+let thursday = new Date(monday.getTime() + 3 * 24 * 60 * 60 * 1000); // 本周周四的日期
+let friday = new Date(monday.getTime() + 4 * 24 * 60 * 60 * 1000); // 本周周五的日期
+let saturday = new Date(monday.getTime() + 5 * 24 * 60 * 60 * 1000); // 本周周六的日期
+let sunday = new Date(monday.getTime() + 6 * 24 * 60 * 60 * 1000); // 本周周日的日期
+
+let num1 = monday.getMonth() + 1 + '/' + monday.getDate()
+let num2 = tuesday.getMonth() + 1 + '/' + tuesday.getDate()
+let num3 = wednesday.getMonth() + 1 + '/' + wednesday.getDate()
+let num4 = thursday.getMonth() + 1 + '/' + thursday.getDate()
+let num5 = friday.getMonth() + 1 + '/' + friday.getDate()
+let num6 = saturday.getMonth() + 1 + '/' + saturday.getDate()
+let num7 = sunday.getMonth() + 1 + '/' + sunday.getDate()
+
+var week =  [`周一\n${num1}` , `周二\n${num2}` , `周三\n${num3}`, `周四\n${num4}`, `周五\n${num5}`, `周六\n${num6}`, `周日\n${num7}`] 
 var courseType = [
     [{ index: '1', name: '8:30' }, 1],
     [{ index: '2', name: '9:30' }, 1],
@@ -16,7 +37,7 @@ var courseType = [
     [{ index: '6', name: '14:30' }, 1],
     [{ index: '7', name: '15:30' }, 1],
     [{ index: '8', name: '16:30' }, 1],
-    [{ index: '9', name: '17:30' }, 1], 
+    [{ index: '9', name: '17:30' }, 1],
     [{ index: '10', name: '18:30' }, 1],
     [{ index: '11', name: '19:30' }, 1],
     [{ index: '12', name: '20:30' }, 1],
@@ -63,18 +84,17 @@ $(function () {
         // 实例化(初始化课表)
         Timetable = new Timetables({
             el: '#coursesTable',
-            timetables: courseList,
+            timetables: courseListOther,
             week: week,
             timetableType: courseType,
-            highlightWeek: day,
+            highlightWeek: weekDay,
             gridOnClick: function (e) {
                 var num = e.index - 1;
                 //var test = JSON.stringify(wType[num]);
                 //alert(test);
                 // alert(e.name + '  ' + e.week + ' ' + wType[num].name);
-                
-                openPopup('秋蒂桌宠', e.name + ' ' +  e.week + ' ' + wType[num].name)
-                console.log(e);
+
+                openPopup('秋蒂桌宠', e.name + ' ' + e.week.split('\n')[0] + ' ' + wType[num].name)
             },
             styles: {
                 Gheight: 50
@@ -85,29 +105,8 @@ $(function () {
 });
 
 
-//切换课表
-function onChange() {
-
-    Timetable.setOption({
-        timetables: courseListOther,
-        week: ['一', '二', '三', '四', '五', '六', '日'],
-        styles: {
-            palette: ['#dedcda', '#ff4081']
-        },
-        timetableType: courseType,
-        gridOnClick: function (e) {
-            var num = e.index - 1;
-            //var test = JSON.stringify(wType[num]);
-            //alert(test);
-            openPopup('秋蒂桌宠', e.name + ' 周' +  e.week + ' ' + wType[num].name)
-            console.log(e);
-        }
-    });
-};
-
-
-(function () {
+window.onload = function () {
     $('#close_btn').on('click', () => {
         ipcRenderer.send('closeSchedule', 'Close')
     })
-})()
+}

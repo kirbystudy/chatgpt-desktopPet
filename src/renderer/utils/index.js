@@ -65,14 +65,16 @@ window.onload = function () {
 
   const hide = document.getElementById('hide')
   hide.addEventListener('click', () => {
-    showMessage("已进入专注模式，右下角有悬浮小球")
+    showMessage("已进入专注模式，右下角有悬浮小球", 3000)
     setTimeout(() => {
       ipcRenderer.send('MainPage', 'Hide')
     }, 1300)
 
     setTimeout(() => {
       ipcRenderer.send('hoverBox', 'Open')
+      showMessage("我回来啦", 3000)
     }, 1300)
+    
   })
 
   draggableHandle()

@@ -7,8 +7,8 @@ let sch = null;
 function createScheduleShow() {
 
     sch = new BrowserWindow({
-        width: 670,
-        height: 600,
+        width: 800,
+        height: 700,
         skipTaskbar: false,
         alwaysOnTop: false,
         transparent: false,
