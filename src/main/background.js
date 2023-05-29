@@ -133,7 +133,9 @@ ipcMain.on('sendBuffer', (event, buffer) => {
 // ipc监听，显示悬浮球
 ipcMain.on('hoverBox', (event, data) => {
   if (data == 'Open') {
-    global.hoverBox = createHoverBox()
+    if (global.hoverBox == null || global.hoverBox.isDestroyed()) {
+      global.hoverBox = createHoverBox()
+    }
   } else if (data == 'Close') {
     event.preventDefault()
     global.hoverBox.hide()
@@ -147,6 +149,8 @@ ipcMain.on('MainPage', (event, data) => {
     global.mainWindow.hide()
   } else if (data == 'Show') {
     global.mainWindow.show()
+    // 点击悬浮球后手动关闭，销毁hoverBox窗口对象
+    global.hoverBox.close()
   }
 })
 

@@ -12,38 +12,9 @@ const jsonContent = fs.readFileSync(configPath, 'utf-8')
 // 解析JSON
 const config = JSON.parse(jsonContent)
 
-function showChatting(text) {
-    // var textContainer = $('#chat_middle_item')
-    // var textChatting = ''
-    // for (var i = 0; i < text.length; i++) {
-    //     if (text[i]['user'] == 'TA') {
-    //         textChatting +=
-    //             `<div class="chat_left clearfix">
-    //             <div class="chat_left_item_1">
-    //                 <img src="../image/qiudi.jpg">
-    //             </div>
-    //             <div class="chat_left_item_2">
-    //                 <div class="chat_left_time">${text[i]['time']}</div>
-    //                 <div class="chat_left_content">${text[i]['text']}</div>
-    //             </div>
-    //         </div>`
-    //     } else {
-    //         textChatting +=
-    //             `<div class="chat_right clearfix">
-    //             <div class="chat_right_item_1">
-    //                 <img src="../image/user.png">
-    //             </div>
-    //             <div class="chat_right_item_2">
-    //                 <div class="chat_right_time">${text[i]['time']}</div>
-    //                 <div class="chat_right_content">${text[i]['text']}</div>
-    //             </div>
-    //         </div>`
-    //     }
-    // }
-    // textContainer.html(textChatting)
+function showChatting() {    
     sending()
 }
-
 
 function sending() {
     var send_message = document.getElementById('chat_middle_item')
@@ -266,60 +237,8 @@ function showReply(str) {
         // 滚动条
         reply_message.scrollTop = reply_message.scrollHeight
 
-        // 语音播报
-        getVoice(str)
-
     }
 }
-
-// 语音功能
-function getVoice(str) {
-
-    // 匹配中文字符的正则表达式
-    var chineseReg = /[^\x00-\xff]+/g
-
-    // 匹配中文和日语字符的正则表达式
-    const chineseAndJapaneseReg = /[\u3040-\u309F\u30A0-\u30FF]+[\u4E00-\u9FA5a-zA-Z0-9\s、。？！~]+/g
-
-    // 匹配英文字符的正则表达式
-    var pattern = /[a-zA-Z]+/g;
-
-    // 将英文字符替换为空
-    var result = str.replace(pattern, '');
-
-    if (result.length <= 35) {
-        if (chineseReg.test(result)) {
-
-            fetch(`${config.vits.url}?text=[ZH]${result}[ZH]&uId=${config.vits.uid}&token=${config.vits.token}&mId=${config.vits.modelId}&rId=${config.vits.roleId}&ar=${config.vits.ar}&domin=${config.vits.domin}&va=${config.vits.va}`, {
-                headers: {
-                    'Content-Disposition': 'inline'
-                }
-            }).then(response => {
-                return response.arrayBuffer()
-            }).then(buffer => {
-                ipcRenderer.send('sendBuffer', buffer)
-            }).catch(error => {
-                console.log(error)
-            }).finally(() => {})
-        } else if (chineseAndJapaneseReg.test(str)) {
-            fetch(`${config.vits.url}?text=[JA]${result}[JA]&uId=${config.vits.uid}&token=${config.vits.token}&mId=${config.vits.modelId}&rId=${config.vits.roleId}&ar=${config.vits.ar}&domin=${config.vits.domin}&va=${config.vits.va}`, {
-                headers: {
-                    'Content-Disposition': 'inline'
-                }
-            }).then(response => {
-                return response.arrayBuffer()
-            }).then(buffer => {
-                ipcRenderer.send('sendBuffer', buffer)
-            }).catch(error => {
-                console.log(error)
-            }).finally(() => {})
-        } else {
-            console.log('英文字符不处理!')
-        }
-    }
-
-}
-
 
 (function () {
     $('#close_btn').on('click', () => {
