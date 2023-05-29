@@ -220,30 +220,6 @@
     cursor: pointer;
 }
 
-/* #loading {
-    display: none;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
-
-#loading .spinner {
-    animation: spin 1s infinite linear;
-    border: 5px solid rgba(0, 0, 0, 0.1);
-    border-left-color: #8b9dc3;
-    border-radius: 50%;
-    height: 40px;
-    width: 40px;
-    position: relative;
-}
-
-@keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
-} */
-
 #send_button.loading::after {
     content: "";
     width: 16px;

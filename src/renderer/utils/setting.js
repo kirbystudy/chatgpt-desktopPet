@@ -49,6 +49,9 @@ clearText.addEventListener('click', () => {
   wordCount.textContent = 0
 })
 
+// 上一次请求的时间
+let lastRequestTime = 0
+
 feedbackBtn.addEventListener('click', () => {
   const count = message.value.length
   if (count > 200) {
@@ -63,6 +66,15 @@ feedbackBtn.addEventListener('click', () => {
   if (str.length > 0) {
     const formData = new FormData();
     formData.append('content', str);
+
+    const currentTime = new Date().getTime()
+
+    if (currentTime - lastRequestTime < 5000) {
+      openPopup('秋蒂桌宠', '请等待至少5秒钟再尝试请求!')
+      message.value = ''
+      wordCount.textContent = 0
+      return
+    }
 
     fetch(`${config.feedBack.url}`, {
       method: 'POST',
@@ -82,7 +94,14 @@ feedbackBtn.addEventListener('click', () => {
       .catch(error => {
         // 处理错误
         console.log(error)
-      });
+      }).finally(() => {
+        lastRequestTime = currentTime
+
+        setTimeout(() => {
+          // 重置计时器
+          lastRequestTime = 0
+        }, 5000);
+      })
   }
 })
 
@@ -99,7 +118,7 @@ const isToggleOn = localStorage.getItem('isToggleOn') === 'true'
 isToggleOn ? toggle_power.checked = true : toggle_power.checked = false
 
 toggle_power.addEventListener('click', () => {
-  
+
   let newToggleOn = !isToggleOn;
   const enabled = toggle_power.checked
   ipcRenderer.send('toggle_power', enabled)
@@ -110,7 +129,7 @@ toggle_power.addEventListener('click', () => {
 // 监听主进程反馈以更新开关状态
 ipcRenderer.on('toggle_power_status', (event, isEnabled) => {
   toggle_power.checked = isEnabled
-  if(isEnabled) {
+  if (isEnabled) {
     openPopup('秋蒂桌宠', '已成功开启')
   } else {
     openPopup('秋蒂桌宠', '已成功关闭')
