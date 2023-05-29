@@ -1,4 +1,4 @@
-# vits-desktopPet
+# chatgpt-desktopPet
 
 使用 Live2D 模型开发的 Electron 桌面宠物应用程序。用户可以将其喜欢的动漫角色或宠物放置在桌面上，并通过语音和文本与它进行互动。
 

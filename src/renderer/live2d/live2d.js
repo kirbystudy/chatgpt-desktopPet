@@ -14,6 +14,12 @@ async function createModel(store, view) {
     store.model4.y = 50
     store.model4.scale.set(store.scale);
 
+    store.model4.on("hit", (hitAreas) => {
+        if(hitAreas.includes("Body")) {
+            store.model4.motion("Tap")
+        }
+    })
+
     if (store.model4.internalModel.coreModel._parameterIds.includes("ParamMouthOpenY")) {
         store.parameterIndex = store.model4.internalModel.coreModel.getParameterIndex("ParamMouthOpenY")
     }
