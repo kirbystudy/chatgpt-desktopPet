@@ -1,4 +1,4 @@
-const { BrowserWindow, screen, ipcMain } = require('electron')
+const { BrowserWindow, screen } = require('electron')
 const path = require('path')
 
 let hoverBox = null

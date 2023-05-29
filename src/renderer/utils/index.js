@@ -89,9 +89,6 @@ window.onload = function () {
     control_btn.style.opacity = 0
   })
 
-  ipcRenderer.on('playAudio', (event, buffer) => {
-    loadAudio(buffer, store.state)
-  })
 }
 
 // 初始化live2d模型
