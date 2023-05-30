@@ -56,21 +56,6 @@ function createChattingShow() {
         )
     })
 
-    // 禁止拖动图片到外部
-    chatting.webContents.addListener('will-navigate', (event) => {
-        // 判断是否为图片拖动事件
-        if (event.sourceCapabilities.firesTouchEvents) {
-            event.preventDefault();
-        }
-    });
-
-    chatting.webContents.addListener('will-redirect', (event) => {
-        // 判断是否为图片拖动事件
-        if (event.sourceCapabilities.firesTouchEvents) {
-            event.preventDefault();
-        }
-    });
-
     // 监听closed事件后执行
     chatting.on('closed', () => { chatting = null })
 
