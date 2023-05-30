@@ -16,7 +16,7 @@ function createChattingShow() {
         minHeight: 600,
         skipTaskbar: false,
         alwaysOnTop: true,
-        transparent: false,
+        transparent: true,
         frame: false,
         resizable: false,
         icon: path.join(__dirname, '../../../assets/app_128.ico'),

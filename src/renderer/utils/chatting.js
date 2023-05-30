@@ -243,12 +243,18 @@ function showReply(str) {
 
     let originalTitle = $('#maximize').attr('title')
     let isTitleChanged = false
+    let chatMiddleSetHeight = $('.chat_middle')
+    let chatBottomSetHeight = $('.chat_bottom')
     $('#maximize').on('click', () => {
         ipcRenderer.send('closeChatting', 'maximize')
         if (isTitleChanged) {
+            chatMiddleSetHeight.css('height', '30rem')
+            chatBottomSetHeight.css('height', '10rem')
             $('#maximize').attr('title', originalTitle)
             isTitleChanged = false
         } else {
+            chatMiddleSetHeight.css('height', '50rem')
+            chatBottomSetHeight.css('height', '14rem')
             $('#maximize').attr('title', '还原')
             isTitleChanged = true
         }
