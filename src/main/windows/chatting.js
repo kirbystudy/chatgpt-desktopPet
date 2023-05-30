@@ -6,15 +6,17 @@ let chatting = null;
 // 创建chatting聊天窗口
 function createChattingShow() {
 
-    // 获取屏幕尺寸
-    const { width,height } = screen.getPrimaryDisplay().workAreaSize
+    // 设置窗口打开监听
+    var set_windth = screen.getPrimaryDisplay().workAreaSize.width
 
     chatting = new BrowserWindow({
-        width: width * 0.45,
-        height: height * 0.8,
+        width: parseInt((set_windth / 3) * 1.25),
+        height: parseInt((set_windth / 3) * 1.08),
+        minWidth: 800,
+        minHeight: 600,
         skipTaskbar: false,
-        alwaysOnTop: false,
-        transparent: true,
+        alwaysOnTop: true,
+        transparent: false,
         frame: false,
         resizable: false,
         icon: path.join(__dirname, '../../../assets/app_128.ico'),
@@ -25,6 +27,9 @@ function createChattingShow() {
             zoomFactor: 1
         }
     })
+
+    // 窗口在屏幕中央
+    chatting.center()
 
     // 加载本地文件
     chatting.loadFile(path.join(__dirname, '../../renderer/pages/chatting.html'))

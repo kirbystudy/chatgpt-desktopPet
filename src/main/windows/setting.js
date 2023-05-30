@@ -11,7 +11,7 @@ function createSettingShow() {
 
     settings = new BrowserWindow({
         width: parseInt(set_windth / 3),
-        height: parseInt(set_windth / 3) * 0.875,
+        height: parseInt((set_windth / 3) * 0.875),
         minWidth: 470,
         minHeight: 320,
         skipTaskbar: false,
@@ -19,13 +19,6 @@ function createSettingShow() {
         transparent: false,
         frame: false,
         resizable: false,
-        titleBarStyle: "hidden",
-        titleBarOverlay: {
-            color: "#202020",
-            symbolColor: "white"
-        },
-        resizable: true,
-        show: true,
         icon: path.join(__dirname, '../../../assets/app_128.ico'),
         webPreferences: {
             nodeIntegration: true,
@@ -37,7 +30,7 @@ function createSettingShow() {
 
     // 加载本地文件
     settings.loadFile(path.join(__dirname, '../../renderer/pages/setting.html'))
-
+    
     // 监听closed事件后执行
     settings.on('closed', () => { settings = null })
 

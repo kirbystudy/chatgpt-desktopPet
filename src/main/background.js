@@ -91,6 +91,22 @@ ipcMain.on('Setting', (event, arg) => {
       global.settings = createSettingShow()
     }
   }
+
+  if (arg == 'minimize') {
+    global.settings.minimize()
+  }
+
+  if (arg == 'maximize') {
+    if (global.settings.isMaximized()) {
+      global.settings.unmaximize()
+    } else {
+      global.settings.maximize()
+    }
+  }
+
+  if (arg == 'close') {
+    global.settings.close()
+  }
 })
 
 // ipc监听，打开日程表窗口
@@ -104,7 +120,20 @@ ipcMain.on('Schedule', (event, arg) => {
 
 // ipc监听，关闭日程表
 ipcMain.on('closeSchedule', (event, arg) => {
-  if (arg == 'Close') {
+
+  if (arg == 'minimize') {
+    global.schedule.minimize()
+  }
+
+  if (arg == 'maximize') {
+    if (global.schedule.isMaximized()) {
+      global.schedule.unmaximize()
+    } else {
+      global.schedule.maximize()
+    }
+  }
+
+  if (arg == 'close') {
     global.schedule.close()
   }
 })
@@ -120,7 +149,20 @@ ipcMain.on('Chatting', (event, arg) => {
 
 // ipc监听，关闭chat聊天窗口
 ipcMain.on('closeChatting', (event, arg) => {
-  if (arg == 'Close') {
+
+  if (arg == 'minimize') {
+    global.chatting.minimize()
+  }
+
+  if (arg == 'maximize') {
+    if (global.chatting.isMaximized()) {
+      global.chatting.unmaximize()
+    } else {
+      global.chatting.maximize()
+    }
+  }
+
+  if (arg == 'close') {
     global.chatting.close()
   }
 })

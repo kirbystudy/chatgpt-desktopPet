@@ -73,7 +73,22 @@
 }
 
 .close_btn img {
-    width: 30px;
+    width: 20px;
+}
+
+#minimize,
+#maximize,
+#close {
+    padding: 8px;
+}
+
+#minimize:hover,
+#maximize:hover {
+    background-color: #a3b5bb;
+}
+
+#close:hover {
+    background-color: #ff0000;
 }
 
 #coursesTable {

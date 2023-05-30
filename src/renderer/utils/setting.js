@@ -109,6 +109,31 @@ window.onload = function () {
   var package = require('../../../package.json')
   const app_version = document.getElementById('app_version')
   app_version.innerText = 'v' + package.version
+
+  const minimize = document.getElementById('minimize')
+  const maximize = document.getElementById('maximize')
+  const close = document.getElementById('close')
+
+  minimize.addEventListener('click', () => {
+    ipcRenderer.send('Setting', 'minimize')
+  })
+
+  let originalTitle = $('#maximize').attr('title')
+  let isTitleChanged = false
+  $('#maximize').on('click', () => {
+    ipcRenderer.send('Setting', 'maximize')
+    if (isTitleChanged) {
+      $('#maximize').attr('title', originalTitle)
+      isTitleChanged = false
+    } else {
+      $('#maximize').attr('title', '还原')
+      isTitleChanged = true
+    }
+  })
+
+  close.addEventListener('click', () => {
+    ipcRenderer.send('Setting', 'close')
+  })
 }
 
 var toggle_power = document.getElementById('toggle_power')

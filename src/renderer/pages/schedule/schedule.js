@@ -27,7 +27,7 @@ let num5 = friday.getMonth() + 1 + '/' + friday.getDate()
 let num6 = saturday.getMonth() + 1 + '/' + saturday.getDate()
 let num7 = sunday.getMonth() + 1 + '/' + sunday.getDate()
 
-var week =  [`周一\n${num1}` , `周二\n${num2}` , `周三\n${num3}`, `周四\n${num4}`, `周五\n${num5}`, `周六\n${num6}`, `周日\n${num7}`] 
+var week = [`周一\n${num1}`, `周二\n${num2}`, `周三\n${num3}`, `周四\n${num4}`, `周五\n${num5}`, `周六\n${num6}`, `周日\n${num7}`]
 var courseType = [
     [{ index: '1', name: '8:30' }, 1],
     [{ index: '2', name: '9:30' }, 1],
@@ -106,7 +106,25 @@ $(function () {
 
 
 window.onload = function () {
-    $('#close_btn').on('click', () => {
-        ipcRenderer.send('closeSchedule', 'Close')
+
+    $('#minimize').on('click', () => {
+        ipcRenderer.send('closeSchedule', 'minimize')
+    })
+
+    let originalTitle = $('#maximize').attr('title')
+    let isTitleChanged = false
+    $('#maximize').on('click', () => {
+        ipcRenderer.send('closeSchedule', 'maximize')
+        if (isTitleChanged) {
+            $('#maximize').attr('title', originalTitle)
+            isTitleChanged = false
+        } else {
+            $('#maximize').attr('title', '还原')
+            isTitleChanged = true
+        }
+    })
+
+    $('#close').on('click', () => {
+        ipcRenderer.send('closeSchedule', 'close')
     })
 }

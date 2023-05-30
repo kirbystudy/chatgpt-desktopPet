@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>chatgpt聊天</title>
+  <title>ChatGPT</title>
   <link rel="stylesheet" href="../style/prism.css">
   <link rel="stylesheet" href="../style/chatting.css">
   <link rel="stylesheet" href="../style/popup.css">
@@ -14,16 +14,15 @@
 
 <body>
   <div class="chat_comment">
-
     <div class="chat_top">
       <div class="title">ChatGPT</div>
       <div class="close_btn" id="close_btn">
-        <img src="../image/window-close.png" alt="">
+        <img id="minimize" src="../image/window-minimize.png" title="最小化">
+        <img id="maximize" src="../image/window-maximize.png" title="最大化">
+        <img id="close" src="../image/window-close.png" title="关闭">
       </div>
     </div>
-
     <div class="chat_middle" id="chat_middle_item"></div>
-
     <div class="chat_bottom">
       <textarea class="chat_context" id="chat_context_item" cols="30" rows="10" placeholder="请输入文字"></textarea>
       <div class="chat_commit" id="send_button">发送</div>

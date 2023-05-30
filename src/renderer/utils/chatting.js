@@ -12,7 +12,7 @@ const jsonContent = fs.readFileSync(configPath, 'utf-8')
 // 解析JSON
 const config = JSON.parse(jsonContent)
 
-function showChatting() {    
+function showChatting() {
     sending()
 }
 
@@ -143,7 +143,7 @@ function sending() {
 
 // 获取回复
 function getReply(str) {
-    
+
     const send_btn = document.getElementById('send_button')
 
     const formData = new FormData();
@@ -193,7 +193,7 @@ function showReply(str) {
         var answer = ''
 
         if (match) {
-            
+
             answer +=
                 `
             <div class="chat_left_item_1">
@@ -237,16 +237,27 @@ function showReply(str) {
 
 (function () {
 
-    const chatWindow = document.getElementById('chat_comment')
-    window.addEventListener('resize', () => {
-        ipcRenderer.send('resize-chat-window', chatWindow.offsetWidth, chatWindow.offsetHeight)
+    $('#minimize').on('click', () => {
+        ipcRenderer.send('closeChatting', 'minimize')
     })
 
-    $('#close_btn').on('click', () => {
-        ipcRenderer.send('closeChatting', 'Close')
+    let originalTitle = $('#maximize').attr('title')
+    let isTitleChanged = false
+    $('#maximize').on('click', () => {
+        ipcRenderer.send('closeChatting', 'maximize')
+        if (isTitleChanged) {
+            $('#maximize').attr('title', originalTitle)
+            isTitleChanged = false
+        } else {
+            $('#maximize').attr('title', '还原')
+            isTitleChanged = true
+        }
     })
 
-    
+    $('#close').on('click', () => {
+        ipcRenderer.send('closeChatting', 'close')
+    })
+
 })()
 
 ipcRenderer.on('openChatting', (event, data) => {
