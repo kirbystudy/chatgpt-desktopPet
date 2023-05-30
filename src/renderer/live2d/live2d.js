@@ -1,18 +1,18 @@
 async function createModel(store, view) {
 
-    store.model4 = await PIXI.live2d.Live2DModel.from(store.live2d);
+    store.model4 = await PIXI.live2d.Live2DModel.from(store.live2d)
     
     const app = new PIXI.Application({
         view: view,
         autoStart: true,
         resizeTo: window,
         backgroundAlpha: 0
-    });
+    })
 
-    app.stage.addChild(store.model4);
+    app.stage.addChild(store.model4)
 
     store.model4.y = 50
-    store.model4.scale.set(store.scale);
+    store.model4.scale.set(store.scale)
 
     if (store.model4.internalModel.coreModel._parameterIds.includes("ParamMouthOpenY")) {
         store.parameterIndex = store.model4.internalModel.coreModel.getParameterIndex("ParamMouthOpenY")

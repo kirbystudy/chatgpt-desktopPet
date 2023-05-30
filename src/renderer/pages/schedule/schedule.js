@@ -1,23 +1,23 @@
 const ipcRenderer = require('electron').ipcRenderer
 
-var courseList = [];
+var courseList = []
 
-var courseListOther = [];
+var courseListOther = []
 
 // 获取当前日期时间
-let date = new Date();
+let date = new Date()
 
 // 获取当前日期
-let weekDay = date.getDay();
+let weekDay = date.getDay()
 
 // 计算本周周一到周日的日期
-let monday = new Date(date.getTime() - (weekDay - 1) * 24 * 60 * 60 * 1000); // 本周周一的日期
-let tuesday = new Date(monday.getTime() + 1 * 24 * 60 * 60 * 1000); // 本周周二的日期
-let wednesday = new Date(monday.getTime() + 2 * 24 * 60 * 60 * 1000); // 本周周三的日期
-let thursday = new Date(monday.getTime() + 3 * 24 * 60 * 60 * 1000); // 本周周四的日期
-let friday = new Date(monday.getTime() + 4 * 24 * 60 * 60 * 1000); // 本周周五的日期
-let saturday = new Date(monday.getTime() + 5 * 24 * 60 * 60 * 1000); // 本周周六的日期
-let sunday = new Date(monday.getTime() + 6 * 24 * 60 * 60 * 1000); // 本周周日的日期
+let monday = new Date(date.getTime() - (weekDay - 1) * 24 * 60 * 60 * 1000) // 本周周一的日期
+let tuesday = new Date(monday.getTime() + 1 * 24 * 60 * 60 * 1000) // 本周周二的日期
+let wednesday = new Date(monday.getTime() + 2 * 24 * 60 * 60 * 1000) // 本周周三的日期
+let thursday = new Date(monday.getTime() + 3 * 24 * 60 * 60 * 1000) // 本周周四的日期
+let friday = new Date(monday.getTime() + 4 * 24 * 60 * 60 * 1000) // 本周周五的日期
+let saturday = new Date(monday.getTime() + 5 * 24 * 60 * 60 * 1000) // 本周周六的日期
+let sunday = new Date(monday.getTime() + 6 * 24 * 60 * 60 * 1000) // 本周周日的日期
 
 let num1 = monday.getMonth() + 1 + '/' + monday.getDate()
 let num2 = tuesday.getMonth() + 1 + '/' + tuesday.getDate()
@@ -44,7 +44,7 @@ var courseType = [
     [{ index: '13', name: '21:30' }, 1],
     [{ index: '14', name: '22:30' }, 1],
     [{ index: '15', name: '23:30' }, 1]
-];
+]
 var wType = [
     { index: '1', name: '8:30' },
     { index: '2', name: '9:30' },
@@ -61,23 +61,23 @@ var wType = [
     { index: '13', name: '21:30' },
     { index: '14', name: '22:30' },
     { index: '15', name: '23:30' },
-];
-var Timetable = null;
+]
+var Timetable = null
 
 $(function () {
     $.get('http://osu.natapp1.cc/qd/sch', function (resp) {
-        var data = JSON.parse(resp);
+        var data = JSON.parse(resp)
         for (let w = 1; w <= 7; w++) {
-            var c = data[w + ""];
-            var we = [];
+            var c = data[w + ""]
+            var we = []
             for (let i = 0; i < 15; i++) {
                 we.push(c[i].content)
             }
             if (w <= 5) {
-                courseList.push(we);
-                courseListOther.push(we);
+                courseList.push(we)
+                courseListOther.push(we)
             } else {
-                courseListOther.push(we);
+                courseListOther.push(we)
             }
         }
 
@@ -89,20 +89,16 @@ $(function () {
             timetableType: courseType,
             highlightWeek: weekDay,
             gridOnClick: function (e) {
-                var num = e.index - 1;
-                //var test = JSON.stringify(wType[num]);
-                //alert(test);
-                // alert(e.name + '  ' + e.week + ' ' + wType[num].name);
-
+                var num = e.index - 1
                 openPopup('秋蒂桌宠', e.name + ' ' + e.week.split('\n')[0] + ' ' + wType[num].name)
             },
             styles: {
                 Gheight: 50
             }
-        });
+        })
 
     })
-});
+})
 
 
 window.onload = function () {

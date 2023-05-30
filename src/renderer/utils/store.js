@@ -1,11 +1,11 @@
 class Store {
     constructor(state, mutations) {
-        this.state = state;
-        this.mutations = mutations;
+        this.state = state
+        this.mutations = mutations
     }
 
     dispatch(name, payload) {
-        this.mutations[name](this.state, payload);
+        this.mutations[name](this.state, payload)
     }
 }
 
@@ -15,7 +15,7 @@ const state = {
     scale: 0.18,
     percentage: parseFloat(13.0),
     parameterIndex: "",
-};
+}
 
 const mutations = {}
 

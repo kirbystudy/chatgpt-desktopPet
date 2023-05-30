@@ -10,10 +10,10 @@ async function loadAudio(buffer, store) {
         .then((decodeData) => {
 
             // 创建音频控制节点
-            const gainNode = audioCtx.createGain();
+            const gainNode = audioCtx.createGain()
 
             // 将增益节点连接到输出设备
-            gainNode.connect(audioCtx.destination);
+            gainNode.connect(audioCtx.destination)
 
             // 设置音量级别在 0 到 1 之间
             gainNode.gain.value = 0.5
@@ -23,7 +23,7 @@ async function loadAudio(buffer, store) {
             source.buffer = decodeData
 
             // 将缓冲区源节点连接到音量控制节点和输出设备
-            source.connect(gainNode);
+            source.connect(gainNode)
 
             // 连接 音频分析器
             source.connect(analyser)
@@ -59,25 +59,25 @@ function run() {
 }
 
 function setMouthOpenY(v) {
-    v = Math.max(0, Math.min(1, v));
+    v = Math.max(0, Math.min(1, v))
     store.state.model4.internalModel.coreModel.setParameterValueByIndex(store.state.parameterIndex, v, 1, true)
 }
 
 function createAnalyser() {
     // 创建音频上下文
-    audioCtx = new AudioContext();
+    audioCtx = new AudioContext()
 
     // 新建分析仪
-    analyser = audioCtx.createAnalyser();
+    analyser = audioCtx.createAnalyser()
 
     // 根据 频率分辨率建立个 Uint8Array 数组备用
-    frequencyData = new Uint8Array(analyser.frequencyBinCount);
+    frequencyData = new Uint8Array(analyser.frequencyBinCount)
 
     // 取音频文件成 arraybuffer
 }
 
 function getByteFrequencyData() {
-    analyser.getByteFrequencyData(frequencyData);
+    analyser.getByteFrequencyData(frequencyData)
     return frequencyData
 }
 

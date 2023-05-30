@@ -237,5 +237,5 @@ app.on('window-all-closed', () => {
 
 app.on('will-quit', () => {
   // 注销所有全局快捷键
-  globalShortcut.unregisterAll();
-});
+  globalShortcut.unregisterAll()
+})

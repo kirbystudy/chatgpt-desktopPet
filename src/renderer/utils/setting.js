@@ -56,16 +56,18 @@ feedbackBtn.addEventListener('click', () => {
   const count = message.value.length
   if (count > 200) {
     openPopup('秋蒂桌宠', '字数超过了200字')
+    return
   }
   var str = message.value
 
   if (str.length == 0) {
     openPopup('秋蒂桌宠', '留言内容不能为空!')
+    return
   }
 
   if (str.length > 0) {
-    const formData = new FormData();
-    formData.append('content', str);
+    const formData = new FormData()
+    formData.append('content', str)
 
     const currentTime = new Date().getTime()
 
@@ -100,7 +102,7 @@ feedbackBtn.addEventListener('click', () => {
         setTimeout(() => {
           // 重置计时器
           lastRequestTime = 0
-        }, 5000);
+        }, 5000)
       })
   }
 })
@@ -144,11 +146,11 @@ isToggleOn ? toggle_power.checked = true : toggle_power.checked = false
 
 toggle_power.addEventListener('click', () => {
 
-  let newToggleOn = !isToggleOn;
+  let newToggleOn = !isToggleOn
   const enabled = toggle_power.checked
   ipcRenderer.send('toggle_power', enabled)
   newToggleOn ? toggle_power.checked = true : toggle_power.checked = false
-  localStorage.setItem('isToggleOn', newToggleOn);
+  localStorage.setItem('isToggleOn', newToggleOn)
 })
 
 // 监听主进程反馈以更新开关状态

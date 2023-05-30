@@ -39,7 +39,7 @@ function sending() {
 
             send_btn.classList.add('disabled')
             send_btn.innerHTML = ''
-            send_btn.classList.add("loading");
+            send_btn.classList.add("loading")
 
 
             if (str.length > 0) {
@@ -89,6 +89,11 @@ function sending() {
     send_btn.addEventListener('click', () => {
 
         var str = message.value
+
+        if (str.length >= 500) {
+            openPopup('秋蒂桌宠', '字数限制在500字内')
+            return
+        }
         if (str.length == 0) {
             openPopup('秋蒂桌宠', '文本内容不能为空!')
             return
@@ -96,21 +101,21 @@ function sending() {
 
         send_btn.classList.add('disabled')
         send_btn.innerHTML = ''
-        send_btn.classList.add("loading");
+        send_btn.classList.add("loading")
 
-        if (str.length > 0) {
-            var date = new Date()
-            var hour = date.getHours()
-            var minute = date.getMinutes()
-            var time = ''
-            if (minute < 10) {
-                time = hour + ':0' + minute
-            } else {
-                time = hour + ':' + minute
-            }
 
-            var answer =
-                `
+        var date = new Date()
+        var hour = date.getHours()
+        var minute = date.getMinutes()
+        var time = ''
+        if (minute < 10) {
+            time = hour + ':0' + minute
+        } else {
+            time = hour + ':' + minute
+        }
+
+        var answer =
+            `
                 <div class="chat_right_item_1">
                     <img src="../image/user.png">
                 </div>
@@ -120,24 +125,24 @@ function sending() {
                 </div>
                 `
 
-            var oLi = document.createElement('div')
-            oLi.setAttribute('class', 'chat_right clearfix')
-            oLi.innerHTML = answer
+        var oLi = document.createElement('div')
+        oLi.setAttribute('class', 'chat_right clearfix')
+        oLi.innerHTML = answer
 
-            send_message.append(oLi)
+        send_message.append(oLi)
 
-            // 清空消息框
-            message.value = ''
+        // 清空消息框
+        message.value = ''
 
-            // 保存信息
-            ipcRenderer.send('push_chattingText', { 'user': 'ME', 'time': time, 'text': str })
+        // 保存信息
+        ipcRenderer.send('push_chattingText', { 'user': 'ME', 'time': time, 'text': str })
 
-            // 滚动条
-            send_message.scrollTop = send_message.scrollHeight
+        // 滚动条
+        send_message.scrollTop = send_message.scrollHeight
 
-            // 请求chatgpt接口
-            getReply(str)
-        }
+        // 请求chatgpt接口
+        getReply(str)
+
     })
 }
 
@@ -146,9 +151,9 @@ function getReply(str) {
 
     const send_btn = document.getElementById('send_button')
 
-    const formData = new FormData();
-    formData.append('ruleType', config.gpt.ruleType);
-    formData.append('command', str);
+    const formData = new FormData()
+    formData.append('ruleType', config.gpt.ruleType)
+    formData.append('command', str)
 
     fetch(`${config.gpt.url}`, {
         method: 'POST',
@@ -174,7 +179,6 @@ function getReply(str) {
 
 // 显示回复
 function showReply(str) {
-    console.log(str)
     if (str.length > 0) {
         var reply_message = document.getElementById('chat_middle_item')
         var date = new Date()

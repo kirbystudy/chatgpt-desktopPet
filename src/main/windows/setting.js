@@ -1,7 +1,7 @@
 const { BrowserWindow, screen } = require('electron')
 const path = require('path')
 
-let settings = null;
+let settings = null
 
 // 创建设置窗口
 function createSettingShow() {

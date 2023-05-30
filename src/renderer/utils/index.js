@@ -112,7 +112,7 @@ function hideMessage(timeout) {
 
 function getGreeting() {
   // 获取当前时间的小时数
-  const hour = new Date().getHours();
+  const hour = new Date().getHours()
 
   if (hour >= 0 && hour <= 5) {
     return '凌晨好'

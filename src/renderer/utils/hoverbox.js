@@ -6,6 +6,6 @@ hover_box.addEventListener('click', () => {
     setTimeout(() => {
         ipcRenderer.send('MainPage', 'Show')
         ipcRenderer.send('hoverBox', 'Close')
-    }, 500);
+    }, 500)
 
 })

@@ -1,7 +1,7 @@
 const { BrowserWindow, screen } = require('electron')
 const path = require('path')
 
-let sch = null;
+let sch = null
 
 // 创建日程表窗口
 function createScheduleShow() {

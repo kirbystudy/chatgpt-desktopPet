@@ -1,7 +1,7 @@
 const { BrowserWindow, screen } = require('electron')
 const path = require('path')
 
-let chatting = null;
+let chatting = null
 
 // 创建chatting聊天窗口
 function createChattingShow() {
