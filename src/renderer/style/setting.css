@@ -82,6 +82,10 @@ html {
 
 .close_btn img {
   width: 20px;
+  -webkit-user-drag: none;
+  -moz-user-drag: none;
+  -ms-user-drag: none;
+  user-drag: none;
 }
 
 #minimize,

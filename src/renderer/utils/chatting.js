@@ -254,11 +254,13 @@ function showReply(str) {
         if (isTitleChanged) {
             chatMiddleSetHeight.css('height', '30rem')
             chatBottomSetHeight.css('height', '10rem')
+            $('.chat_top').css('-webkit-app-region', 'drag')
             $('#maximize').attr('title', originalTitle)
             isTitleChanged = false
         } else {
             chatMiddleSetHeight.css('height', '50rem')
             chatBottomSetHeight.css('height', '14rem')
+            $('.chat_top').css('-webkit-app-region', 'no-drag')
             $('#maximize').attr('title', '还原')
             isTitleChanged = true
         }
