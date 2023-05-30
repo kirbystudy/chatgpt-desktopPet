@@ -143,7 +143,7 @@ function sending() {
 
 // 获取回复
 function getReply(str) {
-
+    
     const send_btn = document.getElementById('send_button')
 
     const formData = new FormData();
@@ -174,6 +174,7 @@ function getReply(str) {
 
 // 显示回复
 function showReply(str) {
+    console.log(str)
     if (str.length > 0) {
         var reply_message = document.getElementById('chat_middle_item')
         var date = new Date()
@@ -192,10 +193,7 @@ function showReply(str) {
         var answer = ''
 
         if (match) {
-            const content_1 = match[1]
-            const code = match[2]
-            const content_2 = match[3]
-            const content_3 = match[4]
+            
             answer +=
                 `
             <div class="chat_left_item_1">
@@ -204,10 +202,7 @@ function showReply(str) {
             <div class="chat_left_item_2">
                 <div class="chat_left_time">${time}</div>
                 <div class="chat_left_content">
-                    <pre><code>${content_1}</code></pre>
-                    <pre><code>${code}</code></pre>
-                    <pre><code>${content_2}</code></pre>
-                    <pre><code>${content_3}</code></pre>
+                    <pre><code>${str}</code></pre>
                 </div>
             </div>
             `
@@ -241,9 +236,17 @@ function showReply(str) {
 }
 
 (function () {
+
+    const chatWindow = document.getElementById('chat_comment')
+    window.addEventListener('resize', () => {
+        ipcRenderer.send('resize-chat-window', chatWindow.offsetWidth, chatWindow.offsetHeight)
+    })
+
     $('#close_btn').on('click', () => {
         ipcRenderer.send('closeChatting', 'Close')
     })
+
+    
 })()
 
 ipcRenderer.on('openChatting', (event, data) => {

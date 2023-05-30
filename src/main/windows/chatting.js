@@ -1,4 +1,4 @@
-const { BrowserWindow } = require('electron')
+const { BrowserWindow, screen } = require('electron')
 const path = require('path')
 
 let chatting = null;
@@ -6,9 +6,12 @@ let chatting = null;
 // 创建chatting聊天窗口
 function createChattingShow() {
 
+    // 获取屏幕尺寸
+    const { width,height } = screen.getPrimaryDisplay().workAreaSize
+
     chatting = new BrowserWindow({
-        width: 480,
-        height: 680,
+        width: width * 0.45,
+        height: height * 0.8,
         skipTaskbar: false,
         alwaysOnTop: false,
         transparent: true,
