@@ -18,6 +18,9 @@ function showChatting() {
     sending()
 }
 
+// 标记是否可以发送请求
+let canSendRequest = true;
+
 function sending() {
     var send_message = document.getElementById('chat_middle_item')
     const send_btn = document.getElementById('send_button')
@@ -34,15 +37,22 @@ function sending() {
             event.preventDefault()
 
             var str = message.value
+
+            if (str.length >= 500) {
+                openPopup('秋蒂桌宠', '字数限制在500字内')
+                message.value = ''
+                return
+            }
             if (str.length == 0) {
                 openPopup('秋蒂桌宠', '文本内容不能为空!')
                 return
             }
 
-            send_btn.classList.add('disabled')
-            send_btn.innerHTML = ''
-            send_btn.classList.add("loading")
-
+            if (!canSendRequest) {
+                openPopup('秋蒂桌宠', '请等待至少5秒钟再尝试发送请求')
+                message.value = ''
+                return
+            }
 
             if (str.length > 0) {
                 var date = new Date()
@@ -94,6 +104,7 @@ function sending() {
 
         if (str.length >= 500) {
             openPopup('秋蒂桌宠', '字数限制在500字内')
+            message.value = ''
             return
         }
         if (str.length == 0) {
@@ -101,10 +112,11 @@ function sending() {
             return
         }
 
-        send_btn.classList.add('disabled')
-        send_btn.innerHTML = ''
-        send_btn.classList.add("loading")
-
+        if (!canSendRequest) {
+            openPopup('秋蒂桌宠', '请等待至少5秒钟再尝试发送请求')
+            message.value = ''
+            return
+        }
 
         var date = new Date()
         var hour = date.getHours()
@@ -148,14 +160,23 @@ function sending() {
     })
 }
 
+// 保存上一次的用户信息
+let lastUserMessage = ''
+
 // 获取回复
 function getReply(str) {
 
     const send_btn = document.getElementById('send_button')
 
+    send_btn.classList.add('disabled')
+    send_btn.innerHTML = ''
+    send_btn.classList.add("loading")
+
     const formData = new FormData()
     formData.append('ruleType', config.gpt.ruleType)
     formData.append('command', str)
+
+    lastUserMessage = str
 
     fetch(`${config.gpt.url}`, {
         method: 'POST',
@@ -166,7 +187,21 @@ function getReply(str) {
             return response.text()
         })
         .then(data => {
-            showReply(data)
+            if (data === '啾咪~晚上好呀，Q蒂派的小可爱们！今天的直播准备好了吗？') {
+                showReply('秋蒂正拼命思考中，请稍后再试or点击重试按钮再发一次，啾咪~')
+                appendMessage(str)
+            } else {
+                showReply(data)
+            }
+
+            // 设置发送请求的等待时间（毫秒）
+            const requestWaitTime = 5000; // 5秒
+            canSendRequest = false;
+
+            // 在指定的等待时间后设置 canSendRequest 为 true，允许发送下一个请求
+            setTimeout(() => {
+                canSendRequest = true;
+            }, requestWaitTime);
         })
         .catch(error => {
             // 处理错误
@@ -177,6 +212,25 @@ function getReply(str) {
             send_btn.innerHTML = '发送'
             send_btn.classList.remove('loading')
         })
+}
+
+// 聊天日志中追加消息
+function appendMessage(message) {
+    const chat_right_content = document.querySelectorAll('.chat_right_content')
+
+    // 添加重发按钮
+    const resendButton = document.createElement('img')
+    resendButton.src = '../image/repeat.png'
+    resendButton.title = '重发'
+    resendButton.classList.add('resend_button')
+    resendButton.addEventListener('click', () => {
+        getReply(lastUserMessage)
+    })
+    
+    // 将消息和重发按钮添加到聊天日志
+    chat_right_content.forEach((item) => {
+        item.appendChild(resendButton);
+    })
 }
 
 // 显示回复
