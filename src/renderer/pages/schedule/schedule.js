@@ -1,7 +1,5 @@
 const ipcRenderer = require('electron').ipcRenderer
 
-var courseList = []
-
 var courseListOther = []
 
 // 获取当前日期时间
@@ -74,7 +72,6 @@ $(function () {
                 we.push(c[i].content)
             }
             if (w <= 5) {
-                courseList.push(we)
                 courseListOther.push(we)
             } else {
                 courseListOther.push(we)

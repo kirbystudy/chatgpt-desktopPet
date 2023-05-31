@@ -270,6 +270,14 @@ function showReply(str) {
         ipcRenderer.send('closeChatting', 'close')
     })
 
+    var screenWidth = window.screen.width
+    var screenHieght = window.screen.height
+
+    if(screenWidth == 1366 && screenHieght == 768) {
+        chatMiddleSetHeight.css('height', '20rem')
+        chatBottomSetHeight.css('height', '10rem')
+    }
+
 })()
 
 ipcRenderer.on('openChatting', (event, data) => {

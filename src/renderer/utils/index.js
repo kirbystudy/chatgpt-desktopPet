@@ -65,16 +65,16 @@ window.onload = function () {
 
   const hide = document.getElementById('hide')
   hide.addEventListener('click', () => {
-    showMessage("已进入专注模式，右下角有悬浮小球", 3000)
+    showMessage("已进入专注模式，右下角有悬浮小球", 3000, true)
     setTimeout(() => {
       ipcRenderer.send('MainPage', 'Hide')
     }, 1300)
 
     setTimeout(() => {
       ipcRenderer.send('hoverBox', 'Open')
-      showMessage("我回来啦", 3000)
+      showMessage("我回来啦", 3000, true)
     }, 1300)
-    
+
   })
 
   draggableHandle()
@@ -89,6 +89,21 @@ window.onload = function () {
     control_btn.style.opacity = 0
   })
 
+  const control_item = document.querySelectorAll('.control_item')
+  control_item.forEach(item => {
+    item.addEventListener('mouseover', (event) => {
+      if (event.target.innerText == '日程表') {
+        showMessage('要打开日程表吗?', 1500, true)
+      } else if (event.target.innerText == '对话框') {
+        showMessage('要打开对话框吗?', 1500, true)
+      } else if (event.target.innerText == '关于') {
+        showMessage('要打开设置吗?', 1500, true)
+      } else if (event.target.innerText == '隐藏') {
+        showMessage('要隐藏模型吗?', 1500, true)
+      }
+    })
+  })
+
 }
 
 // 初始化live2d模型
@@ -98,15 +113,25 @@ function loadLive2D() {
 
 // 显示消息框
 function showMessage(text, timeout, flag) {
-  $('#message_box').html(text).fadeTo(200, 1)
-  if (timeout === undefined) timeout = 5000
-  hideMessage(timeout)
+  if (flag || sessionStorage.getItem('message-text') === '' || sessionStorage.getItem('message-text') === null) {
+    if (flag) {
+      sessionStorage.setItem('message-text', text)
+    }
+    $('#message_box').stop()
+    $('#message_box').html(text).fadeTo(200, 1)
+    if (timeout === undefined) timeout = 5000
+    hideMessage(timeout)
+  }
+
 }
 
 // 隐藏消息框
 function hideMessage(timeout) {
   $('#message_box').stop().css('opacity', 1)
   if (timeout === undefined) timeout = 5000
+  window.setTimeout(() => {
+    sessionStorage.removeItem('message-text')
+  }, timeout)
   $('#message_box').delay(timeout).fadeTo(200, 0)
 }
 
@@ -137,7 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   setTimeout(() => {
     const greeting = getGreeting()
-    showMessage(greeting)
+    showMessage(greeting, 3000, true)
   }, 2000)
 })
 
@@ -166,7 +191,7 @@ function draggableHandle() {
   })
 
   window.addEventListener('mousemove', (event) => {
-    
+
     // 按下鼠标并移动, 拖动操作为true
     if (mousedown_left) {
       dragging = true

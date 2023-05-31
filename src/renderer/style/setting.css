@@ -326,7 +326,7 @@ input:checked+.slider:before {
 .feedback {
   width: 100%;
   height: 100%;
-  font-size: 16px;
+  font-size: 14px;
   padding: 10px;
   margin-top: 8px;
   margin-left: 3px;
@@ -335,12 +335,20 @@ input:checked+.slider:before {
   border-width: 0;
   resize: none;
   border-radius: 7px;
+  border: 1px solid #202020;
+  background-color: #f4f5f7;
+}
+
+.feedback::placeholder {
+  font-size: 14px;
 }
 
 .word_count {
+  position: absolute;
   font-size: 14px;
   padding-top: 5px;
   padding-left: 5px;
+  color: #202020;
 }
 
 .clear_text {
