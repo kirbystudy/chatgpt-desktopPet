@@ -187,7 +187,7 @@ function getReply(str) {
             return response.text()
         })
         .then(data => {
-            if (data === '啾咪~晚上好呀，Q蒂派的小可爱们！今天的直播准备好了吗？') {
+            if (data === '系统繁忙，请稍后再试') {
                 showReply('秋蒂正拼命思考中，请稍后再试or点击重试按钮再发一次，啾咪~')
                 appendMessage(str)
             } else {
