@@ -11,8 +11,8 @@ class Store {
 
 const state = {
     model4: "",
-    live2d: "../../../model/血小板/血小板.model.json",
-    scale: 0.18,
+    live2d: "../../../model/hiyori_pro/hiyori_pro.model3.json",
+    scale: 0.1,
     percentage: parseFloat(13.0),
     parameterIndex: "",
 }

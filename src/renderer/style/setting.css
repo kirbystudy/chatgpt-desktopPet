@@ -34,8 +34,6 @@ html {
 }
 
 .container {
-  margin: 0px;
-  padding: 0;
   position: absolute;
   color: aliceblue;
   background-color: #f4f5f7;

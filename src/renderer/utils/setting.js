@@ -138,27 +138,44 @@ window.onload = function () {
   })
 }
 
-var toggle_power = document.getElementById('toggle_power')
+// 获取开关按钮元素
+const toggle_power = document.getElementById('toggle_power')
+// 从 localStorage 中获取开关状态，默认为 false
+let isToggleOn = localStorage.getItem('isToggleOn') === 'true'
 
-const isToggleOn = localStorage.getItem('isToggleOn') === 'true'
+// 初始化时更新开关状态
+updateToggleStatus()
 
-isToggleOn ? toggle_power.checked = true : toggle_power.checked = false
-
-toggle_power.addEventListener('click', () => {
-
-  let newToggleOn = !isToggleOn
-  const enabled = toggle_power.checked
-  ipcRenderer.send('toggle_power', enabled)
-  newToggleOn ? toggle_power.checked = true : toggle_power.checked = false
-  localStorage.setItem('isToggleOn', newToggleOn)
-})
+// 点击开关按钮时触发的事件处理函数
+toggle_power.addEventListener('click', toggleSwitch)
 
 // 监听主进程反馈以更新开关状态
 ipcRenderer.on('toggle_power_status', (event, isEnabled) => {
-  toggle_power.checked = isEnabled
-  if (isEnabled) {
-    openPopup('秋蒂桌宠', '已成功开启')
-  } else {
-    openPopup('秋蒂桌宠', '已成功关闭')
-  }
-})
+  // 更新开关状态
+  isToggleOn = isEnabled
+  // 更新开关按钮状态
+  updateToggleStatus()
+  // 根据开关状态显示不同的消息提示
+  const message = isEnabled ? '已成功开启' : '已成功关闭'
+  // 打开弹窗
+  openPopup('秋蒂桌宠', message)
+});
+
+// 切换开关状态的函数
+function toggleSwitch() {
+  // 反转开关状态
+  isToggleOn = !isToggleOn
+  // 获取最新的开关状态
+  const enabled = isToggleOn
+  // 发送开关状态给主进程
+  ipcRenderer.send('toggle_power', enabled)
+  // 更新开关按钮状态
+  updateToggleStatus()
+  // 将最新的开关状态保存到 localStorage 中
+  localStorage.setItem('isToggleOn', isToggleOn)
+}
+
+// 更新开关按钮状态的函数
+function updateToggleStatus() {
+  toggle_power.checked = isToggleOn
+}

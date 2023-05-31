@@ -1,5 +1,7 @@
 const ipcRenderer = require('electron').ipcRenderer
+const screen = require('../utils/screen')
 window.$ = window.jQuery = require('../utils/jquery.min.js')
+
 
 // 引入 fs 和 path 模块
 const fs = require('fs')
@@ -252,17 +254,61 @@ function showReply(str) {
     $('#maximize').on('click', () => {
         ipcRenderer.send('closeChatting', 'maximize')
         if (isTitleChanged) {
-            chatMiddleSetHeight.css('height', '30rem')
-            chatBottomSetHeight.css('height', '10rem')
-            $('.chat_top').css('-webkit-app-region', 'drag')
-            $('#maximize').attr('title', originalTitle)
-            isTitleChanged = false
+            screen.getScreenInfo((screenInfo) => {
+                console.log(screenInfo.width, screenInfo.height, screenInfo.scalingFactor)
+                if (screenInfo.width == 1366 && screenInfo.height == 768) {
+                    chatMiddleSetHeight.css('height', '20rem')
+                    chatBottomSetHeight.css('height', '10rem')
+                    $('.chat_top').css('-webkit-app-region', 'drag')
+                    $('#maximize').attr('title', originalTitle)
+                    isTitleChanged = false
+                }
+
+                if (screenInfo.width == 1280 && screenInfo.height == 720 && screenInfo.scalingFactor == 1.5) {
+                    chatMiddleSetHeight.css('height', '20rem')
+                    chatBottomSetHeight.css('height', '10rem')
+                    $('.chat_top').css('-webkit-app-region', 'drag')
+                    $('#maximize').attr('title', originalTitle)
+                    isTitleChanged = false
+                }
+
+                if (screenInfo.width == 1920 && screenInfo.height == 1080 && screenInfo.scalingFactor == 1) {
+                    chatMiddleSetHeight.css('height', '26rem')
+                    chatBottomSetHeight.css('height', '14rem')
+                    $('.chat_top').css('-webkit-app-region', 'drag')
+                    $('#maximize').attr('title', '还原')
+                    isTitleChanged = false
+                }
+            })
+
         } else {
-            chatMiddleSetHeight.css('height', '50rem')
-            chatBottomSetHeight.css('height', '14rem')
-            $('.chat_top').css('-webkit-app-region', 'no-drag')
-            $('#maximize').attr('title', '还原')
-            isTitleChanged = true
+            screen.getScreenInfo((screenInfo) => {
+                console.log(screenInfo.width, screenInfo.height, screenInfo.scalingFactor)
+                if (screenInfo.width == 1366 && screenInfo.height == 768) {
+                    chatMiddleSetHeight.css('height', '28rem')
+                    chatBottomSetHeight.css('height', '10rem')
+                    $('.chat_top').css('-webkit-app-region', 'no-drag')
+                    $('#maximize').attr('title', '还原')
+                    isTitleChanged = true
+                }
+
+                if (screenInfo.width == 1280 && screenInfo.height == 720 && screenInfo.scalingFactor == 1.5) {
+                    chatMiddleSetHeight.css('height', '32rem')
+                    chatBottomSetHeight.css('height', '10rem')
+                    $('.chat_top').css('-webkit-app-region', 'no-drag')
+                    $('#maximize').attr('title', '还原')
+                    isTitleChanged = true
+                }
+
+                if (screenInfo.width == 1920 && screenInfo.height == 1080 && screenInfo.scalingFactor == 1) {
+                    chatMiddleSetHeight.css('height', '51rem')
+                    chatBottomSetHeight.css('height', '13rem')
+                    $('.chat_top').css('-webkit-app-region', 'no-drag')
+                    $('#maximize').attr('title', '还原')
+                    isTitleChanged = true
+                }
+            })
+
         }
     })
 
@@ -270,13 +316,12 @@ function showReply(str) {
         ipcRenderer.send('closeChatting', 'close')
     })
 
-    var screenWidth = window.screen.width
-    var screenHieght = window.screen.height
-
-    if(screenWidth == 1366 && screenHieght == 768) {
-        chatMiddleSetHeight.css('height', '20rem')
-        chatBottomSetHeight.css('height', '10rem')
-    }
+    screen.getScreenInfo((screenInfo) => {
+        if (screenInfo.width == 1280 && screenInfo.height == 720 && screenInfo.scalingFactor == 1.5) {
+            chatMiddleSetHeight.css('height', '20rem')
+            chatBottomSetHeight.css('height', '10rem')
+        }
+    })
 
 })()
 
