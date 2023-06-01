@@ -145,16 +145,12 @@ ipcMain.on('Chatting', (event, arg) => {
       global.chatting = createChattingShow()
     }
   }
-})
 
-// ipc监听，关闭chat聊天窗口
-ipcMain.on('closeChatting', (event, arg) => {
-
-  if (arg == 'minimize') {
+  if (arg == 'minimize-window') {
     global.chatting.minimize()
   }
 
-  if (arg == 'maximize') {
+  if (arg == 'maximize-window') {
     if (global.chatting.isMaximized()) {
       global.chatting.unmaximize()
     } else {
@@ -162,9 +158,10 @@ ipcMain.on('closeChatting', (event, arg) => {
     }
   }
 
-  if (arg == 'close') {
+  if (arg == 'close-window') {
     global.chatting.close()
   }
+
 })
 
 // ipc监听，发送vits语音
@@ -212,6 +209,7 @@ ipcMain.on('toggle_power', (event, enabled) => {
   const isEnabled = app.getLoginItemSettings().openAtLogin
   global.settings.webContents.send('toggle_power_status', isEnabled)
 })
+
 
 // 当Electron完成时，将调用此方法
 // 初始化，并准备创建浏览器窗口。

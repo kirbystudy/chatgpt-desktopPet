@@ -16,7 +16,7 @@ function createWindow() {
         skipTaskbar: true,         // 是否在任务栏中显示窗口
         frame: false,              // 设置为 false 时可以创建一个无边框窗口  
         transparent: true,         // 窗口透明
-        alwaysOnTop: true,         // 窗口是否永远在别的窗口的上面
+        alwaysOnTop: false,         // 窗口是否永远在别的窗口的上面
         resizable: false,          // 窗口大小是否可调整
         webPreferences: {
             enableRemoteModule: true,   // 允许使用remote

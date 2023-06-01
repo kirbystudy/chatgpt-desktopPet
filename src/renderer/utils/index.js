@@ -24,11 +24,9 @@ window.onload = function () {
     ipcRenderer.send('Setting', 'Open')
   })
 
-
   schedule.addEventListener('click', () => {
     ipcRenderer.send('Schedule', 'Open')
   })
-
 
   chatting.addEventListener('click', () => {
     ipcRenderer.send('Chatting', 'Open')

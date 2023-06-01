@@ -1,23 +1,73 @@
-const overlay = document.getElementById('overlay')
-const popup = document.getElementById('popup')
-const closeButton = document.getElementById('close-button')
-const title = document.getElementById('popup-title')
-const content = document.getElementById('popup-content')
+class PopupComponent {
+    constructor() {
+        this.overlay = null
+        this.popup = null
+        this.closeButton = null
+        this.title = null
+        this.content = null
 
-function openPopup(titleText, contentText) {
-    title.innerText = titleText
-    content.innerText = contentText
-    overlay.style.display = 'block'
-}
+        this.createPopup()
 
-function closePopup() {
-    overlay.style.display = 'none'
-}
-
-closeButton.addEventListener('click', closePopup)
-
-overlay.addEventListener('click', function (event) {
-    if (event.target === overlay) {
-        closePopup()
+        this.closeButton.addEventListener('click', this.closePopup.bind(this))
+        // this.overlay.addEventListener('click', this.handleOverlayClick.bind(this))
     }
-})
+
+    createPopup() {
+        this.overlay = document.createElement('div')
+        this.overlay.id = 'overlay'
+
+        this.popup = document.createElement('div')
+        this.popup.id = 'popup'
+
+        const popupHeader = document.createElement('div')
+        popupHeader.id = 'popup-header'
+
+        this.title = document.createElement('h3')
+        this.title.id = 'popup-title'
+        popupHeader.appendChild(this.title)
+
+        this.closeButton = document.createElement('button')
+        this.closeButton.id = 'close-button'
+        const closeButtonImg = document.createElement('img')
+        closeButtonImg.src = this.getImagePath('../../image/window-close.png', '../image/window-close.png')
+
+        this.closeButton.appendChild(closeButtonImg)
+        popupHeader.appendChild(this.closeButton)
+
+        this.content = document.createElement('div')
+        this.content.id = 'popup-content'
+        const paragraphElement = document.createElement('p')
+        this.content.appendChild(paragraphElement)
+
+        this.popup.appendChild(popupHeader)
+        this.popup.appendChild(this.content)
+
+        this.overlay.appendChild(this.popup)
+        document.body.appendChild(this.overlay)
+    }
+
+    openPopup(titleText, contentText) {
+        this.title.innerText = titleText
+        this.content.firstChild.innerText = contentText
+        this.overlay.style.display = 'block'
+    }
+
+    closePopup() {
+        this.overlay.style.display = 'none'
+    }
+
+    // 点击外部元素关闭弹窗
+    // handleOverlayClick(event) {
+    //     if (event.target === this.overlay) {
+    //         this.closePopup()
+    //     }
+    // }
+
+    getImagePath(imagePath, fallbackPath) {
+        const img = new Image()
+        if (img.width === 0) {
+            return fallbackPath
+        }
+        return imagePath
+    }
+}

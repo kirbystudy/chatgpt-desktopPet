@@ -1,16 +1,19 @@
 * {
+    box-sizing: border-box;
     margin: 0;
     padding: 0;
 }
 
-html {
-    width: 100vw;
-    height: 100vh;
-    overflow: hidden;
+ul.messages {
+    margin: 0;
+    overflow-y: scroll;
+    padding-bottom: 100px;
+    list-style: none;
+    height: 90%;
 }
 
 /* 滚动条整体样式 */
-::-webkit-scrollbar {
+ul.messages::-webkit-scrollbar {
     /* 滚动条宽度 */
     width: 4px;
     /* 滚动条高度 */
@@ -20,230 +23,577 @@ html {
 }
 
 /* 滚动条轨道样式 */
-::-webkit-scrollbar-track {
+ul.messages::-webkit-scrollbar-track {
     /* 滚动条轨道背景色 */
     background-color: #f5f5f5;
 }
 
 /* 滚动条滑块样式 */
-::-webkit-scrollbar-thumb {
+ul.messages::-webkit-scrollbar-thumb {
     /* 滚动条滑块颜色 */
     background-color: #BCBCD2;
     /* 滚动条滑块四个圆角半径 */
     border-radius: 4px;
 }
 
-/* 滚动条边框样式 */
-::-webkit-scrollbar-corner {
-    /* 滚动条边角背景色 */
-    background-color: #f5f5f5;
-}
-
-/* 检测滚动容器是否滚动，滚动时设置滚动条可见 */
-*:hover::-webkit-scrollbar-thumb {
-    background-color: #BCBCD2;
-}
-
-/* 设置滚动条不可见 */
-*:not(:hover)::-webkit-scrollbar-thumb {
-    background-color: transparent;
-}
-
-.chat_comment {
+.chat_window {
+    position: absolute;
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
     border-radius: 10px;
-    background-color: #f4f5f7;
+    background-color: #fff;
+    left: 50%;
+    top: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    background-color: #f8f8f8;
+    overflow: hidden;
 }
 
-.chat_top {
-    height: 50px;
-    line-height: 50px;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-    padding-left: 20px;
-    box-sizing: border-box;
-    border-width: 0;
-    background-color: #e4e5e7;
+.top_menu {
+    background-color: #fff;
+    width: 100%;
+    padding: 20px 0 15px;
+    box-shadow: 0 1px 30px rgba(0, 0, 0, 0.1);
     -webkit-app-region: drag;
-    display: flex;
-    justify-content: space-between;
-    user-select: none;
 }
 
-.chat_top .title {
-    font-size: 20px;
-    font-weight: 550;
+.top_menu .buttons {
+    margin: 3px 0 0 20px;
+    position: absolute;
 }
 
-.close_btn {
-    display: flex;
-    align-items: center;
-    -webkit-app-region: no-drag;
+.top_menu .buttons .button {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: inline-block;
     margin-right: 10px;
+    position: relative;
     cursor: pointer;
-}
-
-.close_btn img {
-    width: 20px;
+    -webkit-app-region: no-drag;
     -webkit-user-drag: none;
     -moz-user-drag: none;
     -ms-user-drag: none;
+    user-select: none;
     user-drag: none;
 }
 
-#minimize,
-#maximize,
-#close {
-    padding: 8px;
+.top_menu .buttons .button.close {
+    background-color: #f5886e;
 }
 
-#minimize:hover,
-#maximize:hover {
-    background-color: #a3b5bb;
+.top_menu .buttons .button.minimize {
+    background-color: #fdbf68;
 }
 
-#close:hover {
-    background-color: #ff0000;
+.top_menu .buttons .button.maximize {
+    background-color: #a3d063;
 }
 
-.clearfix::after {
-    content: "";
-    display: block;
+.top_menu .buttons .button.close.show {
+    background-image: url(../image/window-close.png);
+    background-size: cover;
+}
+
+.top_menu .buttons .button.minimize.show {
+    background-image: url(../image/window-minimize.png);
+    background-size: cover;
+}
+
+.top_menu .buttons .button.maximize.show {
+    background-image: url(../image/window-maximize.png);
+    background-size: cover;
+}
+
+.top_menu .title {
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+
+.messages {
+    position: relative;
+    list-style: none;
+    padding: 20px 10px 0 10px;
+    margin: 0;
+    height: 80%;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.messages .message {
     clear: both;
-    width: 0;
-    height: 0;
-    line-height: 0;
-    visibility: hidden;
+    overflow: hidden;
+    margin-bottom: 20px;
+    transition: all 0.5s linear;
+    opacity: 0;
 }
 
-.chat_middle {
-    width: 100%;
-    height: 30rem;
-    position: relative;
-    box-sizing: border-box;
-    overflow: auto;
-    border-width: 0;
-}
-
-.chat_left {
-    width: 100%;
-    height: auto;
-    margin: 20px 0 20px 0;
-}
-
-.chat_left_item_1 {
-    width: 50px;
-    height: 50px;
-    line-height: 50px;
-    background-color: #4459AB;
+.messages .message.left .avatar {
+    background-color: #f5886e;
     float: left;
-    margin: 10px 10px 0 10px;
-    text-align: center;
-    border-radius: 25px;
-    color: white;
 }
 
-.chat_left_item_1 img {
-    width: 100%;
-    height: 100%;
-    border-radius: 25px;
+.messages .message.left .text_wrapper {
+    background-color: #ffe6cb;
+    margin-left: 20px;
 }
 
-.chat_left_item_2 {
-    width: 55%;
-    height: auto;
-    float: left;
-    margin-top: 10px;
+.messages .message.left .text_wrapper::after,
+.messages .message.left .text_wrapper::before {
+    right: 100%;
+    border-right-color: #ffe6cb;
 }
 
-.chat_left_item_2 .chat_left_content {
-    padding: 15px;
-    margin-top: 10px;
-    background-color: #d1d1d2;
+.messages .message.left .text {
+    color: #c48843;
+}
+
+.messages .message.right .avatar {
+    background-color: #fdbf68;
+    float: right;
+}
+
+.messages .message.right .text_wrapper {
+    background-color: #c7eafc;
+    margin-right: 20px;
+    float: right;
+}
+
+.messages .message.right .text_wrapper::after,
+.messages .message.right .text_wrapper::before {
+    left: 100%;
+    border-left-color: #c7eafc;
+}
+
+.messages .message.right .text {
+    color: #45829b;
+}
+
+.messages .message.appeared {
+    opacity: 1;
+}
+
+.messages .message .avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
     display: inline-block;
+}
+
+.messages .message .text_wrapper {
+    display: inline-block;
+    padding: 20px;
     border-radius: 6px;
+    width: calc(100% - 85px);
+    min-width: 100px;
+    position: relative;
 }
 
-.chat_right {
+.messages .message .text_wrapper::after,
+.messages .message .text_wrapper:before {
+    top: 18px;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
+}
+
+.messages .message .text_wrapper::after {
+    border-width: 13px;
+    margin-top: 0px;
+}
+
+.messages .message .text_wrapper::before {
+    border-width: 15px;
+    margin-top: -2px;
+}
+
+.messages .message .text_wrapper .text {
+    font-size: 18px;
+    font-weight: 300;
+}
+
+.bottom_wrapper {
     width: 100%;
-    height: auto;
-    margin: 20px 0 20px 0;
+    background-color: #fff;
+    position: absolute;
+    overflow: hidden;
+    padding: 15px;
+    bottom: 0;
 }
 
-.chat_right_item_1 {
+.bottom_wrapper .message_input_wrapper {
+    display: inline-block;
+    border-radius: 10px;
+    border: 1px solid rgba(0, 0, 0, .1);
+    width: calc(100% - 80px);
+    position: relative;
+    box-shadow: 0 0 15px rgba(0, 0, 0, .1);
+}
+
+textarea {
+    /* 可以使用数字值来设置行高，也可以使用normal保持默认值 */
+    line-height: normal;
+    /* 根据需要设置内边距 */
+    padding: 10px;
+    resize: none;
+    outline: none;
+}
+
+.bottom_wrapper .message_input_wrapper .message_input {
+    border: none;
+    height: 100%;
+    box-sizing: border-box;
+    width: calc(100% - 40px);
+    position: absolute;
+    outline-width: 0;
+    color: gray;
+}
+
+.bottom_wrapper .send_message {
+    width: 70px;
+    height: 50px;
+    display: inline-block;
+    border-radius: 10px;
+    background-color: #21b862;
+    border: 2px solid #21b862;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.2s linear;
+    text-align: center;
+    float: right;
+}
+
+.bottom_wrapper .send_message:hover {
+    color: #ffffff;
+    background-color: #1fa758;
+}
+
+.bottom_wrapper .send_message .text {
+    font-size: 18px;
+    font-weight: 300;
+    display: inline-block;
+    line-height: 48px;
+}
+
+.message_template {
+    display: none;
+}
+
+
+.dialog-box {
+    /* 清除浮动 */
+    overflow: hidden;
+    display: block;
+    word-wrap: break-word;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.dialog-box p {
+    padding-left: 10px;
+    padding-bottom: 0px;
+    padding-top: 0px;
+    margin: 5px 0;
+}
+
+.dialog-box .header {
+    border-radius: 50%;
     width: 50px;
     height: 50px;
-    line-height: 50px;
-    background-color: #fff;
-    float: right;
-    margin: 10px 10px 0 10px;
-    text-align: center;
-    border-radius: 25px;
-    color: white;
+    border-bottom: solid #90e367 thin;
 }
 
-.chat_right_item_1 img {
-    width: 100%;
-    height: 100%;
-    border-radius: 25px;
-}
-
-.chat_right_item_2 {
-    width: 55%;
-    height: auto;
-    float: right;
+.header,
+.content {
+    /* 计算宽度为容器的一半减去间距 */
+    max-width: calc(80% - 10px);
     margin-top: 10px;
 }
 
-.chat_right_item_2 .chat_right_time {
-    width: 100%;
-    text-align: right;
+
+.dialog-box .header,
+.dialog-box .content {
+    float: left;
 }
 
-.chat_right_item_2 .chat_right_content {
-    float: right;
-    padding: 15px;
+.dialog-box .content {
+    /* 设置与 box1 的间距 */
+    margin-left: 20px;
+}
+
+.dialog-box .content {
+    color: #006400;
+    background-color: #ffffff;
     border-radius: 10px;
+    box-shadow: rgba(0, 0, 0, 0.2) 0px 1px 3px;
+    margin-left: 10px;
+    font-size: 15px;
+    text-align: left;
     margin-top: 10px;
-    background-color: #4F7cff;
-    color: white;
-    position: relative;
+    padding: 10px 20px 10px 10px;
+    white-space: pre-wrap;
 }
 
-.chat_bottom {
-    width: 100%;
-    height: 10rem;
-    position: relative;
-}
-
-.chat_context {
-    width: 100%;
-    height: 100%;
-    font-size: 16px;
-    box-sizing: border-box;
+#tem_slider {
+    -webkit-appearance: none;
+    /* 隐藏默认滑块样式 */
+    appearance: none;
+    width: 35%;
+    height: 10px;
+    background: #ddd;
+    /* 去掉聚焦时的边框 */
     outline: none;
-    resize: none;
-    border-width: 0;
-    padding: 16px;
-    border-bottom-left-radius: 10px;
-    border-bottom-right-radius: 10px;
+    opacity: 0.7;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+    /* 圆角 */
+    border-radius: 50%;
+    /* 阴影 */
+    box-shadow: 0 0 5px rgba(82, 82, 82, 0.3);
 }
 
-.chat_commit {
-    width: 80px;
-    height: 30px;
-    color: white;
-    background-color: #4F7cff;
-    line-height: 30px;
-    text-align: center;
-    border-radius: 5px;
-    position: absolute;
-    right: 10px;
-    bottom: 20px;
-    margin-right: 10px;
+#tem_slider::-webkit-slider-thumb {
+    /* 隐藏默认滑块样式 */
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    background: #90e367;
+    cursor: pointer;
+    /* 圆角 */
+    border-radius: 50%;
+    /* 阴影 */
+    box-shadow: 0 0 5px rgba(89, 89, 89, 0.3);
+
+}
+
+#tem_slider::-moz-range-thumb {
+    width: 50%;
+    height: 20px;
+    background: #90e367;
     cursor: pointer;
 }
 
-#send_button.loading::after {
+.dialog-box1 {
+    /* 清除浮动 */
+    overflow: hidden;
+    display: block;
+    margin-top: 20px;
+    word-wrap: break-word;
+    margin-bottom: 10px;
+}
+
+.dialog-box1 p {
+    padding-left: 10px;
+    padding-bottom: 0px;
+    padding-top: 0px;
+    margin: 5px 0;
+}
+
+.dialog-box1 .header {
+    border-radius: 10px;
+    width: 50px;
+    height: 50px;
+    border-bottom: solid #ffffff thin;
+}
+
+.dialog-box1 .header,
+.dialog-box1 .content {
+    float: right;
+}
+
+.dialog-box1 .content {
+    /* 设置与 box1 的间距 */
+    margin-right: 20px;
+}
+
+.dialog-box1 .content {
+    color: #006400;
+    background-color: #90e367;
+    border-radius: 10px;
+    box-shadow: rgba(0, 0, 0, 0.2) 0px 1px 3px;
+    margin-right: 10px;
+    font-size: 15px;
+    text-align: left;
+    margin-top: 10px;
+    padding: 10px 10px 10px 10px;
+    white-space: pre-wrap;
+    position: relative;
+}
+
+
+.sidebar {
+    position: fixed;
+    top: 63px;
+    right: -300px;
+    /* 初始状态为隐藏 */
+    width: 300px;
+    height: calc(100% - 63px);
+    z-index: 9999;
+    /* 确保在最上层 */
+    background-color: rgba(255, 255, 255, 1);
+
+}
+
+input[type=radio] {
+    border-radius: 2%;
+}
+
+.sidebar-toggle {
+    position: absolute;
+    top: 20px;
+    right: 40px;
+    /* 调整按钮位置 */
+    background-color: white;
+}
+
+@media screen and (max-width :1000px) {
+
+    /* 在小屏幕下调整宽度 */
+    .sidebar {
+        width: 100%;
+        /* 初始状态为隐藏 */
+        right: -100%;
+    }
+}
+
+#setting {
+    border: none;
+    font-size: 30px;
+}
+
+#username {
+    font-size: 10px;
+    padding: 10px;
+}
+
+.sidebar-toggle:hover {
+    cursor: pointer;
+}
+
+.sidebar-toggle:focus,
+.sidebar-toggle:active {
+    /* 移除按钮的默认边框 */
+    outline: none !important;
+}
+
+/* 点击时改变字体颜色为灰色 */
+.sidebar-toggle:focus,
+.sidebar-toggle:active {
+    color: gray;
+}
+
+.sidebar.show {
+    /* 播放slide-in-right动画 */
+    animation-name: slide-in-right;
+    /* 动画持续时间为0.5秒 */
+    animation-duration: .7s;
+    /* 将隐藏栏移入屏幕内显示出来*/
+    right: 0;
+
+}
+
+.sidebar.hide {
+    animation-name: slide-out-right;
+    animation-duration: .7s;
+    right: -300px;
+}
+
+@keyframes slide-out-right {
+    from {
+        right: 0;
+    }
+
+    to {
+        right: -300px;
+    }
+}
+
+.line {
+    background-color: #dcdddd;
+    color: #dcdddd;
+    height: 1px;
+    border: none;
+}
+
+#preset-text {
+    height: 120px;
+    width: 80%;
+
+}
+
+@keyframes slide-in-right {
+    from {
+        right: -300px;
+    }
+
+    to {
+        right: 0;
+    }
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 45px;
+    height: 25px;
+}
+
+.switch input {
+    opacity: 0;
+}
+
+.slider1 {
+    position: absolute;
+    cursor: pointer;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background-color: #ccc;
+}
+
+.slider1:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 4px;
+    top: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    margin-top: auto;
+    margin-bottom: auto;
+    border-radius: 50%;
+    box-shadow: 0 .1rem .3rem rgba(0, 0, 0, .15);
+}
+
+input:checked+.slider1:before {
+    transform: translateX(20px);
+}
+
+#textarea-wrapper textarea {
+    width: 80%;
+    height: 100px;
+}
+
+.round {
+    border-radius: 34px !important;
+}
+
+#select-wrapper select {
+    margin-bottom: 17px;
+    height: 22px;
+    width: 110px;
+}
+
+#sendbutton.loading::after {
     content: "";
     width: 16px;
     height: 16px;
@@ -252,13 +602,11 @@ html {
     border-top-color: #3e91f7;
     animation: spin 0.8s ease-in-out infinite;
     position: absolute;
-    top: 50%;
-    left: 50%;
     margin-left: -10px;
     margin-top: -10px;
 }
 
-#send_button.disabled {
+#sendbutton.disabled {
     opacity: 0.5;
     pointer-events: none;
 }
@@ -273,7 +621,6 @@ html {
     border-radius: 50%;
     cursor: pointer;
 }
-
 
 @keyframes spin {
     to {

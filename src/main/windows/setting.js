@@ -15,7 +15,7 @@ function createSettingShow() {
         minWidth: 470,
         minHeight: 320,
         skipTaskbar: false,
-        alwaysOnTop: true,
+        alwaysOnTop: false,
         transparent: false,
         frame: false,
         resizable: false,
@@ -30,7 +30,8 @@ function createSettingShow() {
 
     // 加载本地文件
     settings.loadFile(path.join(__dirname, '../../renderer/pages/setting.html'))
-    
+    settings.webContents.openDevTools()
+
     // 监听closed事件后执行
     settings.on('closed', () => { settings = null })
 

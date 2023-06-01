@@ -1,7 +1,11 @@
 const ipcRenderer = require('electron').ipcRenderer
-const screen = require('../utils/screen')
+const maximizeBtn = document.querySelector('.maximize')
+const minimizeBtn = document.querySelector('.minimize')
+const closeBtn = document.querySelector('.close')
 window.$ = window.jQuery = require('../utils/jquery.min.js')
 
+// 创建弹窗组件实例
+const popupComponent = new PopupComponent()
 
 // 引入 fs 和 path 模块
 const fs = require('fs')
@@ -14,403 +18,277 @@ const jsonContent = fs.readFileSync(configPath, 'utf-8')
 // 解析JSON
 const config = JSON.parse(jsonContent)
 
-function showChatting() {
-    sending()
-}
+maximizeBtn.addEventListener('mouseenter', () => {
+  // 显示最大化按钮
+  maximizeBtn.classList.add('show')
+})
+
+maximizeBtn.addEventListener('mouseleave', () => {
+  // 隐藏最大化按钮
+  maximizeBtn.classList.remove('show')
+})
+
+minimizeBtn.addEventListener('mouseenter', () => {
+  // 显示最小化按钮
+  minimizeBtn.classList.add('show')
+})
+
+minimizeBtn.addEventListener('mouseleave', () => {
+  // 隐藏最小化按钮
+  minimizeBtn.classList.remove('show')
+})
+
+closeBtn.addEventListener('mouseenter', () => {
+  // 显示关闭按钮
+  closeBtn.classList.add('show')
+})
+
+closeBtn.addEventListener('mouseleave', () => {
+  // 隐藏关闭按钮
+  closeBtn.classList.remove('show')
+})
+
+maximizeBtn.addEventListener('click', () => {
+  ipcRenderer.send('Chatting', 'maximize-window')
+})
+
+minimizeBtn.addEventListener('click', () => {
+  ipcRenderer.send('Chatting', 'minimize-window')
+})
+
+closeBtn.addEventListener('click', () => {
+  ipcRenderer.send('Chatting', 'close-window')
+})
 
 // 标记是否可以发送请求
-let canSendRequest = true;
-
-// 发送内容
-var message = document.getElementById('chat_context_item')
-
-function sending() {
-    var send_message = document.getElementById('chat_middle_item')
-    const send_btn = document.getElementById('send_button')
-
-    // 回车键发送消息
-    message.addEventListener('keydown', (event) => {
-
-        if (event.key === 'Enter') {
-
-            // 阻止默认的回车键行为，以避免换行
-            event.preventDefault()
-
-            var str = message.value
-
-            if (str.length >= 500) {
-                openPopup('秋蒂桌宠', '字数限制在500字内')
-                message.value = ''
-                return
-            }
-            if (str.length == 0) {
-                openPopup('秋蒂桌宠', '文本内容不能为空!')
-                return
-            }
-
-            if (!canSendRequest) {
-                openPopup('秋蒂桌宠', '请等待至少5秒钟再尝试发送请求')
-                message.value = ''
-                return
-            }
-
-            if (str.length > 0) {
-                var date = new Date()
-                var hour = date.getHours()
-                var minute = date.getMinutes()
-                var time = ''
-                if (minute < 10) {
-                    time = hour + ':0' + minute
-                } else {
-                    time = hour + ':' + minute
-                }
-
-                var answer =
-                    `
-                <div class="chat_right_item_1">
-                    <img src="../image/user.png">
-                </div>
-                <div class="chat_right_item_2">
-                    <div class="chat_right_time">${time}</div>
-                    <div class="chat_right_content">${str}</div>
-                </div>
-                `
-
-                var oLi = document.createElement('div')
-                oLi.setAttribute('class', 'chat_right clearfix')
-                oLi.innerHTML = answer
-
-                send_message.append(oLi)
-
-                // 清空消息框
-                message.value = ''
-
-                // 保存信息
-                ipcRenderer.send('push_chattingText', { 'user': 'ME', 'time': time, 'text': str })
-
-                // 滚动条
-                send_message.scrollTop = send_message.scrollHeight
-
-                // 请求chatgpt接口
-                getReply(str)
-            }
-        }
-    })
-
-    // 鼠标点击发送消息
-    send_btn.addEventListener('click', () => {
-
-        var str = message.value
-
-        if (str.length >= 500) {
-            openPopup('秋蒂桌宠', '字数限制在500字内')
-            message.value = ''
-            return
-        }
-        if (str.length == 0) {
-            openPopup('秋蒂桌宠', '文本内容不能为空!')
-            return
-        }
-
-        if (!canSendRequest) {
-            openPopup('秋蒂桌宠', '请等待至少5秒钟再尝试发送请求')
-            message.value = ''
-            return
-        }
-
-        var date = new Date()
-        var hour = date.getHours()
-        var minute = date.getMinutes()
-        var time = ''
-        if (minute < 10) {
-            time = hour + ':0' + minute
-        } else {
-            time = hour + ':' + minute
-        }
-
-        var answer =
-            `
-                <div class="chat_right_item_1">
-                    <img src="../image/user.png">
-                </div>
-                <div class="chat_right_item_2">
-                    <div class="chat_right_time">${time}</div>
-                    <div class="chat_right_content">${str}</div>
-                </div>
-                `
-
-        var oLi = document.createElement('div')
-        oLi.setAttribute('class', 'chat_right clearfix')
-        oLi.innerHTML = answer
-
-        send_message.append(oLi)
-
-        // 清空消息框
-        message.value = ''
-
-        // 保存信息
-        ipcRenderer.send('push_chattingText', { 'user': 'ME', 'time': time, 'text': str })
-
-        // 滚动条
-        send_message.scrollTop = send_message.scrollHeight
-
-        // 请求chatgpt接口
-        getReply(str)
-
-    })
-}
+let canSendRequest = true
 
 // 保存上一次的用户信息
 let lastUserMessage = ''
 
-// 获取回复
-function getReply(str) {
+let message = document.getElementById('chatinput')
 
-    const send_btn = document.getElementById('send_button')
+$(document).ready(function () {
 
-    send_btn.classList.add('disabled')
-    send_btn.innerHTML = ''
-    send_btn.classList.add("loading")
-
-    const formData = new FormData()
-    formData.append('ruleType', config.gpt.ruleType)
-    formData.append('command', str)
-
-    lastUserMessage = str
-
-    message.disabled = true
-    
-    fetch(`${config.gpt.url}`, {
-        method: 'POST',
-        body: formData
-    })
-        .then(response => {
-            // 处理响应
-            return response.text()
-        })
-        .then(data => {
-            if (data === '系统繁忙，请稍后再试') {
-                showReply('秋蒂正拼命思考中，请稍后再试or点击重试按钮再发一次，啾咪~')
-                appendMessage(str)
-            } else {
-                showReply(data)
-            }
-
-            // 设置发送请求的等待时间（毫秒）
-            const requestWaitTime = 5000; // 5秒
-            canSendRequest = false;
-
-            // 在指定的等待时间后设置 canSendRequest 为 true，允许发送下一个请求
-            setTimeout(() => {
-                canSendRequest = true;
-            }, requestWaitTime);
-        })
-        .catch(error => {
-            // 处理错误
-            console.log(error)
-        })
-        .finally(() => {
-            message.disabled = false
-            send_btn.classList.remove('disabled')
-            send_btn.innerHTML = '发送'
-            send_btn.classList.remove('loading')
-        })
-}
-
-// 聊天日志中追加消息
-function appendMessage(message) {
-    const chat_right_content = document.querySelectorAll('.chat_right_content')
-
-    // 添加重发按钮
-    const resendButton = document.createElement('img')
-    resendButton.src = '../image/repeat.png'
-    resendButton.title = '重发'
-    resendButton.classList.add('resend_button')
-    resendButton.addEventListener('click', () => {
-        getReply(lastUserMessage)
-    })
-    
-    // 将消息和重发按钮添加到聊天日志
-    chat_right_content.forEach((item) => {
-        item.appendChild(resendButton);
-    })
-}
-
-// 显示回复
-function showReply(str) {
-    if (str.length > 0) {
-        var reply_message = document.getElementById('chat_middle_item')
-        var date = new Date()
-        var hour = date.getHours()
-        var minute = date.getMinutes()
-        var time = ''
-        if (minute < 10) {
-            time = hour + ':0' + minute
-        } else {
-            time = hour + ':' + minute
-        }
-
-        const regex = /^([^\n]+)\n([\s\S]+)\n([^\n]+)\n([^\n]+)/
-        const match = str.match(regex)
-
-        var answer = ''
-
-        if (match) {
-
-            answer +=
-                `
-            <div class="chat_left_item_1">
-                <img src="../image/qiudi.jpg">
-            </div>
-            <div class="chat_left_item_2">
-                <div class="chat_left_time">${time}</div>
-                <div class="chat_left_content">
-                    <pre><code>${str}</code></pre>
-                </div>
-            </div>
-            `
-        } else {
-            answer +=
-                `
-            <div class="chat_left_item_1">
-                <img src="../image/qiudi.jpg">
-            </div>
-            <div class="chat_left_item_2">
-                <div class="chat_left_time">${time}</div>
-                <div class="chat_left_content">${str}</div>
-            </div>
-            `
-        }
-
-
-        var oLi = document.createElement('div')
-        oLi.setAttribute('class', 'chat_left clearfix')
-        oLi.innerHTML = answer
-
-        reply_message.append(oLi)
-
-        // 保存信息
-        ipcRenderer.send('push_chattingText', { 'user': 'TA', 'time': time, 'text': str })
-
-        // 滚动条
-        reply_message.scrollTop = reply_message.scrollHeight
-
+  message.addEventListener('keyup', (event) => {
+    if (event.keyCode === 13) {
+      event.preventDefault()
+      document.getElementById('sendbutton').click()
+      this.value = ''
     }
+  })
+
+  $('#sendbutton').click(function () {
+
+    sending(message.value)
+
+    // 清空对话框
+    message.value = ''
+
+  })
+})
+
+async function sending(userMessage) {
+
+  if (userMessage.trim().length === 0) {
+    popupComponent.openPopup('秋蒂桌宠', '文本内容不能为空')
+    return
+  }
+
+  if (userMessage.trim().length >= 500) {
+    popupComponent.openPopup('秋蒂桌宠', '字数限制在500字内')
+    message.value = ''
+    return
+  }
+
+  if (!canSendRequest) {
+    popupComponent.openPopup('秋蒂桌宠', '请等待至少3秒后再发送请求')
+    message.value = ''
+    return
 }
 
-(function () {
+  // 获取按钮元素
+  let myButton = document.getElementById('sendbutton')
 
-    $('#minimize').on('click', () => {
-        ipcRenderer.send('closeChatting', 'minimize')
+  // 禁用按钮
+  message.disabled = true
+  
+  myButton.classList.add('disabled')
+  myButton.innerHTML = ''
+  myButton.classList.add("loading")
+
+  // 创建实例对象
+  let dialogBoxYou = new DialogBox('#chatlog', 'dialog-box1', '../image/user.png')
+
+  //构建对话框内容
+  let dialogContentYou = userMessage
+
+  //将对话框内容添加到组件中显示。
+  dialogBoxYou.setText(dialogContentYou)
+
+  // 对话框拉到底部
+  scrollToBottom()
+
+  // 创建实例对象
+  let dialogBoxRobot = new DialogBox('#chatlog', 'dialog-box', '../image/qiudi.jpg')
+
+  // 对话框拉到底部
+  scrollToBottom()
+
+  const formData = new FormData()
+  formData.append('ruleType', config.gpt.ruleType)
+  formData.append('command', userMessage)
+
+  lastUserMessage = userMessage
+
+  dialogBoxRobot.setContent('秋蒂正在思考...')
+
+  await fetch(`${config.gpt.url}`, {
+    method: 'POST',
+    body: formData
+  })
+    .then(response => {
+      // 处理响应
+      return response.text()
+    })
+    .then(data => {
+      dialogBoxRobot.removeContent()
+      if (data === '系统繁忙，请稍后再试') {
+        dialogBoxRobot.appendContent('秋蒂正拼命思考中，请稍后再试or点击重试按钮再发一次，啾咪~')
+        appendMessage()
+        scrollToBottom()
+      } else {
+        // let parsedMessageRobot = marked.parse(data)
+        dialogBoxRobot.appendContent(data)
+        scrollToBottom()
+      }
+
+      // 设置发送请求的等待时间（毫秒）
+      const requestWaitTime = 3000
+      canSendRequest = false
+
+      // 在指定的等待时间后设置 canSendRequest 为 true，允许发送下一个请求
+      setTimeout(() => {
+          canSendRequest = true
+      }, requestWaitTime)
+    })
+    .catch(error => {
+      // 处理错误
+      console.log(error)
+    }).finally(() => {
+      // 启用按钮
+      message.disabled = false
+      myButton.classList.remove('disabled')
+      myButton.innerHTML = '提交'
+      myButton.classList.remove('loading')
     })
 
-    let originalTitle = $('#maximize').attr('title')
-    let isTitleChanged = false
-    let chatMiddleSetHeight = $('.chat_middle')
-    let chatBottomSetHeight = $('.chat_bottom')
-    $('#maximize').on('click', () => {
-        ipcRenderer.send('closeChatting', 'maximize')
-        if (isTitleChanged) {
-            screen.getScreenInfo((screenInfo) => {
-                console.log(screenInfo.width, screenInfo.height, screenInfo.scalingFactor)
-                if (screenInfo.width == 1366 && screenInfo.height == 768) {
-                    chatMiddleSetHeight.css('height', '20rem')
-                    chatBottomSetHeight.css('height', '10rem')
-                    $('.chat_top').css('-webkit-app-region', 'drag')
-                    $('#maximize').attr('title', originalTitle)
-                    isTitleChanged = false
-                }
+  let chat_log = document.getElementById('chatlog')
+  chat_log.scrollTop = chat_log.scrollHeight
 
-                if (screenInfo.width == 1280 && screenInfo.height == 720 && screenInfo.scalingFactor == 1.5) {
-                    chatMiddleSetHeight.css('height', '20rem')
-                    chatBottomSetHeight.css('height', '10rem')
-                    $('.chat_top').css('-webkit-app-region', 'drag')
-                    $('#maximize').attr('title', originalTitle)
-                    isTitleChanged = false
-                }
+}
 
-                if (screenInfo.width == 1536 && screenInfo.height == 864 && screenInfo.scalingFactor == 1.25) {
-                    chatMiddleSetHeight.css('height', '20rem')
-                    chatBottomSetHeight.css('height', '10rem')
-                    $('.chat_top').css('-webkit-app-region', 'drag')
-                    $('#maximize').attr('title', originalTitle)
-                    isTitleChanged = false
-                }
+function scrollToBottom() {
+  // 找到消息列表容器
+  let messages = $('.messages')
 
-                if (screenInfo.width == 1920 && screenInfo.height == 1080 && screenInfo.scalingFactor == 1) {
-                    chatMiddleSetHeight.css('height', '30rem')
-                    chatBottomSetHeight.css('height', '10rem')
-                    $('.chat_top').css('-webkit-app-region', 'drag')
-                    $('#maximize').attr('title', '还原')
-                    isTitleChanged = false
-                }
-            })
+  // 将消息列表容器的滚动到底部位置
+  messages.scrollTop(messages.prop("scrollHeight"))
+}
 
-        } else {
-            screen.getScreenInfo((screenInfo) => {
-                if (screenInfo.width == 1366 && screenInfo.height == 768 && screenInfo.scalingFactor == 1) {
-                    chatMiddleSetHeight.css('height', '35rem')
-                    chatBottomSetHeight.css('height', '10rem')
-                    $('.chat_top').css('-webkit-app-region', 'no-drag')
-                    $('#maximize').attr('title', '还原')
-                    isTitleChanged = true
-                }
+class DialogBox {
+  constructor(selector, className, imgUrl) {
+    this.element = document.querySelector(selector)
+    this.header = null
+    this.content = null
+    this.dialogBox = null
+    if (this.element) {
+      // 创建头部和内容区域元素
+      this.header = document.createElement('div')
+      this.header.classList.add('header')
+      this.content = document.createElement('div')
+      this.content.classList.add('content')
+      this.dialogBox = document.createElement('div')
+      this.dialogBox.classList.add(className)
+      // 添加到容器中
+      this.dialogBox.appendChild(this.header)
+      this.dialogBox.appendChild(this.content)
+      this.element.appendChild(this.dialogBox)
+      this.header.style.backgroundImage = "url('" + imgUrl + "')"
+      this.header.style.backgroundSize = "cover"
+    } else {
+      console.error(`Element with selector ${selector} not found.`)
+    }
+  }
+  setTitle(title) {
+    if (this.header) {
+      // 设置标题文本
+      const titleNode = document.createTextNode(title)
+      while (this.header.firstChild) {
+        // 删除旧节点
+        this.header.removeChild(this.header.firstChild)
+      }
+      this.header.appendChild(titleNode)
+    }
+  }
+  setContent(contentHTML) {
+    if (this.content) {
+      //设置内容区域的 html 内容
+      this.content.innerHTML = contentHTML
+    }
+  }
+  appendContent(contentHTML) {
+    if (this.content) {
+      //设置内容区域的 html 内容
+      this.content.innerHTML += contentHTML
+    }
+  }
+  removeContent() {
+    if (this.content) {
+      //设置内容区域的 html 内容
+      this.content.innerHTML = null
+    }
+  }
+  setText(contentText) {
+    // 创建 Text 节点
+    if (this.content) {
+      let textNode = document.createTextNode(contentText)
+      this.p = document.createElement('p')
+      this.content.appendChild(this.p)
+      this.p.appendChild(textNode)
+    }
+  }
+  appendText(contentText) {
+    // 创建 Text 节点
+    if (this.content) {
+      if (!this.p) {
+        this.p = document.createElement('p')
+        let textNode = document.createTextNode(contentText)
+        this.content.appendChild(this.p)
+        this.p.appendChild(textNode)
+      } else {
+        let textNode = this.p.childNodes[0]
+        textNode.nodeValue += contentText
+      }
+    }
+  }
+}
 
-                if (screenInfo.width == 1280 && screenInfo.height == 720 && screenInfo.scalingFactor == 1.5) {
-                    chatMiddleSetHeight.css('height', '32rem')
-                    chatBottomSetHeight.css('height', '10rem')
-                    $('.chat_top').css('-webkit-app-region', 'no-drag')
-                    $('#maximize').attr('title', '还原')
-                    isTitleChanged = true
-                }
+// 聊天记录中追加消息
+function appendMessage() {
+  const chat_right_content = document.querySelectorAll('.dialog-box1 .content')
 
-                if (screenInfo.width == 1536 && screenInfo.height == 864 && screenInfo.scalingFactor == 1.25) {
-                    chatMiddleSetHeight.css('height', '41rem')
-                    chatBottomSetHeight.css('height', '10rem')
-                    $('.chat_top').css('-webkit-app-region', 'no-drag')
-                    $('#maximize').attr('title', '还原')
-                    isTitleChanged = true
-                }
-
-                if (screenInfo.width == 1920 && screenInfo.height == 1080 && screenInfo.scalingFactor == 1) {
-                    chatMiddleSetHeight.css('height', '51rem')
-                    chatBottomSetHeight.css('height', '13rem')
-                    $('.chat_top').css('-webkit-app-region', 'no-drag')
-                    $('#maximize').attr('title', '还原')
-                    isTitleChanged = true
-                }
-            })
-
-        }
-    })
-
-    $('#close').on('click', () => {
-        ipcRenderer.send('closeChatting', 'close')
-    })
-
-    screen.getScreenInfo((screenInfo) => {
-
-        // 屏幕分辨率 1920 * 1080 缩放级别 150%
-        if (screenInfo.width == 1280 && screenInfo.height == 720 && screenInfo.scalingFactor == 1.5) {
-            chatMiddleSetHeight.css('height', '20rem')
-            chatBottomSetHeight.css('height', '10rem')
-        }
-
-        // 屏幕分辨率 1920 * 1080 缩放级别 125%
-        if (screenInfo.width == 1536 && screenInfo.height == 864 && screenInfo.scalingFactor == 1.25) {
-            chatMiddleSetHeight.css('height', '20rem')
-            chatBottomSetHeight.css('height', '10rem')
-        }
-
-        // 屏幕分辨率 1366 * 768 缩放级别 150%
-        if (screenInfo.width == 1366 && screenInfo.height == 768 && screenInfo.scalingFactor == 1) {
-            chatMiddleSetHeight.css('height', '20rem')
-            chatBottomSetHeight.css('height', '10rem')
-        }
-    })
-
-})()
-
-ipcRenderer.on('openChatting', (event, data) => {
-    showChatting(data)
-})
+  // 添加重发按钮
+  const resendButton = document.createElement('img')
+  resendButton.src = '../image/repeat.png'
+  resendButton.title = '重发'
+  resendButton.classList.add('resend_button')
+  resendButton.addEventListener('click', () => {
+      sending(lastUserMessage)
+  })
+  
+  // 将消息和重发按钮添加到聊天日志
+  chat_right_content.forEach((item) => {
+      item.appendChild(resendButton)
+  })
+}

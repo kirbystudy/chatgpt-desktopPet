@@ -1,55 +1,45 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ChatGPT</title>
-  <link rel="stylesheet" href="../style/prism.css">
-  <link rel="stylesheet" href="../style/chatting.css">
-  <link rel="stylesheet" href="../style/popup.css">
-
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatGPT</title>
+    <link rel="stylesheet" href="../style/chatting.css">
+    <link rel="stylesheet" href="../style/popup.css">
 </head>
 
 <body>
-  <div class="chat_comment">
-    <div class="chat_top">
-      <div class="title">ChatGPT</div>
-      <div class="close_btn" id="close_btn">
-        <img id="minimize" src="../image/window-minimize.png" title="最小化">
-        <img id="maximize" src="../image/window-maximize.png" title="最大化">
-        <img id="close" src="../image/window-close.png" title="关闭">
-      </div>
-    </div>
-    <div class="chat_middle" id="chat_middle_item"></div>
-    <div class="chat_bottom">
-      <textarea class="chat_context" id="chat_context_item" cols="30" rows="10" placeholder="请输入文字"></textarea>
-      <div class="chat_commit" id="send_button">发送</div>
-    </div>
-  </div>
+    <div>
+        <!-- 添加用户名输入框 -->
+        <div class="chat_window">
+            <div class="top_menu">
+                <div class="buttons">
+                    <div class="button close"></div>
+                    <div class="button minimize"></div>
+                    <div class="button maximize"></div>
+                </div>
+                <div class="title">ChatGPT</div>
+            </div>
 
-  <div id="overlay">
-    <div id="popup">
-      <div id="popup-header">
-        <h3 id="popup-title">
-          </h2>
-          <button id="close-button">
-            <img src="../image/window-close.png" alt="">
-          </button>
-      </div>
-      <div id="popup-content">
-        <p></p>
-      </div>
-    </div>
-  </div>
+            <ul class="messages">
+                <div style="text-align: left;" id="chatlogdiv">
+                    <pre style="white-space: pre-wrap; word-wrap:break-word" id="chatlog"></pre>
+                </div>
+            </ul>
 
+            <div class="bottom_wrapper clearfix">
+                <textarea class="message_input_wrapper" placeholder="点击这里输入问题" id="chatinput"></textarea>
+                <button class="send_message" id="sendbutton">提交</button>
+            </div>
+        </div>
+
+    </div>
+    
 </body>
 
 </html>
-
-<script src="../utils/prism.js"></script>
+<script src="../utils/marked.min.js"></script>
 <script src="../utils/popup.js"></script>
-<script src="../utils/store.js"></script>
 <script src="../utils/chatting.js"></script>
-<script src="../utils/mouth.js"></script>

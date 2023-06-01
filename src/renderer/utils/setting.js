@@ -4,6 +4,8 @@ const fs = require('fs')
 const path = require('path')
 window.$ = window.jQuery = require('../utils/jquery.min.js')
 
+// 创建弹窗组件实例
+const popupComponent = new PopupComponent();
 
 // 读取config.json
 const configPath = path.resolve(__dirname, '../../../config/config.json')
@@ -55,13 +57,13 @@ let lastRequestTime = 0
 feedbackBtn.addEventListener('click', () => {
   const count = message.value.length
   if (count > 200) {
-    openPopup('秋蒂桌宠', '字数超过了200字')
+    popupComponent.openPopup('秋蒂桌宠', '字数超过了200字')
     return
   }
   var str = message.value
 
   if (str.length == 0) {
-    openPopup('秋蒂桌宠', '留言内容不能为空!')
+    popupComponent.openPopup('秋蒂桌宠', '留言内容不能为空!')
     return
   }
 
@@ -72,7 +74,7 @@ feedbackBtn.addEventListener('click', () => {
     const currentTime = new Date().getTime()
 
     if (currentTime - lastRequestTime < 5000) {
-      openPopup('秋蒂桌宠', '请等待至少5秒钟再尝试请求!')
+      popupComponent.openPopup('秋蒂桌宠', '请等待至少5秒钟再尝试请求!')
       message.value = ''
       wordCount.textContent = 0
       return
@@ -88,7 +90,7 @@ feedbackBtn.addEventListener('click', () => {
       })
       .then(response => {
         if (response == 'SUCCESS') {
-          openPopup('秋蒂桌宠', '感谢您的留言!')
+          popupComponent.openPopup('秋蒂桌宠', '感谢您的留言!')
         }
         message.value = ''
         wordCount.textContent = 0
@@ -158,7 +160,7 @@ ipcRenderer.on('toggle_power_status', (event, isEnabled) => {
   // 根据开关状态显示不同的消息提示
   const message = isEnabled ? '已成功开启' : '已成功关闭'
   // 打开弹窗
-  openPopup('秋蒂桌宠', message)
+  popupComponent.openPopup('秋蒂桌宠', message)
 });
 
 // 切换开关状态的函数

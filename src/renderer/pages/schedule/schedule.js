@@ -63,6 +63,9 @@ var wType = [
 var Timetable = null
 
 $(function () {
+    // 创建弹窗组件实例
+    const popupComponent = new PopupComponent();
+
     $.get('http://osu.natapp1.cc/qd/sch', function (resp) {
         var data = JSON.parse(resp)
         for (let w = 1; w <= 7; w++) {
@@ -87,13 +90,12 @@ $(function () {
             highlightWeek: weekDay,
             gridOnClick: function (e) {
                 var num = e.index - 1
-                openPopup('秋蒂桌宠', e.name + ' ' + e.week.split('\n')[0] + ' ' + wType[num].name)
+                popupComponent.openPopup('秋蒂桌宠', e.name + ' ' + e.week.split('\n')[0] + ' ' + wType[num].name)
             },
             styles: {
                 Gheight: 50
             }
         })
-
     })
 })
 
