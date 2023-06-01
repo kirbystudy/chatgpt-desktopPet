@@ -2,7 +2,7 @@
 OML2D.loadOhMyLive2D({
   source: './',
   models: [
-    { path: localStorage.getItem('live2d') == null ? '../../../model/桃濑日和/桃濑日和.model3.json' : localStorage.getItem('live2d') },
+    { path: localStorage.getItem('live2d') == null ? '../../../model/hiyori_pro/hiyori_pro.model3.json' : localStorage.getItem('live2d') },
   ],
   mobileShow: true,
   tips: {

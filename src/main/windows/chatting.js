@@ -33,6 +33,7 @@ function createChattingShow() {
 
     // 加载本地文件
     chatting.loadFile(path.join(__dirname, '../../renderer/pages/chatting.html'))
+    chatting.webContents.openDevTools()
 
     chatting.webContents.on('did-finish-load', (event) => {
         // 发送消息给渲染进程chat

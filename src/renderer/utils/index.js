@@ -1,69 +1,39 @@
 // 获取remote
 const remote = require('@electron/remote')
 const { ipcRenderer } = require('electron')
+const screenUtils = require('../utils/screen')
 window.$ = window.jQuery = require('../utils/jquery.min.js')
 
 // 获取 screen模块
 const screen = remote.screen
 
-// 是否在拖动操作
-let dragging = false
-
-// 鼠标左键是否按下
-let mousedown_left = false
-
-let mouseOnPage
-
 const app = document.getElementById('app')
 const canvas = document.getElementById('canvas')
+const setting = document.getElementById('setting')
+const schedule = document.getElementById('schedule')
+const chatting = document.getElementById('chatting')
+const hide = document.getElementById('hide')
+
+const control_btn = document.querySelector('.control_btn')
+const control_item = document.querySelectorAll('.control_item')
 
 window.onload = function () {
   loadLive2D()
 
-  const control_box = document.createElement('div')
-  control_box.classList.add('control_btn')
-  app.appendChild(control_box)
-
-  const schedule_box = document.createElement('div')
-  schedule_box.classList.add('control_item')
-  schedule_box.setAttribute('id', 'schedule')
-  schedule_box.textContent = '日程表'
-  control_box.appendChild(schedule_box)
-
-  const dialog_box = document.createElement('div')
-  dialog_box.classList.add('control_item')
-  dialog_box.setAttribute('id', 'chatting')
-  dialog_box.textContent = '对话框'
-  control_box.appendChild(dialog_box)
-
-  const setting_box = document.createElement('div')
-  setting_box.classList.add('control_item')
-  setting_box.setAttribute('id', 'setting')
-  setting_box.textContent = '关于'
-  control_box.appendChild(setting_box)
-
-  const hide_box = document.createElement('div')
-  hide_box.classList.add('control_item')
-  hide_box.setAttribute('id', 'hide')
-  hide_box.textContent = '隐藏'
-  control_box.appendChild(hide_box)
-
-  const setting = document.getElementById('setting')
   setting.addEventListener('click', () => {
     ipcRenderer.send('Setting', 'Open')
   })
 
-  const schedule = document.getElementById('schedule')
+
   schedule.addEventListener('click', () => {
     ipcRenderer.send('Schedule', 'Open')
   })
 
-  const chatting = document.getElementById('chatting')
+
   chatting.addEventListener('click', () => {
     ipcRenderer.send('Chatting', 'Open')
   })
 
-  const hide = document.getElementById('hide')
   hide.addEventListener('click', () => {
     showMessage("已进入专注模式，右下角有悬浮小球", 3000, true)
     setTimeout(() => {
@@ -77,10 +47,6 @@ window.onload = function () {
 
   })
 
-  draggableHandle()
-
-  const control_btn = document.querySelector('.control_btn')
-
   app.addEventListener('mouseover', () => {
     control_btn.style.opacity = 1
   })
@@ -89,7 +55,6 @@ window.onload = function () {
     control_btn.style.opacity = 0
   })
 
-  const control_item = document.querySelectorAll('.control_item')
   control_item.forEach(item => {
     item.addEventListener('mouseover', (event) => {
       if (event.target.innerText == '日程表') {
@@ -109,6 +74,15 @@ window.onload = function () {
 // 初始化live2d模型
 function loadLive2D() {
   createModel(store.state, canvas)
+
+  setTimeout(() => {
+    app.classList.add("show")
+  }, 1000)
+
+  setTimeout(() => {
+    const greeting = getGreeting()
+    showMessage(greeting, 3000, true)
+  }, 2000)
 }
 
 // 显示消息框
@@ -156,51 +130,72 @@ function getGreeting() {
 
 // DOM内容解析完成后触发事件
 document.addEventListener('DOMContentLoaded', () => {
-  setTimeout(() => {
-    app.classList.add("show")
-  }, 1000)
 
-  setTimeout(() => {
-    const greeting = getGreeting()
-    showMessage(greeting, 3000, true)
-  }, 2000)
+  // 启动拖拽事件处理函数
+  screenUtils.getScreenInfo((screenInfo) => {
+
+    // 屏幕缩放级别为100%
+    if (screenInfo.scalingFactor == 1) {
+      draggableHandle()
+    }
+
+    // 屏幕缩放级别为150%
+    if (screenInfo.scalingFactor == 1.5) {
+      draggableHandle()
+    }
+  })
+
 })
 
 // 鼠标拖拽事件
 function draggableHandle() {
 
-  // 监听鼠标按下事件
-  canvas.addEventListener('mousedown', (event) => {
+  // 是否在拖动操作
+  let dragging = false;
+
+  // 鼠标左键是否按下
+  let mousedownLeft = false;
+
+  // 鼠标相对于窗口坐标
+  let mouseOnPage;
+
+  function handleMouseDown(event) {
     if (event.button === 0) {
-      mousedown_left = true
+      mousedownLeft = true;
     }
 
     // 获取鼠标位置
-    const { x, y } = screen.getCursorScreenPoint()
+    const { x, y } = screen.getCursorScreenPoint();
 
     // 从主进程获取当前窗口的位置
-    const pos = ipcRenderer.sendSync('getMainPos')
+    const pos = ipcRenderer.sendSync('getMainPos');
 
-    // 鼠标相对于窗口坐标
-    mouseOnPage = [(x - pos[0]), (y - pos[1])]
-  })
+    // 计算鼠标相对于窗口的坐标
+    mouseOnPage = [x - pos[0], y - pos[1]];
+  }
 
-  window.addEventListener('mouseup', () => {
-    mousedown_left = false
-    dragging = false
-  })
+  function handleMouseUp() {
+    mousedownLeft = false;
+    dragging = false;
+  }
 
-  window.addEventListener('mousemove', (event) => {
-
-    // 按下鼠标并移动, 拖动操作为true
-    if (mousedown_left) {
-      dragging = true
+  function handleMouseMove() {
+    if (mousedownLeft) {
+      dragging = true;
     }
 
-    // 执行拖动操作
     if (dragging) {
       // 移动窗口操作发送到主进程
-      ipcRenderer.send('dragMain', mouseOnPage)
+      ipcRenderer.send('dragMain', mouseOnPage);
     }
-  })
+  }
+
+  // 监听鼠标按下事件
+  canvas.addEventListener('mousedown', handleMouseDown);
+
+  // 监听鼠标抬起事件
+  window.addEventListener('mouseup', handleMouseUp);
+
+  // 监听鼠标移动事件
+  window.addEventListener('mousemove', handleMouseMove);
 }

@@ -21,12 +21,12 @@ function showChatting() {
 // 标记是否可以发送请求
 let canSendRequest = true;
 
+// 发送内容
+var message = document.getElementById('chat_context_item')
+
 function sending() {
     var send_message = document.getElementById('chat_middle_item')
     const send_btn = document.getElementById('send_button')
-
-    // 发送内容
-    var message = document.getElementById('chat_context_item')
 
     // 回车键发送消息
     message.addEventListener('keydown', (event) => {
@@ -178,6 +178,8 @@ function getReply(str) {
 
     lastUserMessage = str
 
+    message.disabled = true
+    
     fetch(`${config.gpt.url}`, {
         method: 'POST',
         body: formData
@@ -208,6 +210,7 @@ function getReply(str) {
             console.log(error)
         })
         .finally(() => {
+            message.disabled = false
             send_btn.classList.remove('disabled')
             send_btn.innerHTML = '发送'
             send_btn.classList.remove('loading')
@@ -326,9 +329,17 @@ function showReply(str) {
                     isTitleChanged = false
                 }
 
+                if (screenInfo.width == 1536 && screenInfo.height == 864 && screenInfo.scalingFactor == 1.25) {
+                    chatMiddleSetHeight.css('height', '20rem')
+                    chatBottomSetHeight.css('height', '10rem')
+                    $('.chat_top').css('-webkit-app-region', 'drag')
+                    $('#maximize').attr('title', originalTitle)
+                    isTitleChanged = false
+                }
+
                 if (screenInfo.width == 1920 && screenInfo.height == 1080 && screenInfo.scalingFactor == 1) {
-                    chatMiddleSetHeight.css('height', '26rem')
-                    chatBottomSetHeight.css('height', '14rem')
+                    chatMiddleSetHeight.css('height', '30rem')
+                    chatBottomSetHeight.css('height', '10rem')
                     $('.chat_top').css('-webkit-app-region', 'drag')
                     $('#maximize').attr('title', '还原')
                     isTitleChanged = false
@@ -337,9 +348,8 @@ function showReply(str) {
 
         } else {
             screen.getScreenInfo((screenInfo) => {
-                console.log(screenInfo.width, screenInfo.height, screenInfo.scalingFactor)
-                if (screenInfo.width == 1366 && screenInfo.height == 768) {
-                    chatMiddleSetHeight.css('height', '28rem')
+                if (screenInfo.width == 1366 && screenInfo.height == 768 && screenInfo.scalingFactor == 1) {
+                    chatMiddleSetHeight.css('height', '35rem')
                     chatBottomSetHeight.css('height', '10rem')
                     $('.chat_top').css('-webkit-app-region', 'no-drag')
                     $('#maximize').attr('title', '还原')
@@ -348,6 +358,14 @@ function showReply(str) {
 
                 if (screenInfo.width == 1280 && screenInfo.height == 720 && screenInfo.scalingFactor == 1.5) {
                     chatMiddleSetHeight.css('height', '32rem')
+                    chatBottomSetHeight.css('height', '10rem')
+                    $('.chat_top').css('-webkit-app-region', 'no-drag')
+                    $('#maximize').attr('title', '还原')
+                    isTitleChanged = true
+                }
+
+                if (screenInfo.width == 1536 && screenInfo.height == 864 && screenInfo.scalingFactor == 1.25) {
+                    chatMiddleSetHeight.css('height', '41rem')
                     chatBottomSetHeight.css('height', '10rem')
                     $('.chat_top').css('-webkit-app-region', 'no-drag')
                     $('#maximize').attr('title', '还原')
@@ -371,7 +389,21 @@ function showReply(str) {
     })
 
     screen.getScreenInfo((screenInfo) => {
+
+        // 屏幕分辨率 1920 * 1080 缩放级别 150%
         if (screenInfo.width == 1280 && screenInfo.height == 720 && screenInfo.scalingFactor == 1.5) {
+            chatMiddleSetHeight.css('height', '20rem')
+            chatBottomSetHeight.css('height', '10rem')
+        }
+
+        // 屏幕分辨率 1920 * 1080 缩放级别 125%
+        if (screenInfo.width == 1536 && screenInfo.height == 864 && screenInfo.scalingFactor == 1.25) {
+            chatMiddleSetHeight.css('height', '20rem')
+            chatBottomSetHeight.css('height', '10rem')
+        }
+
+        // 屏幕分辨率 1366 * 768 缩放级别 150%
+        if (screenInfo.width == 1366 && screenInfo.height == 768 && screenInfo.scalingFactor == 1) {
             chatMiddleSetHeight.css('height', '20rem')
             chatBottomSetHeight.css('height', '10rem')
         }
