@@ -151,51 +151,51 @@ document.addEventListener('DOMContentLoaded', () => {
 function draggableHandle() {
 
   // 是否在拖动操作
-  let dragging = false;
+  let dragging = false
 
   // 鼠标左键是否按下
-  let mousedownLeft = false;
+  let mousedownLeft = false
 
   // 鼠标相对于窗口坐标
-  let mouseOnPage;
+  let mouseOnPage
 
   function handleMouseDown(event) {
     if (event.button === 0) {
-      mousedownLeft = true;
+      mousedownLeft = true
     }
 
     // 获取鼠标位置
-    const { x, y } = screen.getCursorScreenPoint();
+    const { x, y } = screen.getCursorScreenPoint()
 
     // 从主进程获取当前窗口的位置
-    const pos = ipcRenderer.sendSync('getMainPos');
+    const pos = ipcRenderer.sendSync('getMainPos')
 
     // 计算鼠标相对于窗口的坐标
-    mouseOnPage = [x - pos[0], y - pos[1]];
+    mouseOnPage = [x - pos[0], y - pos[1]]
   }
 
   function handleMouseUp() {
-    mousedownLeft = false;
-    dragging = false;
+    mousedownLeft = false
+    dragging = false
   }
 
   function handleMouseMove() {
     if (mousedownLeft) {
-      dragging = true;
+      dragging = true
     }
 
     if (dragging) {
       // 移动窗口操作发送到主进程
-      ipcRenderer.send('dragMain', mouseOnPage);
+      ipcRenderer.send('dragMain', mouseOnPage)
     }
   }
 
   // 监听鼠标按下事件
-  canvas.addEventListener('mousedown', handleMouseDown);
+  canvas.addEventListener('mousedown', handleMouseDown)
 
   // 监听鼠标抬起事件
-  window.addEventListener('mouseup', handleMouseUp);
+  window.addEventListener('mouseup', handleMouseUp)
 
   // 监听鼠标移动事件
-  window.addEventListener('mousemove', handleMouseMove);
+  window.addEventListener('mousemove', handleMouseMove)
 }
