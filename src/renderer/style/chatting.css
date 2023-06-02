@@ -4,6 +4,10 @@
     padding: 0;
 }
 
+del {
+    text-decoration: none;
+}
+
 ul.messages {
     margin: 0;
     overflow-y: scroll;

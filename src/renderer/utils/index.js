@@ -57,8 +57,8 @@ window.onload = function () {
     item.addEventListener('mouseover', (event) => {
       if (event.target.innerText == '日程表') {
         showMessage('要打开日程表吗?', 1500, true)
-      } else if (event.target.innerText == '对话框') {
-        showMessage('要打开对话框吗?', 1500, true)
+      } else if (event.target.innerText == '聊天') {
+        showMessage('要打开聊天吗?', 1500, true)
       } else if (event.target.innerText == '关于') {
         showMessage('要打开设置吗?', 1500, true)
       } else if (event.target.innerText == '隐藏') {

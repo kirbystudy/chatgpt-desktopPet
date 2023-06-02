@@ -70,15 +70,15 @@ let message = document.getElementById('chatinput')
 
 $(document).ready(function () {
 
-  message.addEventListener('keyup', (event) => {
+  message.addEventListener('keydown', (event) => {
     if (event.keyCode === 13) {
       event.preventDefault()
-      document.getElementById('sendbutton').click()
+      $('#sendbutton').click()
       this.value = ''
     }
   })
 
-  $('#sendbutton').click(function () {
+  $('#sendbutton').click(() => {
 
     sending(message.value)
 
@@ -105,14 +105,14 @@ async function sending(userMessage) {
     popupComponent.openPopup('秋蒂桌宠', '请等待至少3秒后再发送请求')
     message.value = ''
     return
-}
+  }
 
   // 获取按钮元素
   let myButton = document.getElementById('sendbutton')
 
   // 禁用按钮
   message.disabled = true
-  
+
   myButton.classList.add('disabled')
   myButton.innerHTML = ''
   myButton.classList.add("loading")
@@ -158,8 +158,8 @@ async function sending(userMessage) {
         appendMessage()
         scrollToBottom()
       } else {
-        // let parsedMessageRobot = marked.parse(data)
-        dialogBoxRobot.appendContent(data)
+        let parsedMessageRobot = marked.parse(data)
+        dialogBoxRobot.appendContent(parsedMessageRobot)
         scrollToBottom()
       }
 
@@ -169,7 +169,7 @@ async function sending(userMessage) {
 
       // 在指定的等待时间后设置 canSendRequest 为 true，允许发送下一个请求
       setTimeout(() => {
-          canSendRequest = true
+        canSendRequest = true
       }, requestWaitTime)
     })
     .catch(error => {
@@ -284,11 +284,11 @@ function appendMessage() {
   resendButton.title = '重发'
   resendButton.classList.add('resend_button')
   resendButton.addEventListener('click', () => {
-      sending(lastUserMessage)
+    sending(lastUserMessage)
   })
-  
+
   // 将消息和重发按钮添加到聊天日志
   chat_right_content.forEach((item) => {
-      item.appendChild(resendButton)
+    item.appendChild(resendButton)
   })
 }
