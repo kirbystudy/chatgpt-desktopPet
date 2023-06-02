@@ -2,13 +2,14 @@ const { ipcRenderer } = require('electron')
 // 引入 fs 和 path 模块
 const fs = require('fs')
 const path = require('path')
-window.$ = window.jQuery = require('../utils/jquery.min.js')
+
+window.$ = window.jQuery = require('../../utils/jquery.min.js')
 
 // 创建弹窗组件实例
 const popupComponent = new PopupComponent();
 
 // 读取config.json
-const configPath = path.resolve(__dirname, '../../../config/config.json')
+const configPath = path.resolve(__dirname, '../../../../config/config.json')
 const jsonContent = fs.readFileSync(configPath, 'utf-8')
 
 // 解析JSON
@@ -110,7 +111,7 @@ feedbackBtn.addEventListener('click', () => {
 })
 
 window.onload = function () {
-  var package = require('../../../package.json')
+  var package = require('../../../../package.json')
   const app_version = document.getElementById('app_version')
   app_version.innerText = 'v' + package.version
 

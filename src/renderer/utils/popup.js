@@ -29,7 +29,7 @@ class PopupComponent {
         this.closeButton = document.createElement('button')
         this.closeButton.id = 'close-button'
         const closeButtonImg = document.createElement('img')
-        closeButtonImg.src = this.getImagePath('../../image/window-close.png', '../image/window-close.png')
+        closeButtonImg.src = path.resolve(__dirname, '../../image/window-close.png')
 
         this.closeButton.appendChild(closeButtonImg)
         popupHeader.appendChild(this.closeButton)
@@ -62,12 +62,4 @@ class PopupComponent {
     //         this.closePopup()
     //     }
     // }
-
-    getImagePath(imagePath, fallbackPath) {
-        const img = new Image()
-        if (img.width === 0) {
-            return fallbackPath
-        }
-        return imagePath
-    }
 }

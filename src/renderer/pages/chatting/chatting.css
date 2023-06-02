@@ -96,17 +96,17 @@ ul.messages::-webkit-scrollbar-thumb {
 }
 
 .top_menu .buttons .button.close.show {
-    background-image: url(../image/window-close.png);
+    background-image: url(../../image/window-close.png);
     background-size: cover;
 }
 
 .top_menu .buttons .button.minimize.show {
-    background-image: url(../image/window-minimize.png);
+    background-image: url(../../image/window-minimize.png);
     background-size: cover;
 }
 
 .top_menu .buttons .button.maximize.show {
-    background-image: url(../image/window-maximize.png);
+    background-image: url(../../image/window-maximize.png);
     background-size: cover;
 }
 

@@ -1,4 +1,8 @@
 const ipcRenderer = require('electron').ipcRenderer
+const path = require('path')
+
+// 创建弹窗组件实例
+const popupComponent = new PopupComponent();
 
 var courseListOther = []
 
@@ -63,9 +67,7 @@ var wType = [
 var Timetable = null
 
 $(function () {
-    // 创建弹窗组件实例
-    const popupComponent = new PopupComponent();
-
+    
     $.get('http://osu.natapp1.cc/qd/sch', function (resp) {
         var data = JSON.parse(resp)
         for (let w = 1; w <= 7; w++) {

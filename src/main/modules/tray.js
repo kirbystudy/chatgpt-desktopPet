@@ -42,7 +42,7 @@ function createTrayMenu() {
     appTray = new Tray(path.join(__dirname, '../../../assets/app_128.ico'))
 
     // 设置此托盘图标的悬停提示内容
-    appTray.setToolTip('Live2D DeskTopPet')
+    appTray.setToolTip('秋蒂桌宠')
 
     // 图标的上下文菜单
     let contextMenu = Menu.buildFromTemplate(trayMenuTemplate)

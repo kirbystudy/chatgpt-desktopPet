@@ -2,17 +2,17 @@ const ipcRenderer = require('electron').ipcRenderer
 const maximizeBtn = document.querySelector('.maximize')
 const minimizeBtn = document.querySelector('.minimize')
 const closeBtn = document.querySelector('.close')
-window.$ = window.jQuery = require('../utils/jquery.min.js')
-
-// 创建弹窗组件实例
-const popupComponent = new PopupComponent()
+window.$ = window.jQuery = require('../../utils/jquery.min.js')
 
 // 引入 fs 和 path 模块
 const fs = require('fs')
 const path = require('path')
 
+// 创建弹窗组件实例
+const popupComponent = new PopupComponent()
+
 // 读取config.json
-const configPath = path.resolve(__dirname, '../../../config/config.json')
+const configPath = path.resolve(__dirname, '../../../../config/config.json')
 const jsonContent = fs.readFileSync(configPath, 'utf-8')
 
 // 解析JSON
@@ -118,7 +118,7 @@ async function sending(userMessage) {
   myButton.classList.add("loading")
 
   // 创建实例对象
-  let dialogBoxYou = new DialogBox('#chatlog', 'dialog-box1', '../image/user.png')
+  let dialogBoxYou = new DialogBox('#chatlog', 'dialog-box1', '../../image/user.png')
 
   //构建对话框内容
   let dialogContentYou = userMessage
@@ -130,7 +130,7 @@ async function sending(userMessage) {
   scrollToBottom()
 
   // 创建实例对象
-  let dialogBoxRobot = new DialogBox('#chatlog', 'dialog-box', '../image/qiudi.jpg')
+  let dialogBoxRobot = new DialogBox('#chatlog', 'dialog-box', '../../image/qiudi.jpg')
 
   // 对话框拉到底部
   scrollToBottom()
