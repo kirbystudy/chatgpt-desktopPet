@@ -1,11 +1,10 @@
 // 获取remote
 const remote = require('@electron/remote')
+// 获取 screen模块
+const screen = remote.screen
 const { ipcRenderer } = require('electron')
 const screenUtils = require('../utils/screen')
 window.$ = window.jQuery = require('../utils/jquery.min.js')
-
-// 获取 screen模块
-const screen = remote.screen
 
 const app = document.getElementById('app')
 const canvas = document.getElementById('canvas')
