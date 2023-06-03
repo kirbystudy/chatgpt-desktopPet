@@ -280,7 +280,7 @@ function appendMessage() {
 
   // 添加重发按钮
   const resendButton = document.createElement('img')
-  resendButton.src = '../image/repeat.png'
+  resendButton.src = '../../image/repeat.png'
   resendButton.title = '重发'
   resendButton.classList.add('resend_button')
   resendButton.addEventListener('click', () => {

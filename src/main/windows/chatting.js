@@ -24,6 +24,7 @@ function createChattingShow() {
 
     // 加载本地文件
     chatting.loadFile(path.join(__dirname, '../../renderer/pages/chatting/chatting.html'))
+    chatting.webContents.openDevTools()
 
     // 监听closed事件后执行
     chatting.on('closed', () => { chatting = null })

@@ -22,8 +22,6 @@ ul.messages::-webkit-scrollbar {
     width: 4px;
     /* 滚动条高度 */
     height: 5px;
-    /* 默认设置滚动条不可见 */
-    opacity: 0;
 }
 
 /* 滚动条轨道样式 */
@@ -341,7 +339,8 @@ textarea {
     text-align: left;
     margin-top: 10px;
     padding: 10px 20px 10px 10px;
-    white-space: pre-wrap;
+    /* white-space: pre-wrap;  */
+    white-space: break-all;
 }
 
 #tem_slider {
