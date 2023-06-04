@@ -210,6 +210,28 @@ ipcMain.on('toggle_power', (event, enabled) => {
   global.settings.webContents.send('toggle_power_status', isEnabled)
 })
 
+// ipc监听，更换live2d
+ipcMain.on('selectedValue', (event, value) => {
+ 
+  const roleId = getLive2dModelPath(value)
+  global.mainWindow.webContents.send('loadlive2d', roleId)
+})
+
+function getLive2dModelPath(value) {
+  let modelPath
+  switch (value) {
+    case '小埋':
+      roleId = 1
+      break;
+    case '血小板':
+      roleId = 2
+      break;
+    default:
+      break;
+  }
+  return roleId
+}
+
 
 // 当Electron完成时，将调用此方法
 // 初始化，并准备创建浏览器窗口。

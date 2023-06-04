@@ -182,3 +182,54 @@ function toggleSwitch() {
 function updateToggleStatus() {
   toggle_power.checked = isToggleOn
 }
+
+
+// 获取下拉框图标
+const arrow_down = document.querySelector('.input-suffix')
+
+// 获取下拉内容
+const dropdown = document.querySelector('.select-dropdown')
+
+const input = document.querySelector('.select-input')
+
+// 获取用于显示选中值的输入框
+const input_inner = document.querySelector('.input-inner')
+
+// 获取所有下拉选项
+const dropdownOption = document.querySelectorAll('.select-dropdown-item')
+
+// 默认高亮显示
+const firstOption = dropdownOption[0]
+firstOption.classList.add('selected')
+
+// 当点击下拉框图标 显示/隐藏 下拉内容，并切换图标状态
+input.addEventListener('click', toggleDropdown)
+
+function toggleDropdown() {
+  dropdown.style.display = (dropdown.style.display === 'block') ? 'none' : 'block'
+  arrow_down.classList.toggle('open')
+}
+
+// 为每个下拉选项添加点击事件监听器
+dropdownOption.forEach((option) => {
+  option.addEventListener('click', (event) => {
+    selectOption(event.target)
+  })
+})
+
+function selectOption(event) {
+  input_inner.value = event.innerText
+
+  // 清除之前高亮的状态
+  dropdownOption.forEach((option) => {
+    option.classList.remove('selected')
+  })
+
+  // 为选中选项添加高亮样式
+  event.classList.add('selected')
+
+  dropdown.style.display = 'none'
+  arrow_down.classList.remove('open')
+
+  ipcRenderer.send('selectedValue', event.innerText)
+}

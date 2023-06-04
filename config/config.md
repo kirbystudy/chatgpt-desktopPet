@@ -14,6 +14,7 @@
       {
         "roleId": 1,
         "roleName": "角色名称",
+        "roleText": "角色引导词",
         "model": "模型文件路径",
         "scale": 0.1
       },

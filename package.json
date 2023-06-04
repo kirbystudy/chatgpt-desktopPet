@@ -1,7 +1,7 @@
 {
-  "name": "vits-desktoppet",
-  "version": "1.1.8",
-  "description": "DesktopPet Electron",
+  "name": "chatgpt-desktoppet",
+  "version": "1.0.0",
+  "description": "Anime DesktopPet",
   "main": "./src/main/background.js",
   "scripts": {
     "start": "chcp 65001 && cross-env NODE_ENV=development electron .",

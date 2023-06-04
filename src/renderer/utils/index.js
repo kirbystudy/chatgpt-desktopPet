@@ -80,8 +80,9 @@ window.onload = function () {
 }
 
 // 初始化live2d模型
-function loadLive2D() {
-  createModel(config.live2d, canvas)
+function loadLive2D(roleId) {
+
+  createModel(config.live2d, canvas, roleId)
 
   setTimeout(() => {
     app.classList.add("show")
@@ -138,6 +139,10 @@ function getGreeting() {
 
 // DOM内容解析完成后触发事件
 document.addEventListener('DOMContentLoaded', () => {
+
+  ipcRenderer.on('loadlive2d', (event, value) => {
+    loadLive2D(value)
+  })
 
   // 启动拖拽事件处理函数
   screenUtils.getScreenInfo((screenInfo) => {
