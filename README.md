@@ -29,6 +29,23 @@
     npm run dist-win64
   ```
 
+## 基础使用 (Basic Use)
+
+  1.config文件夹下创建config.json文件，配置参数需自行填写
+  ```json
+  {
+    "gpt": {
+      "url": "chatgpt接口",
+      "ruleType": "规则类型"
+    },
+    "feedBack": {
+      "url": "留言反馈接口"
+    }
+  }
+  ```
+
+  2.项目目录下创建model文件夹，放置live2d模型文件，在项目中找到store.js文件，修改live2d参数的值为live2d文件路径即可。
+
 ## 功能 (Function)
 
 - [x] 支持 Live2d moc/moc3
