@@ -31,7 +31,7 @@
 
 ## 基础使用 (Basic Use)
 
-  1.config文件夹下创建config.json文件，配置参数需自行填写
+  1. config文件夹下创建config.json文件，配置参数需自行填写
   ```json
   {
     "gpt": {
@@ -40,11 +40,18 @@
     },
     "feedBack": {
       "url": "留言反馈接口"
+    },
+    "live2d": {
+      "model": "",
+      "path": "模型文件路径",
+      "x": 0,
+      "y": 50,
+      "scale": 0.1
     }
   }
   ```
 
-  2.项目目录下创建model文件夹，放置live2d模型文件，在项目中找到store.js文件，修改live2d参数的值为live2d文件路径即可。
+  2. 项目目录下创建model文件夹，放置live2d模型文件，然后在config.json文件里填写模型文件路径即可。
 
 ## 功能 (Function)
 
