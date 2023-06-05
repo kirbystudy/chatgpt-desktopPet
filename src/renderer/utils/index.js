@@ -6,6 +6,17 @@ const { ipcRenderer } = require('electron')
 const screenUtils = require('../utils/screen')
 window.$ = window.jQuery = require('../utils/jquery.min.js')
 
+// 引入 fs 和 path 模块
+const fs = require('fs')
+const path = require('path')
+
+// 读取config.json
+const configPath = path.resolve(__dirname, '../../../config/config.json')
+const jsonContent = fs.readFileSync(configPath, 'utf-8')
+
+// 解析JSON
+const config = JSON.parse(jsonContent)
+
 const app = document.getElementById('app')
 const canvas = document.getElementById('canvas')
 const setting = document.getElementById('setting')
@@ -70,7 +81,7 @@ window.onload = function () {
 
 // 初始化live2d模型
 function loadLive2D() {
-  createModel(store.state, canvas)
+  createModel(config.live2d, canvas)
 
   setTimeout(() => {
     app.classList.add("show")
