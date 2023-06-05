@@ -13,6 +13,20 @@ if (process.env.NODE_ENV === 'development') {
   } catch (_) { }
 }
 
+// 阻止应用多开
+const isAppInstance = app.requestSingleInstanceLock()
+if (!isAppInstance) {
+  app.exit(0)
+} else {
+  app.on('second-instance', (event, argv, workingDirectory, additionalData, ackCallback) => {
+    if (global.mainWindow.isMaximized()) {
+      global.mainWindow.restore()
+    }
+    global.mainWindow.focus()
+    global.mainWindow.show()
+  })
+}
+
 // ipc监听，获取主窗体位置
 ipcMain.on('getMainPos', (event) => {
   const pos = global.mainWindow.getPosition()
