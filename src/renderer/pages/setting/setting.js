@@ -15,26 +15,6 @@ const jsonContent = fs.readFileSync(configPath, 'utf-8')
 // 解析JSON
 const config = JSON.parse(jsonContent)
 
-const versionInfoTab = document.getElementById('versionInfoTab')
-const modelSettingTab = document.getElementById('modelSettingTab')
-const versionInfo = document.getElementById('versionInfo')
-const modelSetting = document.getElementById('modelSetting')
-const highlight = document.getElementById('highlight')
-
-versionInfoTab.addEventListener('click', () => {
-  versionInfo.style.display = 'block'
-  modelSetting.style.display = 'none'
-  highlight.style.left = '15px'
-  highlight.style.width = '70px'
-})
-
-modelSettingTab.addEventListener('click', () => {
-  versionInfo.style.display = 'none'
-  modelSetting.style.display = 'block'
-  highlight.style.left = '115px'
-  highlight.style.width = '70px'
-})
-
 const feedbackBtn = document.getElementById('feedback_button')
 
 // 发送内容
@@ -139,6 +119,72 @@ window.onload = function () {
   close.addEventListener('click', () => {
     ipcRenderer.send('Setting', 'close')
   })
+}
+
+var contentPages = document.getElementsByClassName("setting_page")
+var highlight = document.getElementById("highlight")
+
+// 选项点击事件处理程序
+function handleOptionClick(event) {
+  var target = event.target
+  var id = target.id
+  var contentId = id.replace("Tab", "")
+
+  // 隐藏所有的内容
+
+  for (var i = 0; i < contentPages.length; i++) {
+    contentPages[i].classList.remove('active')
+  }
+
+  // 显示目标内容
+  var content = document.getElementById(contentId)
+  if (content) {
+    content.classList.add('active')
+
+    // 更新选项卡的高亮位置
+    var tabWidth = target.offsetWidth
+    var tabOffsetLeft = target.offsetLeft
+    highlight.style.left = tabOffsetLeft + "px"
+    highlight.style.width = tabWidth + "px"
+
+    // 存储选中的选项
+    localStorage.setItem("selectedOption", id)
+  }
+}
+
+// 添加点击事件委托到选项父容器
+var selection = document.querySelector(".selection")
+selection.addEventListener("click", function (event) {
+  if (event.target.classList.contains("selection_bar")) {
+    handleOptionClick(event)
+  }
+})
+
+// 检查是否有选中的选项并恢复状态
+var selectedOption = localStorage.getItem("selectedOption")
+if (selectedOption === null) {
+  console.log('1')
+  var versionInfoTab = document.getElementById("versionInfoTab");
+  var versionInfoContent = document.getElementById("versionInfo");
+  if (versionInfoTab && versionInfoContent) {
+    versionInfoTab.classList.add('active');
+    versionInfoContent.classList.add('active');
+  }
+
+} else {
+  console.log('2')
+  var selectedTab = document.getElementById(selectedOption)
+  var contentId = selectedOption.replace("Tab", "")
+  var content = document.getElementById(contentId)
+
+  if (selectedTab && content && highlight) {
+    selectedTab.classList.add('active')
+    content.classList.add('active')
+    var tabWidth = selectedTab.offsetWidth
+    var tabOffsetLeft = selectedTab.offsetLeft
+    highlight.style.left = tabOffsetLeft + "px"
+    highlight.style.width = tabWidth + "px"
+  }
 }
 
 // 获取开关按钮元素

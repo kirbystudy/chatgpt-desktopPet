@@ -145,6 +145,7 @@ html {
 }
 
 .setting_page {
+  display: none;
   position: absolute;
   background-color: #f4f5f7;
   border-radius: 3px;
@@ -154,6 +155,10 @@ html {
   bottom: 15px;
   overflow-x: hidden;
   overflow-y: auto;
+}
+
+.setting_page.active {
+  display: block;
 }
 
 .setting_box {
