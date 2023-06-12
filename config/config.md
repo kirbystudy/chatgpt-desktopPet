@@ -14,10 +14,19 @@
       {
         "roleId": 1,
         "roleName": "角色名称",
-        "roleText": "角色引导词",
         "model": "模型文件路径",
-        "scale": 0.1
+        "scale": 0.2,
+        "x": 50,
+        "y": 50
       },
+      {
+        "roleId": 2,
+        "roleName": "角色名称",
+        "model": "模型文件路径",
+        "scale": 0.18,
+        "x": 0,
+        "y": 50
+      }
     ]
   }
 }
