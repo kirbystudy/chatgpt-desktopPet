@@ -51,7 +51,7 @@
       </div>
     </div>
 
-    <div class="setting_page" id="modelSetting" style="display: none;">
+    <div class="setting_page" id="modelSetting">
       <div class="setting_box">
         <div class="setting_header">
           <h3>启动设置</h3>
@@ -65,10 +65,10 @@
         </div>
 
         <div class="container_box">
-          <span>选择Live2D模型</span>
+          <span>选择Live2d模型</span>
           <div class="select-box full-width">
             <div class="select-input">
-              <input type="text" class="input-inner" value="小埋" readonly="readonly" >
+              <input type="text" class="input-inner" value="小埋" readonly="readonly">
               <span class="input-suffix">
                 <img src="../../image/arrow-down-bold.png" alt="">
               </span>
@@ -84,9 +84,19 @@
                 </ul>
               </div>
             </div>
-           
           </div>
+
         </div>
+
+        <div class="setting_header">
+          <h3>悬浮球设置</h3>
+        </div>
+
+        <div class="container_box" style="height: 80px">
+          <div id="bubble_img" class="bubble"></div>
+          <button class="config-btn" id="upload_file">选择文件</button>
+        </div>
+
       </div>
     </div>
   </div>

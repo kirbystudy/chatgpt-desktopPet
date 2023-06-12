@@ -114,6 +114,27 @@ ul.messages::-webkit-scrollbar-thumb {
     font-weight: bold;
 }
 
+.top_menu .sidebar_toggle {
+    position: absolute;
+    top: 16px;
+    right: 30px;
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    transition: transform 0.5s ease;
+    -webkit-app-region: no-drag;
+}
+
+.sidebar_toggle img {
+    -webkit-user-drag: none;
+    -moz-user-drag: none;
+    -ms-user-drag: none;
+    user-drag: none;
+}
+
+.sidebar_toggle.rotate {
+    transform: rotate(180deg);
+}
 
 .messages {
     position: relative;
@@ -220,6 +241,228 @@ ul.messages::-webkit-scrollbar-thumb {
     font-weight: 300;
 }
 
+.config_box {
+    position: fixed;
+    top: 61px;
+    /* 初始状态为隐藏 */
+    right: -350px;
+    width: 350px;
+    height: calc(100% - 61px);
+    z-index: 9999;
+    background-color: #f4f5f7;
+    transition: right 0.6s ease-in-out;
+}
+
+.config_box.show {
+    right: 0;
+}
+
+.config_box.hide {
+    right: -350px;
+}
+
+.config_box .config_title {
+    background-color: #e5e7eb;
+    padding: 10px;
+    font-size: 14px;
+    display: flex;
+    justify-content: center;
+}
+
+.config-dialog {
+    padding: 1rem;
+}
+
+.config-input {
+    position: relative;
+    margin-bottom: 1.25rem;
+}
+
+.config-input #role_script {
+    display: none;
+}
+
+.config-input .role_name {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.select-box {
+    display: inline-block;
+    position: relative;
+}
+
+.full-width {
+    width: 100% !important;
+}
+
+.select-box>.select-input {
+    display: block;
+}
+
+.select-input {
+    position: relative;
+    font-size: 14px;
+}
+
+.input-inner {
+    width: 100%;
+    height: 100%;
+    font-size: 14px;
+    padding: 10px;
+    box-sizing: border-box;
+    outline: none;
+    border-width: 0;
+    resize: none;
+    border-radius: 7px;
+    border: 1px solid #d1d5db;
+    background-color: #fff;
+}
+
+.input-suffix {
+    position: absolute;
+    height: 100%;
+    top: 0;
+    right: 10px;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    transition: all 0.3s;
+    cursor: pointer;
+}
+
+.select-input.open .select-dropdown {
+    display: block;
+}
+
+.select-input .input-suffix.open {
+    transition: transform 0.3s;
+    transform: rotate(180deg);
+}
+
+.select-dropdown {
+    display: none;
+    width: 100%;
+    position: absolute;
+    margin-top: 8px;
+    border: 1px solid #e4e7ed;
+    background-color: #fff;
+    border-radius: 6px;
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+    transition: all 0.3s;
+    z-index: 9999;
+}
+
+.select-dropdown::after {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: 35px;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-bottom: 6px solid #fff;
+    box-sizing: border-box;
+}
+
+.scrollbar {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+/* 滚动条整体样式 */
+.scrollbar::-webkit-scrollbar {
+    /* 滚动条宽度 */
+    width: 4px;
+    /* 滚动条高度 */
+    height: 5px;
+}
+
+/* 滚动条轨道样式 */
+.scrollbar::-webkit-scrollbar-track {
+    /* 滚动条轨道背景色 */
+    background-color: #f5f5f5;
+}
+
+/* 滚动条滑块样式 */
+.scrollbar::-webkit-scrollbar-thumb {
+    /* 滚动条滑块颜色 */
+    background-color: #BCBCD2;
+    /* 滚动条滑块四个圆角半径 */
+    border-radius: 4px;
+}
+
+.select-dropdown-wrap {
+    height: 100%;
+}
+
+.select-dropdown-list {
+    list-style: none;
+    padding: 6px 0;
+}
+
+.select-dropdown-item {
+    font-size: 14px;
+    padding: 0 40px;
+    position: relative;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #606266;
+    height: 34px;
+    line-height: 34px;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+
+.select-dropdown-item:hover {
+    background-color: #f5f7fa;
+}
+
+.select-dropdown-item.selected {
+    color: #249ffd;
+    font-weight: bold;
+}
+
+.select-dropdown-item.show {
+    position: absolute;
+    right: 0;
+    background-image: url(../../image/window-close.png);
+    background-color: cover;
+}
+
+
+.config-bottom {
+    display: none;
+    position: absolute;
+    right: 20px;
+}
+
+.config-bottom-left {
+    display: none;
+    position: absolute;
+    left: 70px;
+}
+
+.config-btn {
+    border-radius: 6px;
+    padding: 8px 16px;
+    outline: none;
+    border: none;
+    background-color: #4e7fff;
+    color: #fff;
+    margin-left: 16px;
+    cursor: pointer;
+}
+
+.config-btn:active {
+    transform: scale(0.98);
+}
+
 .bottom_wrapper {
     width: 100%;
     background-color: #fff;
@@ -287,7 +530,6 @@ textarea {
     display: none;
 }
 
-
 .dialog-box {
     /* 清除浮动 */
     overflow: hidden;
@@ -308,7 +550,6 @@ textarea {
     border-radius: 50%;
     width: 50px;
     height: 50px;
-    border-bottom: solid #90e367 thin;
 }
 
 .header,
@@ -629,4 +870,56 @@ input:checked+.slider1:before {
     to {
         transform: rotate(360deg);
     }
+}
+
+.useRole {
+    display: block;
+    width: 100%;
+    text-align: center;
+    font-size: 14px;
+    padding: 16px;
+    background-color: #e5e7eb;
+    border: 2px solid #e4e5e7;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    box-shadow: 0 .1rem .3rem rgba(0, 0, 0, .15);
+}
+
+.delete-btn {
+    display: none;
+    position: absolute;
+    right: 10px;
+    top: 8px;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.role-type {
+    width: 50px;
+    height: 25px;
+    line-height: 25px;
+    position: absolute;
+    top: 5px;
+    left: 100px;
+    font-size: 10px;
+    border-radius: 4px;
+    background-color: #28a745;
+    color: #fff;
+    text-align: center;
+    pointer-events: none;
+    -webkit-user-drag: none;
+    -moz-user-drag: none;
+    -ms-user-drag: none;
+    user-select: none;
+    user-drag: none;
+}
+
+.role-avatar {
+    width: 25px;
+    height: 25px;
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    border-radius: 50%;
 }

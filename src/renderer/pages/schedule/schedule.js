@@ -92,7 +92,7 @@ $(function () {
             highlightWeek: weekDay,
             gridOnClick: function (e) {
                 var num = e.index - 1
-                popupComponent.openPopup('秋蒂桌宠', e.name + ' ' + e.week.split('\n')[0] + ' ' + wType[num].name)
+                popupComponent.openPopup('chatGPT桌宠', e.name + ' ' + e.week.split('\n')[0] + ' ' + wType[num].name)
             },
             styles: {
                 Gheight: 50

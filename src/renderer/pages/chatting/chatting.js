@@ -60,6 +60,574 @@ closeBtn.addEventListener('click', () => {
   ipcRenderer.send('Chatting', 'close-window')
 })
 
+/* ----------------------------- 右侧配置项 -----------------------------*/
+
+const sidebarToggle = document.querySelector('.sidebar_toggle')
+
+// 如果点击的不是侧边栏或按钮，则隐藏侧边栏
+let sidebar = document.getElementById('config')
+let toggleBtn = document.getElementById('setting')
+
+let isClick = false
+
+document.addEventListener('click', (event) => {
+  if (!sidebar.contains(event.target) && !toggleBtn.contains(event.target)) {
+    hideSidebar()
+  } else if (toggleBtn.contains(event.target)) {
+    toggleSidebar()
+  }
+})
+
+function hideSidebar() {
+  isClick = false
+  sidebarToggle.classList.remove('rotate')
+  sidebar.classList.remove('show')
+  sidebar.classList.add('hide')
+}
+
+function toggleSidebar() {
+  if (isClick) {
+    hideSidebar()
+  } else {
+    isClick = true
+    sidebarToggle.classList.add('rotate')
+    sidebar.classList.remove('hide')
+    sidebar.classList.add('show')
+  }
+}
+
+/* ----------------------------- 右侧配置项 -----------------------------*/
+
+
+/* ----------------------------- 下拉框内容 -----------------------------*/
+
+// 获取下拉框图标
+const arrow_down = document.getElementById('input-suffix')
+
+// 获取下拉内容
+const dropdown = document.getElementById('select-dropdown')
+
+const dropdownContainer = document.getElementById('select-input')
+
+// 获取用于显示选中值的输入框
+var input_inner = document.getElementById('input-inner')
+
+// 获取所有下拉选项
+var dropdownOption = document.querySelectorAll('.select-dropdown-item')
+
+// 文本域
+const textarea = document.getElementById('textarea-inner')
+
+// 角色显示/隐藏
+const role_script = document.getElementById('role_script')
+
+// 按钮显示/隐藏
+const btn_script = document.getElementById('btn_script')
+const upload_script = document.getElementById('upload_script')
+
+// 角色提示
+const useRole = document.querySelector('.useRole')
+
+// 上传按钮
+const uploadBtn = document.getElementById('upload_avatar_btn')
+
+// 在页面加载完成后执行代码
+window.addEventListener('DOMContentLoaded', () => {
+
+  // 获取下拉选项元素
+  var optionElements = document.querySelectorAll('.select-dropdown-item')
+
+  // 获取缓存中的 role_name 值
+  var cachedRoleName = localStorage.getItem('role_name')
+
+  // 获取缓存中的 role_text 值
+  const cacheRoleText = localStorage.getItem(`role_text_${encodeURIComponent(cachedRoleName)}`)
+
+  // 设置默认选中文本
+  var defaultSelectedText = cachedRoleName ? cachedRoleName : '小埋'
+
+  // 遍历每个下拉选项元素
+  optionElements.forEach((optionElement) => {
+
+    // 获取当前选项的文本内容
+    var currentText = optionElement.textContent.replace('内置角色', '')
+
+    // 判断是否为默认选中项，设置高亮样式
+    if (currentText === defaultSelectedText) {
+      optionElement.classList.add('selected')
+    }
+  })
+
+  // 设置角色引导词的显示状态
+  if (defaultSelectedText === '小埋' || defaultSelectedText === '血小板') {
+    // 小埋和血小板的角色引导词文本框隐藏和不可编辑
+    role_script.style.display = 'none'
+    btn_script.style.display = 'none'
+    upload_script.style.display = 'none'
+    input_inner.disabled = true
+  } else {
+    // 其他角色引导词文本框显示和可编辑
+    role_script.style.display = 'block'
+    btn_script.style.display = 'block'
+    upload_script.style.display = ' block'
+    textarea.disabled = false
+    textarea.value = cacheRoleText
+  }
+
+  // 设置初始的角色名称和使用提示
+  input_inner.value = defaultSelectedText
+  useRole.innerText = `当前使用的角色名称：${defaultSelectedText}`
+
+})
+
+uploadBtn.addEventListener('click', () => {
+  // 向主进程发送打开文件对话框请求
+  ipcRenderer.send('open-file-dialog')
+})
+
+ipcRenderer.on('selected-file', (event, filePath) => {
+
+  // 获取当前角色名称
+  const currentRoleName = localStorage.getItem('role_name')
+
+  // 将文件路径与角色关联起来存储
+  const roleAvatarMap = JSON.parse(localStorage.getItem('role_avatar_map')) || {}
+  roleAvatarMap[currentRoleName] = filePath.replaceAll('\\', '/')
+  localStorage.setItem('role_avatar_map', JSON.stringify(roleAvatarMap))
+  setTimeout(() => {
+    ipcRenderer.send('Chatting', 'Refresh')
+  }, 500)
+})
+
+let previousValue = localStorage.getItem('role_name')
+
+// 检查并更新角色名称显示
+setInterval(function () {
+  const updatedValue = localStorage.getItem('role_name')
+  if (updatedValue !== previousValue) {
+    if (!updatedValue) {
+      useRole.innerText = '当前使用的角色名称：小埋'
+      input_inner.value = '小埋'
+    } else {
+      useRole.innerText = `当前使用的角色名称：${updatedValue}`
+      previousValue = updatedValue
+    }
+  }
+}, 500)
+
+
+// 当点击下拉框图标 显示/隐藏 下拉内容，并切换图标状态
+dropdownContainer.addEventListener('click', toggleDropdown)
+
+function toggleDropdown() {
+  dropdown.style.display = (dropdown.style.display === 'block') ? 'none' : 'block'
+  arrow_down.classList.toggle('open')
+}
+
+
+/* ----------------------------- 下拉框内容 -----------------------------*/
+
+// 保存按钮
+const save_btn = document.getElementById('save_btn')
+
+// 重置按钮
+const reset_btn = document.getElementById('reset_btn')
+
+// 获取选项数组
+var dropdownOptions = localStorage.getItem('dropdownOptions')
+
+// 获取存储的选项数组
+var storedOptions = JSON.parse(localStorage.getItem('dropdownOptions')) || []
+
+// 全部选项内容元素
+var dropdownList = document.querySelector('.select-dropdown-list')
+
+// 创建并添加存储的选项到下拉框
+function addStoredOptionsToDropdown() {
+  // 创建文档片段
+  var fragment = document.createDocumentFragment()
+
+  // 查找血小板选项
+  var plateletOption = dropdownList.querySelector('.select-dropdown-item:nth-child(2)')
+
+  // 遍历存储的选项
+  storedOptions.forEach((optionText) => {
+    var newOption = createOptionElement(optionText)
+
+    // 将新选项添加到文档片段
+    fragment.appendChild(newOption)
+  })
+
+  // 将文档片段插入到血小板选项之后
+  dropdownList.insertBefore(fragment, plateletOption.nextElementSibling)
+}
+
+// 调用函数添加存储的选项到下拉框
+addStoredOptionsToDropdown()
+
+dropdownOption = dropdownList.querySelectorAll('.select-dropdown-item')
+
+dropdownOption.forEach((option) => {
+
+  var deleteBtn = document.createElement('img')
+  deleteBtn.src = '../../image/window-close.png'
+  deleteBtn.classList.add('delete-btn')
+  option.appendChild(deleteBtn)
+
+  var roleName = option.textContent.trim()
+  var avatar = document.createElement('img')
+  avatar.classList.add('role-avatar')
+
+  var roleAvatarMap = JSON.parse(localStorage.getItem('role_avatar_map'))
+
+  if (!roleAvatarMap || typeof roleAvatarMap !== 'object') {
+    // 处理 roleAvatarMap 不存在或无效的情况
+    // 给 roleAvatarMap 赋予一个空对象作为初始值
+    if (option.textContent === '小埋内置角色') {
+      avatar.src = '../../image/umaru.jpg'
+    } else if (option.textContent === '血小板内置角色') {
+      avatar.src = '../../image/xxb.jpg'
+    }
+  } else {
+    // roleAvatarMap 存在且有效，执行相关操作
+    if (option.textContent === '小埋内置角色') {
+      avatar.src = '../../image/umaru.jpg'
+    } else if (option.textContent === '血小板内置角色') {
+      avatar.src = '../../image/xxb.jpg'
+    } else {
+      var roleNames = Object.keys(roleAvatarMap)
+      for (var i = 0; i < roleNames.length; i++) {
+        if (roleName === roleNames[i]) {
+          avatar.src = roleAvatarMap[roleName]
+        }
+      }
+    }
+  }
+
+  option.appendChild(avatar)
+
+  option.addEventListener('mouseenter', () => {
+    if (option.textContent === '小埋内置角色' || option.textContent === '血小板内置角色' || option.textContent === '自定义角色') {
+      deleteBtn.style.display = 'none'
+    } else {
+      deleteBtn.style.display = 'inline-block'
+    }
+  })
+
+  option.addEventListener('mouseleave', () => {
+    deleteBtn.style.display = 'none'
+  })
+
+  deleteBtn.addEventListener('click', (event) => {
+    option.remove()
+    // 阻止事件冒泡，不触发父级元素的点击事件
+    event.stopPropagation()
+
+    input_inner.value = ''
+    textarea.value = ''
+    useRole.value = ''
+
+    // 获取存储的角色名称
+    var roleName = localStorage.getItem('role_name')
+
+    // 将字符串转换为JavaScript对象
+    var roleAvatarMap = JSON.parse(localStorage.getItem('role_avatar_map'))
+    if (roleAvatarMap != null) {
+
+      // 删除特定的属性
+      delete roleAvatarMap[roleName]
+
+      // 将更新后的对象转换为字符串
+      var updatedRoleAvatarMapString = JSON.stringify(roleAvatarMap)
+
+      // 将更新后的字符串重新存储到role_avatar_map
+      localStorage.setItem('role_avatar_map', updatedRoleAvatarMapString)
+    }
+
+    storedOptions = storedOptions.filter(text => text !== option.textContent)
+
+    localStorage.setItem('dropdownOptions', JSON.stringify(storedOptions))
+    localStorage.removeItem('role_name')
+    localStorage.removeItem('role_type')
+    localStorage.removeItem(`role_text_${encodeURIComponent(option.textContent)}`)
+
+    // 设置默认角色名称和角色类型
+    localStorage.setItem('role_name', '小埋')
+    localStorage.setItem('role_type', 'umaru')
+
+    if (localStorage.getItem('role_name') == '小埋') {
+      dropdownOption[0].classList.add('selected')
+    }
+
+    // 隐藏角色引导词和按钮
+    role_script.style.display = 'none'
+    btn_script.style.display = 'none'
+
+  })
+
+})
+
+var liElements = dropdownOption
+var lastElement = liElements[liElements.length - 1]
+var imageElement = lastElement.querySelector('.role-avatar')
+imageElement.style.display = 'none'
+
+function handleOptionClick(event) {
+  var selectedText = event.target.innerText
+
+  dropdownOption.forEach(option => {
+    option.classList.remove('selected')
+  })
+
+  // 切换选中选项的高亮样式
+  event.target.classList.add('selected')
+
+  // 更新输入文本框的值和当前使用角色名称的值
+  input_inner.value = selectedText
+  useRole.value = selectedText
+  textarea.value = localStorage.getItem(`role_text_${encodeURIComponent(selectedText)}`)
+
+  // 根据选择的选项进行不同的处理
+  if (selectedText === '自定义角色') {
+    handleCustomRoleOption()
+  } else {
+    handleBuiltInRoleOption(selectedText)
+  }
+
+  hideDropdownOptions(event.target)
+}
+
+// 点击其他地方隐藏下拉选项
+document.addEventListener('click', (event) => {
+  hideDropdownOptions(event.target)
+})
+
+// 判断是否创建新角色名称
+let isNewRole = false
+
+// 处理自定义角色的选项
+function handleCustomRoleOption() {
+  isNewRole = true
+  input_inner.value = ''
+  textarea.value = ''
+  input_inner.disabled = false
+  textarea.disabled = false
+  role_script.style.display = 'block'
+  btn_script.style.display = 'block'
+  upload_script.style.display = 'none'
+  input_inner.focus()
+  localStorage.setItem('role_type', 'custom')
+}
+
+// 处理内置角色的选项
+function handleBuiltInRoleOption(selectedText) {
+  const roleMappings = {
+    '小埋\n内置角色': { name: '小埋', type: 'umaru' },
+    '血小板\n内置角色': { name: '血小板', type: 'xxb' }
+  }
+
+  if (roleMappings[selectedText]) {
+    const { name, type } = roleMappings[selectedText]
+    input_inner.disabled = true
+    textarea.disabled = true
+    role_script.style.display = 'none'
+    btn_script.style.display = 'none'
+    upload_script.style.display = 'none'
+    input_inner.value = name
+    localStorage.setItem('role_name', name)
+    localStorage.setItem('role_type', type)
+  } else if (dropdownOptions && dropdownOptions.includes(selectedText)) {
+    input_inner.disabled = false
+    textarea.disabled = false
+    role_script.style.display = 'block'
+    btn_script.style.display = 'block'
+    upload_script.style.display = 'block'
+    input_inner.value = selectedText
+    textarea.value = localStorage.getItem(`role_text_${encodeURIComponent(selectedText)}`)
+    localStorage.setItem('role_name', selectedText)
+    localStorage.setItem('role_type', 'custom')
+  }
+}
+
+// 隐藏下拉选项
+function hideDropdownOptions(target) {
+  // 检查点击的目标元素是否在下拉选项以及下拉按钮之外
+  if (!dropdownContainer.contains(target) && target !== arrow_down) {
+    dropdown.style.display = 'none'
+    arrow_down.classList.remove('open')
+  }
+}
+
+// 在保存按钮点击事件处理程序
+save_btn.addEventListener('click', () => {
+
+  const role_name = input_inner.value.trim()
+
+  if (role_name === '') {
+    popupComponent.openPopup('chatGPT桌宠', '角色名称不能为空')
+    return
+  }
+
+  // 获取缓存里的角色名称
+  const prev_role_name = localStorage.getItem('role_name')
+
+  if (isNewRole) {
+    localStorage.setItem('role_name', role_name)
+    if (textarea.value != '') {
+      localStorage.setItem(`role_text_${encodeURIComponent(role_name)}`, textarea.value)
+    }
+
+    // 创建新选项并添加到下拉框
+    var newOption = createOptionElement(role_name)
+
+    // 查找血小板选项
+    var plateletOption = dropdownList.querySelector('.select-dropdown-item:nth-child(2)')
+
+    // 将新选项插入到血小板选项之后
+    dropdownList.insertBefore(newOption, plateletOption.nextElementSibling)
+
+    // 将新选项的文本内容存储到本地
+    storedOptions.push(role_name)
+    localStorage.setItem('dropdownOptions', JSON.stringify(storedOptions))
+
+    // 清除其他选项的高亮状态
+    dropdownOption.forEach((option) => {
+      option.classList.remove('selected')
+    })
+
+    // 将新选项设置为高亮状态
+    newOption.classList.add('selected')
+
+    // 更新输入文本框的值
+    input_inner.value = role_name
+    useRole.value = role_name
+
+    // 清除新选项的高亮状态
+    function clearNewOptionHighlight() {
+      newOption.classList.remove('selected')
+    }
+
+    // 其他选项的点击事件监听
+    dropdownOption.forEach((option) => {
+      if (option !== newOption) {
+        option.addEventListener('click', (event) => {
+          dropdownOption.forEach((option) => {
+            option.classList.remove('selected')
+          })
+          event.target.classList.add('selected')
+          clearNewOptionHighlight()
+        })
+      }
+    })
+    isNewRole = false // 重置为非新建角色状态
+  } else {
+    if (prev_role_name !== role_name) { // 角色名称、角色引导词一起修改
+      
+      const dropdownOptions = JSON.parse(localStorage.getItem('dropdownOptions')) || []
+      const index = dropdownOptions.indexOf(prev_role_name)
+      if (index !== -1) {
+        dropdownOptions[index] = role_name
+        localStorage.setItem('dropdownOptions', JSON.stringify(dropdownOptions))
+      }
+
+      // 将字符串转换为JavaScript对象
+      var roleAvatarMap = JSON.parse(localStorage.getItem('role_avatar_map'))
+
+      // 创建一个新的对象来存储更新后的属性
+      var updatedRoleAvatarMap = {}
+
+      // 遍历原始对象的属性
+      for (var key in roleAvatarMap) {
+        // 检查是否是要删除的属性
+        if (key === prev_role_name) {
+          // 使用新的属性名存储对应的值
+          updatedRoleAvatarMap[role_name] = roleAvatarMap[key]
+        } else {
+          // 保留原有的属性名和值
+          updatedRoleAvatarMap[key] = roleAvatarMap[key]
+        }
+      }
+
+      // 将更新后的对象转换为字符串
+      var updatedRoleAvatarMapString = JSON.stringify(updatedRoleAvatarMap)
+
+      // 将更新后的字符串重新存储到角色头像
+      localStorage.setItem('role_avatar_map', updatedRoleAvatarMapString)
+
+      // 删除上次缓存的角色引导词
+      localStorage.removeItem(`role_text_${encodeURIComponent(localStorage.getItem('role_name'))}`)
+
+      // 同时修改角色名称和引导词
+      localStorage.setItem('role_name', role_name)
+      localStorage.setItem(`role_text_${encodeURIComponent(role_name)}`, textarea.value)
+
+    } else { // 只修改角色引导词
+      
+      // 将字符串转换为JavaScript对象
+      var roleAvatarMap = JSON.parse(localStorage.getItem('role_avatar_map'))
+
+      // 创建一个新的对象来存储更新后的属性
+      var updatedRoleAvatarMap = {}
+
+      // 遍历原始对象的属性
+      for (var key in roleAvatarMap) {
+        // 检查是否是要删除的属性
+        if (key === prev_role_name) {
+          // 使用新的属性名存储对应的值
+          updatedRoleAvatarMap[role_name] = roleAvatarMap[key]
+        } else {
+          // 保留原有的属性名和值
+          updatedRoleAvatarMap[key] = roleAvatarMap[key]
+        }
+      }
+
+      // 将更新后的对象转换为字符串
+      var updatedRoleAvatarMapString = JSON.stringify(updatedRoleAvatarMap)
+
+      // 将更新后的字符串重新存储到role_avatar_map
+      localStorage.setItem('role_avatar_map', updatedRoleAvatarMapString)
+
+      // 同时修改角色名称和引导词
+      localStorage.setItem('role_name', role_name)
+      localStorage.setItem(`role_text_${encodeURIComponent(role_name)}`, textarea.value)
+
+    }
+
+  }
+
+  // 默认显示角色名称和角色引导词的内容
+  input_inner.value = role_name
+  textarea.value = localStorage.getItem(`role_text_${encodeURIComponent(role_name)}`)
+
+  setTimeout(() => {
+    ipcRenderer.send('Chatting', 'Refresh')
+  }, 1000)
+
+})
+
+// 在下拉选项的父元素上添加事件监听器，利用事件委托处理点击事件
+dropdownList.addEventListener('click', (event) => {
+  const option = event.target.closest('.select-dropdown-item')
+  if (option) {
+    handleOptionClick(event)
+  }
+})
+
+// 创建下拉选项元素并添加点击事件监听器
+function createOptionElement(text) {
+  var option = document.createElement('li')
+  option.classList.add('select-dropdown-item')
+  option.textContent = text
+
+  return option
+}
+
+reset_btn.addEventListener('click', () => {
+  input_inner.value = ''
+  textarea.value = ''
+})
+
+
 // 标记是否可以发送请求
 let canSendRequest = true
 
@@ -91,18 +659,18 @@ $(document).ready(function () {
 async function sending(userMessage) {
 
   if (userMessage.trim().length === 0) {
-    popupComponent.openPopup('秋蒂桌宠', '文本内容不能为空')
+    popupComponent.openPopup('chatGPT桌宠', '文本内容不能为空')
     return
   }
 
   if (userMessage.trim().length >= 500) {
-    popupComponent.openPopup('秋蒂桌宠', '字数限制在500字内')
+    popupComponent.openPopup('chatGPT桌宠', '字数限制在500字内')
     message.value = ''
     return
   }
 
   if (!canSendRequest) {
-    popupComponent.openPopup('秋蒂桌宠', '请等待至少3秒后再发送请求')
+    popupComponent.openPopup('chatGPT桌宠', '请等待至少3秒后再发送请求')
     message.value = ''
     return
   }
@@ -117,6 +685,29 @@ async function sending(userMessage) {
   myButton.innerHTML = ''
   myButton.classList.add("loading")
 
+  var left_avatar = '../../image/umaru.jpg'
+  var roleType = localStorage.getItem('role_type')
+  var roleName = localStorage.getItem('role_name')
+  var roleAvatarMap = JSON.parse(localStorage.getItem('role_avatar_map'))
+
+  if (roleAvatarMap != null) {
+    var roleAvatarFilePath = roleAvatarMap[roleName]
+  }
+
+  if (roleType === null) {
+    left_avatar = '../../image/umaru.jpg'
+  } else if (roleType === 'umaru') {
+    left_avatar = '../../image/umaru.jpg'
+  } else if (roleType === 'xxb') {
+    left_avatar = '../../image/xxb.jpg'
+  } else if (roleType === 'custom') {
+    if (roleAvatarFilePath) {
+      left_avatar = roleAvatarFilePath
+    } else {
+      left_avatar = '../../image/gpt.jpg'
+    }
+  }
+
   // 创建实例对象
   let dialogBoxYou = new DialogBox('#chatlog', 'dialog-box1', '../../image/user.png')
 
@@ -130,18 +721,24 @@ async function sending(userMessage) {
   scrollToBottom()
 
   // 创建实例对象
-  let dialogBoxRobot = new DialogBox('#chatlog', 'dialog-box', '../../image/qiudi.jpg')
+  let dialogBoxRobot = new DialogBox('#chatlog', 'dialog-box', left_avatar)
 
   // 对话框拉到底部
   scrollToBottom()
 
   const formData = new FormData()
-  formData.append('ruleType', config.gpt.ruleType)
-  formData.append('command', userMessage)
+  if (localStorage.getItem('role_type') === 'custom') {
+    formData.append('ruleType', localStorage.getItem('role_type'))
+    formData.append('roleText', `【附加说明：${localStorage.getItem(`role_text_${encodeURIComponent(localStorage.getItem('role_name'))}`)}】`)
+    formData.append('command', userMessage)
+  } else {
+    formData.append('ruleType', localStorage.getItem('role_type') === null ? 'umaru' : localStorage.getItem('role_type'))
+    formData.append('command', userMessage)
+  }
 
   lastUserMessage = userMessage
 
-  dialogBoxRobot.setContent('秋蒂正在思考...')
+  dialogBoxRobot.setContent(`${localStorage.getItem('role_name') === null ? '小埋' : localStorage.getItem('role_name')}正在思考...`)
 
   await fetch(`${config.gpt.url}`, {
     method: 'POST',
@@ -154,7 +751,7 @@ async function sending(userMessage) {
     .then(data => {
       dialogBoxRobot.removeContent()
       if (data === '系统繁忙，请稍后再试') {
-        dialogBoxRobot.appendContent('秋蒂正拼命思考中，请稍后再试or点击重试按钮再发一次，啾咪~')
+        dialogBoxRobot.appendContent(`${localStorage.getItem('role_name')}正拼命思考中，请稍后再试or点击重试按钮再发一次。`)
         appendMessage()
         scrollToBottom()
       } else {
@@ -173,8 +770,9 @@ async function sending(userMessage) {
       }, requestWaitTime)
     })
     .catch(error => {
+      dialogBoxRobot.removeContent()
       // 处理错误
-      console.log(error)
+      dialogBoxRobot.appendContent(`请求发生错误，error：${error}`)
     }).finally(() => {
       // 启用按钮
       message.disabled = false
@@ -292,3 +890,33 @@ function appendMessage() {
     item.appendChild(resendButton)
   })
 }
+
+const container = document.querySelector('.scrollbar')
+const minHeightToShowScrollbar = 200
+
+// 检查容器内容高度并根据需要显示/隐藏滚动条
+function checkScrollbarVisibility() {
+  if (container.scrollHeight > minHeightToShowScrollbar) {
+    // 达到高度要求，显示滚动条
+    container.style.overflow = 'auto'
+  } else {
+    // 未达到高度要求，隐藏滚动条
+    container.style.overflow = 'hidden'
+  }
+}
+
+// 初始化时检查滚动的可见性
+checkScrollbarVisibility()
+
+// 监听内容变化，当内容高度发生变化时重新检查滚动条可见性
+new MutationObserver(checkScrollbarVisibility).observe(container, {
+  childList: true,
+  subtree: true,
+  characterData: true
+})
+
+function handleContentChange() {
+  checkScrollbarVisibility()
+}
+
+document.addEventListener('click', handleContentChange)

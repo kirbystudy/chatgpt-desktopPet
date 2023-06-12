@@ -27,7 +27,7 @@
     "@electron/remote": "^2.0.9"
   },
   "build": {
-    "productName": "秋蒂桌宠",
+    "productName": "chatGPT桌宠",
     "appId": "com.disktoppet",
     "directories": {
       "output": "dist"
@@ -35,7 +35,6 @@
     "files": [
       "./src",
       "model",
-      "node_modules",
       "package.json",
       "assets",
       "config"
@@ -61,7 +60,7 @@
       "installerHeaderIcon": "./assets/app_256.ico",
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "秋蒂桌宠"
+      "shortcutName": "chatGPT桌宠"
     },
     "extends": null
   }

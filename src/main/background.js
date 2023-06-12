@@ -1,8 +1,8 @@
-const { app, ipcMain, globalShortcut, screen } = require('electron')
+const { app, ipcMain, globalShortcut, screen, dialog,BrowserWindow } = require('electron')
 const createWindow = require('./windows/mainWindow')
 const createTrayMenu = require('./modules/tray')
 const createSettingShow = require('./windows/setting')
-const createScheduleShow = require('./windows/schedule')
+// const createScheduleShow = require('./windows/schedule')
 const createChattingShow = require('./windows/chatting')
 const createHoverBox = require('./windows/hoverbox')
 
@@ -12,6 +12,21 @@ if (process.env.NODE_ENV === 'development') {
     require('electron-reloader')(module)
   } catch (_) { }
 }
+
+// 阻止应用多开
+const isAppInstance = app.requestSingleInstanceLock()
+if (!isAppInstance) {
+  app.exit(0)
+} else {
+  app.on('second-instance', (event, argv, workingDirectory, additionalData, ackCallback) => {
+    if (global.mainWindow.isMaximized()) {
+      global.mainWindow.restore()
+    }
+    global.mainWindow.focus()
+    global.mainWindow.show()
+  })
+}
+
 
 // ipc监听，获取主窗体位置
 ipcMain.on('getMainPos', (event) => {
@@ -107,14 +122,24 @@ ipcMain.on('Setting', (event, arg) => {
   if (arg == 'close') {
     global.settings.close()
   }
+
+  if(arg == 'Refresh') {
+    global.settings.reload()
+  }
 })
 
 // ipc监听，打开日程表窗口
 ipcMain.on('Schedule', (event, arg) => {
   if (arg == 'Open') {
-    if (global.schedule == null || global.schedule.isDestroyed()) {
-      global.schedule = createScheduleShow()
-    }
+    // if (global.schedule == null || global.schedule.isDestroyed()) {
+    //   global.schedule = createScheduleShow()
+    // }
+    dialog.showMessageBox(global.schedule, {
+      type: 'info',
+      title: 'chatGPT桌宠',
+      message: '功能正在开发中,敬请期待...',
+      buttons: ['OK']
+    })
   }
 })
 
@@ -162,11 +187,10 @@ ipcMain.on('Chatting', (event, arg) => {
     global.chatting.close()
   }
 
-})
+  if (arg == 'Refresh') {
+    global.chatting.reload()
+  }
 
-// ipc监听，发送vits语音
-ipcMain.on('sendBuffer', (event, buffer) => {
-  global.mainWindow.webContents.send('playAudio', buffer)
 })
 
 // ipc监听，显示悬浮球
@@ -212,13 +236,12 @@ ipcMain.on('toggle_power', (event, enabled) => {
 
 // ipc监听，更换live2d
 ipcMain.on('selectedValue', (event, value) => {
- 
+
   const roleId = getLive2dModelPath(value)
   global.mainWindow.webContents.send('loadlive2d', roleId)
 })
 
 function getLive2dModelPath(value) {
-  let modelPath
   switch (value) {
     case '小埋':
       roleId = 1
@@ -232,6 +255,27 @@ function getLive2dModelPath(value) {
   return roleId
 }
 
+// ipc监听，打开文件对话框
+ipcMain.on('open-file-dialog', (event) => {
+  dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {
+    properties: ['openFile'],
+    filters: [
+      {
+        name: 'Images',
+        extensions: ['jpg', 'png', 'jpeg', 'gif']
+      }
+    ]
+  }).then(result => {
+    if (!result.canceled) {
+      const selectedFilePath = result.filePaths[0]
+
+      // 回复消息
+      event.sender.send('selected-file', selectedFilePath)
+    }
+  }).catch(err => {
+    console.log(err)
+  })
+})
 
 // 当Electron完成时，将调用此方法
 // 初始化，并准备创建浏览器窗口。

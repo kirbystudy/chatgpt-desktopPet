@@ -6,7 +6,7 @@ const path = require('path')
 window.$ = window.jQuery = require('../../utils/jquery.min.js')
 
 // 创建弹窗组件实例
-const popupComponent = new PopupComponent();
+const popupComponent = new PopupComponent()
 
 // 读取config.json
 const configPath = path.resolve(__dirname, '../../../../config/config.json')
@@ -14,26 +14,6 @@ const jsonContent = fs.readFileSync(configPath, 'utf-8')
 
 // 解析JSON
 const config = JSON.parse(jsonContent)
-
-const versionInfoTab = document.getElementById('versionInfoTab')
-const modelSettingTab = document.getElementById('modelSettingTab')
-const versionInfo = document.getElementById('versionInfo')
-const modelSetting = document.getElementById('modelSetting')
-const highlight = document.getElementById('highlight')
-
-versionInfoTab.addEventListener('click', () => {
-  versionInfo.style.display = 'block'
-  modelSetting.style.display = 'none'
-  highlight.style.left = '15px'
-  highlight.style.width = '70px'
-})
-
-modelSettingTab.addEventListener('click', () => {
-  versionInfo.style.display = 'none'
-  modelSetting.style.display = 'block'
-  highlight.style.left = '115px'
-  highlight.style.width = '70px'
-})
 
 const feedbackBtn = document.getElementById('feedback_button')
 
@@ -58,13 +38,13 @@ let lastRequestTime = 0
 feedbackBtn.addEventListener('click', () => {
   const count = message.value.length
   if (count > 200) {
-    popupComponent.openPopup('秋蒂桌宠', '字数超过了200字')
+    popupComponent.openPopup('chatGPT桌宠', '字数超过了200字')
     return
   }
   var str = message.value
 
   if (str.length == 0) {
-    popupComponent.openPopup('秋蒂桌宠', '留言内容不能为空!')
+    popupComponent.openPopup('chatGPT桌宠', '留言内容不能为空!')
     return
   }
 
@@ -75,7 +55,7 @@ feedbackBtn.addEventListener('click', () => {
     const currentTime = new Date().getTime()
 
     if (currentTime - lastRequestTime < 5000) {
-      popupComponent.openPopup('秋蒂桌宠', '请等待至少5秒钟再尝试请求!')
+      popupComponent.openPopup('chatGPT桌宠', '请等待至少5秒钟再尝试请求!')
       message.value = ''
       wordCount.textContent = 0
       return
@@ -91,7 +71,7 @@ feedbackBtn.addEventListener('click', () => {
       })
       .then(response => {
         if (response == 'SUCCESS') {
-          popupComponent.openPopup('秋蒂桌宠', '感谢您的留言!')
+          popupComponent.openPopup('chatGPT桌宠', '感谢您的留言!')
         }
         message.value = ''
         wordCount.textContent = 0
@@ -139,7 +119,71 @@ window.onload = function () {
   close.addEventListener('click', () => {
     ipcRenderer.send('Setting', 'close')
   })
+
 }
+
+var contentPages = document.getElementsByClassName("setting_page")
+var highlight = document.getElementById("highlight")
+
+// 选项点击事件处理程序
+function handleOptionClick(event) {
+  var target = event.target
+  var id = target.id
+  var contentId = id.replace("Tab", "")
+
+  // 隐藏所有的内容
+  for (var i = 0; i < contentPages.length; i++) {
+    contentPages[i].classList.remove('active')
+  }
+
+  // 显示目标内容
+  var content = document.getElementById(contentId)
+  if (content) {
+    content.classList.add('active')
+
+    // 更新选项卡的高亮位置
+    var tabWidth = target.offsetWidth
+    var tabOffsetLeft = target.offsetLeft
+    highlight.style.left = tabOffsetLeft + "px"
+    highlight.style.width = tabWidth + "px"
+
+    // 存储选中的选项
+    localStorage.setItem("selectedOption", id)
+  }
+}
+
+// 添加点击事件委托到选项父容器
+var selection = document.querySelector(".selection")
+selection.addEventListener("click", function (event) {
+  if (event.target.classList.contains("selection_bar")) {
+    handleOptionClick(event)
+  }
+})
+
+// 检查是否有选中的选项并恢复状态
+var selectedOption = localStorage.getItem("selectedOption")
+if (selectedOption === null) {
+  var versionInfoTab = document.getElementById("versionInfoTab");
+  var versionInfoContent = document.getElementById("versionInfo");
+  if (versionInfoTab && versionInfoContent) {
+    versionInfoTab.classList.add('active');
+    versionInfoContent.classList.add('active');
+  }
+} else {
+  var selectedTab = document.getElementById(selectedOption)
+  var contentId = selectedOption.replace("Tab", "")
+  var content = document.getElementById(contentId)
+
+  if (selectedTab && content && highlight) {
+    selectedTab.classList.add('active')
+    content.classList.add('active')
+    var tabWidth = selectedTab.offsetWidth
+    var tabOffsetLeft = selectedTab.offsetLeft
+    highlight.style.left = tabOffsetLeft + "px"
+    highlight.style.width = tabWidth + "px"
+  }
+}
+
 
 // 获取开关按钮元素
 const toggle_power = document.getElementById('toggle_power')
@@ -161,8 +205,8 @@ ipcRenderer.on('toggle_power_status', (event, isEnabled) => {
   // 根据开关状态显示不同的消息提示
   const message = isEnabled ? '已成功开启' : '已成功关闭'
   // 打开弹窗
-  popupComponent.openPopup('秋蒂桌宠', message)
-});
+  popupComponent.openPopup('chatGPT桌宠', message)
+})
 
 // 切换开关状态的函数
 function toggleSwitch() {
@@ -233,3 +277,29 @@ function selectOption(event) {
 
   ipcRenderer.send('selectedValue', event.innerText)
 }
+
+
+window.addEventListener('DOMContentLoaded', () => {
+
+  let bubble_img = document.getElementById('bubble_img')
+  let upload_file = document.getElementById('upload_file')
+  let localBubble = localStorage.getItem('bubble_img')
+  if (localBubble === null) {
+    bubble_img.style.backgroundImage = `url(../../image/app.png)`
+  } else {
+    bubble_img.style.backgroundImage = `url(${localBubble})`
+  }
+
+  upload_file.addEventListener('click', () => {
+    // 向主进程发送打开文件对话框请求
+    ipcRenderer.send('open-file-dialog')
+  })
+
+  ipcRenderer.on('selected-file', (event, filePath) => {
+    localStorage.setItem('bubble_img', filePath.replaceAll('\\', '/'))
+    setTimeout(() => {
+      ipcRenderer.send('Setting', 'Refresh')
+    }, 500)
+  })
+})
+

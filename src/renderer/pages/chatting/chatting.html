@@ -20,9 +20,63 @@
                     <div class="button maximize"></div>
                 </div>
                 <div class="title">ChatGPT</div>
+                <div class="sidebar_toggle" id="setting">
+                    <img src="../../image/settings.png" alt="">
+                </div>
             </div>
 
             <ul class="messages">
+                <div id="config" class="config_box">
+                    <div class="config_title">默认配置</div>
+                    <div class="config-dialog">
+                        <div class="useRole"></div>
+                        <div class="config-input">
+                            <div class="role_name">角色名称</div>
+                            <div class="select-box full-width">
+                                <div class="select-input" id="select-input">
+                                    <input type="text" class="input-inner" id="input-inner" placeholder="请输入角色名">
+                                    <span class="input-suffix" id="input-suffix">
+                                        <img src="../../image/arrow-down-bold.png" alt="">
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="select-dropdown" id="select-dropdown">
+                                <div class="scrollbar">
+                                    <div class="select-dropdown-wrap">
+                                        <ul class="select-dropdown-list">
+                                            <li class="select-dropdown-item">小埋<span class="role-type">内置角色</span></li>
+                                            <li class="select-dropdown-item">血小板<span class="role-type">内置角色</span></li>
+                                            <li class="select-dropdown-item">自定义角色</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="config-input">
+                            <div id="role_script">
+                                <div class="role_name">角色引导词</div>
+                                <div class="select-box full-width">
+                                    <div class="select-input">
+                                        <textarea class="input-inner" id="textarea-inner" cols="30" rows="10"
+                                            placeholder="例如：你的名字叫XX，喜欢看动漫和打游戏"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="config-bottom-left" id="upload_script">
+                            <button class="config-btn" id="upload_avatar_btn">上传头像</button>
+                        </div>
+                        
+                        <div class="config-bottom" id="btn_script">
+                            <button class="config-btn" id="save_btn">保存</button>
+                            <button class="config-btn" id="reset_btn">重置</button>
+                        </div>
+                    </div>
+
+                </div>
+
                 <div style="text-align: left;" id="chatlogdiv">
                     <pre style="white-space: pre-wrap; word-wrap:break-word" id="chatlog"></pre>
                 </div>
@@ -35,7 +89,7 @@
         </div>
 
     </div>
-    
+
 </body>
 
 </html>

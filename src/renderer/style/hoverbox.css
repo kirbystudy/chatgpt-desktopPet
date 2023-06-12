@@ -4,8 +4,7 @@
     height: 50px;
     z-index: 10;
     bottom: 10px;
-    right: 10px; 
-    background-image: url(../image/qiudi.jpg);
+    right: 10px;
     background-size: cover;
     overflow: hidden;
     border-radius: 25px;

@@ -1,16 +1,16 @@
 async function createModel(store, view, roleId) {
 
     var model = ''
-    if(roleId == undefined) {
+    if (roleId == undefined) {
         model = store.role[0].model
-    } else if(roleId == store.role[0].roleId) {
+    } else if (roleId == store.role[0].roleId) {
         model = store.role[0].model
-    } else if(roleId == store.role[1].roleId) {
+    } else if (roleId == store.role[1].roleId) {
         model = store.role[1].model
     }
-    
+
     store.model = await PIXI.live2d.Live2DModel.from(model)
-    
+
     const app = new PIXI.Application({
         view: view,
         autoStart: true,
@@ -20,19 +20,30 @@ async function createModel(store, view, roleId) {
 
     app.stage.addChild(store.model)
 
-    if(roleId == undefined) {
+    if (roleId == undefined) {
         store.model.x = store.role[0].x
         store.model.y = store.role[0].y
         store.model.scale.set(store.role[0].scale)
-    } else if(roleId == store.role[0].roleId) {
+    } else if (roleId == store.role[0].roleId) {
         store.model.x = store.role[0].x
         store.model.y = store.role[0].y
         store.model.scale.set(store.role[0].scale)
-    } else if(roleId == store.role[1].roleId) {
+    } else if (roleId == store.role[1].roleId) {
         store.model.x = store.role[1].x
         store.model.y = store.role[1].y
         store.model.scale.set(store.role[1].scale)
     }
+
+    store.model.on('hit', (hitAreas) => {
+       
+        if (hitAreas.includes('head')) {
+            store.model.motion('tap_head')
+        }
+
+        if (hitAreas.includes('body')) {
+            store.model.motion('tap_body')
+        }
+    })
 
     return app
 }
