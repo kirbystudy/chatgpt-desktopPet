@@ -131,7 +131,6 @@ function handleOptionClick(event) {
   var contentId = id.replace("Tab", "")
 
   // 隐藏所有的内容
-
   for (var i = 0; i < contentPages.length; i++) {
     contentPages[i].classList.remove('active')
   }
@@ -163,7 +162,6 @@ selection.addEventListener("click", function (event) {
 // 检查是否有选中的选项并恢复状态
 var selectedOption = localStorage.getItem("selectedOption")
 if (selectedOption === null) {
-  console.log('1')
   var versionInfoTab = document.getElementById("versionInfoTab");
   var versionInfoContent = document.getElementById("versionInfo");
   if (versionInfoTab && versionInfoContent) {
@@ -172,7 +170,6 @@ if (selectedOption === null) {
   }
 
 } else {
-  console.log('2')
   var selectedTab = document.getElementById(selectedOption)
   var contentId = selectedOption.replace("Tab", "")
   var content = document.getElementById(contentId)
