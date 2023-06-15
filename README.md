@@ -1,67 +1,60 @@
-# chatgpt-desktopPet
+# 秋蒂桌宠说明文档
 
-使用 Live2D 模型开发的 Electron 桌面宠物应用程序。用户可以将其喜欢的动漫角色或宠物放置在桌面上，并通过语音和文本与它进行互动。
+## 介绍
 
-## 开发 (Develop)
+该桌宠是基于秋蒂虚拟主播人物所开发的。软件下载需要去B站关注秋蒂，找秋蒂获得软件压缩包即可！用户下载安装后就可以选择秋蒂作为自己的桌宠，与她进行聊天和互动，还可以查看日程表了解秋蒂直播的日程。
 
-- 使用 `npm` 安装：
-
-  ```shell
-    npm install
-  ```
-
-- 使用 `cnpm` 安装：
-
-  ```shell
-    npm install -g cnpm --registry=https://registry.npmmirror.com
-    cnpm install
-  ```
-
-- 启动方式：
-
-  ```shell
-    npm run start
-  ```
-
-- 打包方式
-
-  ```shell
-    npm run dist-win64
-  ```
-
-## 基础使用 (Basic Use)
-
-  1. config文件夹下创建config.json文件，配置参数需自行填写
-  ```json
-  {
-    "gpt": {
-      "url": "chatgpt接口",
-      "ruleType": "规则类型"
-    },
-    "feedBack": {
-      "url": "留言反馈接口"
-    },
-    "live2d": {
-      "model": "",
-      "path": "模型文件路径",
-      "x": 0,
-      "y": 50,
-      "scale": 0.1
-    }
-  }
-  ```
-
-  2. 项目目录下创建model文件夹，放置live2d模型文件，然后在config.json文件里填写模型文件路径即可。
-
-## 功能 (Function)
+## 功能
 
 - [x] 支持 Live2d moc/moc3
+
 - [x] 支持 拖拽模型(单屏/双屏)
+
 - [x] 开机自启动
+
 - [x] 语音口型同步
+
 - [x] 日程表
+
 - [x] ChatGPT聊天
+
+  
+
+## 示例Demo
+
+以下为秋蒂桌宠的功能示例：
+
+### 日程表功能：
+
+![1686841381596](https://dullwolf.oss-cn-shenzhen.aliyuncs.com/1119044963955376128.png)
+
+![1686841420453](https://dullwolf.oss-cn-shenzhen.aliyuncs.com/1119044900071931904.png)
+
+
+
+### 聊天功能：
+
+![1686841493297](https://dullwolf.oss-cn-shenzhen.aliyuncs.com/1119044845223018496.png)
+
+### 设置功能：
+
+![1686841528605](https://dullwolf.oss-cn-shenzhen.aliyuncs.com/1119044772074356736.png)
+
+
+
+### 隐藏功能：
+
+![1686841612421](https://dullwolf.oss-cn-shenzhen.aliyuncs.com/1119044699496120320.png)
+
+![1686841629957](https://dullwolf.oss-cn-shenzhen.aliyuncs.com/1119044580444995584.png)
+
+
 
 ## 鸣谢 (Thanks)
 
 - Live2D For Web 组件 [pixi-live2d-display](https://github.com/guansss/pixi-live2d-display)
+
+## 参考链接
+
+1. 秋蒂的B站主页：https://space.bilibili.com/455899334
+
