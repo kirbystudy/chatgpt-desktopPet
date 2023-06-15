@@ -5,7 +5,7 @@ let mainWindow = null
 
 // 模型窗口大小
 const win_width = 300
-const win_height = 500
+const win_height = 400
 
 // 创建并控制浏览器窗口
 function createWindow() {

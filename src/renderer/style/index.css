@@ -34,7 +34,7 @@ body {
     opacity: 0;
     position: absolute;
     right: 0;
-    bottom: 30%;
+    bottom: 20%;
     font-size: 14px;
     z-index: 9999;
     transition: all 0.3s ease-in-out;
@@ -63,7 +63,7 @@ body {
 
 #message_box {
     position: absolute;
-    top: 0;
+    top: 10px;
     left: 20px;
     opacity: 0;
     border: 2px solid white;

@@ -37,7 +37,7 @@ ipcMain.on('getMainPos', (event) => {
 ipcMain.on('dragMain', (event, mouseOnPage) => {
 
   const winWidth = 300
-  const winHeight = 500
+  const winHeight = 400
 
   // 获取鼠标在目标屏幕上的位置
   const { x, y } = screen.getCursorScreenPoint()
