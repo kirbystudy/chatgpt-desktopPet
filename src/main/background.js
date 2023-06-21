@@ -1,4 +1,4 @@
-const { app, ipcMain, globalShortcut, screen } = require('electron')
+const { app, ipcMain, globalShortcut, screen, BrowserWindow } = require('electron')
 const createWindow = require('./windows/mainWindow')
 const createTrayMenu = require('./modules/tray')
 const createSettingShow = require('./windows/setting')

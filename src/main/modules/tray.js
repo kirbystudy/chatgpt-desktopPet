@@ -1,4 +1,4 @@
-const { app, Menu, Tray } = require('electron')
+const { app, Menu, Tray, BrowserWindow } = require('electron')
 const createSettingShow = require('../windows/setting')
 const dialog = require('electron').dialog
 const path = require('path')
@@ -21,16 +21,19 @@ function createTrayMenu() {
         {
             label: '退出',
             click: function () {
+
                 // 退出程序
                 dialog.showMessageBox({
                     type: 'info',
-                    buttons: ["我手滑了", "告辞"],
+                    buttons: ["我手滑了", "真的要离开我吗"],
                     title: '退出',
-                    message: '真的要退出吗?'
+                    message: '真的要退出吗?',
                 }).then((res) => {
+
                     if (res.response == 1) {
                         app.quit()
                     }
+
                 }).catch((error) => {
                     console.log(error)
                 })

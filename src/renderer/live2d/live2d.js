@@ -1,4 +1,4 @@
-async function createModel(store, view) {
+async function loadModel(store, view) {
 
     store.model = await PIXI.live2d.Live2DModel.from(store.path)
     

@@ -48,8 +48,9 @@ body {
     justify-content: center;
     align-items: center;
     transition: all 0.3s ease;
-    background-color: #1c699d;
-    color: #fff;
+    background-color: #FFFCF3;
+    color: #53342A;
+    text-align: center;
     cursor: pointer;
 }
 
@@ -58,23 +59,22 @@ body {
 }
 
 .control_item:hover {
-    background-color: #2bb7f5;
+    color: #B22222;
 }
 
 #message_box {
     position: absolute;
-    top: 10px;
-    left: 20px;
     opacity: 0;
-    border: 2px solid white;
-    background-color: #58b0fc;
-    border-radius: 8px; 
-    width: 250px;
-    height: 80px;
-    line-height: 80px;
+    width: 280px;
+    height: 100px;
+    line-height: 100px;
+    background-image: url(../image/dialogBox.png);
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
     text-align: center;
     font-size: 15px;
-    color: #fff;
+    color: #53342A;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;

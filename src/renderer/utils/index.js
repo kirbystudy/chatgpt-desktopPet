@@ -5,6 +5,7 @@ const screen = remote.screen
 const { ipcRenderer } = require('electron')
 const screenUtils = require('../utils/screen')
 window.$ = window.jQuery = require('../utils/jquery.min.js')
+const loadAudio = require('../../renderer/utils/mouth')
 
 // 引入 fs 和 path 模块
 const fs = require('fs')
@@ -27,6 +28,9 @@ const hide = document.getElementById('hide')
 const control_btn = document.querySelector('.control_btn')
 const control_item = document.querySelectorAll('.control_item')
 
+// 定时器的全局变量
+let timer = null
+
 window.onload = function () {
   loadLive2D()
 
@@ -43,7 +47,7 @@ window.onload = function () {
   })
 
   hide.addEventListener('click', () => {
-    showMessage("已进入专注模式，右下角有悬浮小球", 3000, true)
+    showMessage("右下角有悬浮小球哦~", 3000, true)
     setTimeout(() => {
       ipcRenderer.send('MainPage', 'Hide')
     }, 1300)
@@ -65,23 +69,33 @@ window.onload = function () {
 
   control_item.forEach(item => {
     item.addEventListener('mouseover', (event) => {
-      if (event.target.innerText == '日程表') {
-        showMessage('要打开日程表吗?', 1500, true)
+      if (event.target.innerText == '日程') {
+        debounce(() => showMessage('要打开日程表吗?', 1500, true))
       } else if (event.target.innerText == '聊天') {
-        showMessage('要打开聊天吗?', 1500, true)
+        debounce(() =>  showMessage('要打开聊天吗?', 1500, true))
       } else if (event.target.innerText == '关于') {
-        showMessage('要打开设置吗?', 1500, true)
+        debounce(() => showMessage('要打开设置吗?', 1500, true))
       } else if (event.target.innerText == '隐藏') {
-        showMessage('要隐藏模型吗?', 1500, true)
+        debounce(() => showMessage('要隐藏模型吗?', 1500, true))
       }
     })
   })
+}
 
+// 优化代码
+// 实现防抖机制，接收一个函数和一个延迟时间作为参数
+function debounce(fn, delay = 300) {
+  // 每次调用 debounce 函数时，清空之前的定时器
+  clearTimeout(timer)
+  // 设置一个新的定时器，并在一定时间后执行被包装的函数
+  timer = setTimeout(() => {
+    fn()
+  }, delay);
 }
 
 // 初始化live2d模型
 function loadLive2D() {
-  createModel(config.live2d, canvas)
+  loadModel(config.live2d, canvas)
 
   setTimeout(() => {
     app.classList.add("show")
@@ -89,8 +103,31 @@ function loadLive2D() {
 
   setTimeout(() => {
     const greeting = getGreeting()
+    if (greeting === '早上好') {
+      playAudio(path.join(__dirname, '../../renderer/resources/早上好.wav'))
+    } else if (greeting === '中午好') {
+      playAudio(path.join(__dirname, '../../renderer/resources/中午好.wav'))
+    } else if (greeting === '下午好') {
+      playAudio(path.join(__dirname, '../../renderer/resources/下午好.wav'))
+    } else if (greeting === '晚上好') {
+      playAudio(path.join(__dirname, '../../renderer/resources/晚上好.wav'))
+    }
     showMessage(greeting, 3000, true)
   }, 2000)
+}
+
+// 播放音频
+function playAudio(filePath) {
+  try {
+    fetch(`file:///${filePath}`)
+      .then(res => res.arrayBuffer())
+      .then(arrayBuffer => {
+        loadAudio(arrayBuffer)
+      })
+  } catch (error) {
+    console.log(error)
+  }
+
 }
 
 // 显示消息框
@@ -121,9 +158,7 @@ function getGreeting() {
   // 获取当前时间的小时数
   const hour = new Date().getHours()
 
-  if (hour >= 0 && hour <= 5) {
-    return '凌晨好'
-  } else if (hour > 5 && hour <= 11) {
+  if (hour > 5 && hour <= 11) {
     return '早上好'
   } else if (hour > 11 && hour <= 13) {
     return '中午好'
@@ -207,3 +242,8 @@ function draggableHandle() {
   // 监听鼠标移动事件
   window.addEventListener('mousemove', handleMouseMove)
 }
+
+// 退出事件处理
+ipcRenderer.on('exitEvent', () => {
+  playAudio(path.join(__dirname, '../../renderer/resources/退出桌宠.wav'))
+})

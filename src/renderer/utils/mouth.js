@@ -1,10 +1,9 @@
-/* 口型同步 */
 let audioCtx; let analyser; let frequencyData;
 
 let playing = false; let o = 80;
 
 // 获取音频
-async function loadAudio(buffer, store) {
+async function loadAudio(buffer) {
     createAnalyser()
     audioCtx.decodeAudioData(buffer)
         .then((decodeData) => {
@@ -30,7 +29,7 @@ async function loadAudio(buffer, store) {
 
             // 开始播放
             playing = true
-            run()
+            // run()
             setTimeout(() => {
                 source.start(0)
             }, 0.5)
@@ -44,24 +43,24 @@ async function loadAudio(buffer, store) {
         })
 }
 
-function run() {
-    if (!playing) return
-    const frequencyData = getByteFrequencyData()
+// function run() {
+//     if (!playing) return
+//     const frequencyData = getByteFrequencyData()
 
-    const arr = []
+//     const arr = []
 
-    for (var i = 0; i < 700; i += o) {
-        arr.push(frequencyData[i])
-    }
-    setMouthOpenY((arrayAdd(arr) / arr.length - 20) / store.state.percentage, store)
+//     for (var i = 0; i < 700; i += o) {
+//         arr.push(frequencyData[i])
+//     }
+//     setMouthOpenY((arrayAdd(arr) / arr.length - 20) / store.state.percentage, store)
 
-    setTimeout(run, 1000 / 60)
-}
+//     setTimeout(run, 1000 / 60)
+// }
 
-function setMouthOpenY(v) {
-    v = Math.max(0, Math.min(1, v))
-    store.state.model4.internalModel.coreModel.setParameterValueByIndex(store.state.parameterIndex, v, 1, true)
-}
+// function setMouthOpenY(v) {
+//     v = Math.max(0, Math.min(1, v))
+//     store.state.model4.internalModel.coreModel.setParameterValueByIndex(store.state.parameterIndex, v, 1, true)
+// }
 
 function createAnalyser() {
     // 创建音频上下文
@@ -85,3 +84,6 @@ function getByteFrequencyData() {
 function arrayAdd(a) {
     return a.reduce((i, a) => i + a, 0)
 }
+
+
+module.exports = loadAudio

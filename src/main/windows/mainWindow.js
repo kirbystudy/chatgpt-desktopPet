@@ -53,6 +53,19 @@ function createWindow() {
         console.log("注册快捷键失败")
     }
 
+    mainWindow.on('close', (event) => {
+        // 阻止窗口关闭
+        event.preventDefault()
+
+        // 向渲染进程发送消息
+        mainWindow.webContents.send('exitEvent')
+
+        setTimeout(() => {
+            // 关闭窗口
+            mainWindow.destroy()
+        }, 4000)
+    })
+
     // 监听closed事件后执行
     mainWindow.on('closed', () => { mainWindow = null })
 

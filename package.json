@@ -1,6 +1,6 @@
 {
   "name": "vits-desktoppet",
-  "version": "1.1.8",
+  "version": "1.1.9",
   "description": "DesktopPet Electron",
   "main": "./src/main/background.js",
   "scripts": {
@@ -29,6 +29,7 @@
   "build": {
     "productName": "秋蒂桌宠",
     "appId": "com.disktoppet",
+    "asar": true,
     "directories": {
       "output": "dist"
     },
