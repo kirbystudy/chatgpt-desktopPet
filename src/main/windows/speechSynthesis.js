@@ -23,7 +23,6 @@ function createSpeechSynthesisShow() {
 
     // 加载本地文件
     speechSynthesis.loadFile(path.join(__dirname, '../../renderer/pages/speechSynthesis/speechSynthesis.html'))
-    speechSynthesis.webContents.openDevTools()
 
     // 监听closed事件后执行
     speechSynthesis.on('closed', () => { speechSynthesis = null })

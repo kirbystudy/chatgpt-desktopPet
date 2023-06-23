@@ -28,5 +28,22 @@
         "y": 50
       }
     ]
-  }
+  },
+  "vits": {
+    "intro": "VITS 配置参数需加群获取，群号：691432604",
+    "header": {
+      "uid": "",
+      "token": ""
+    },
+    "getUrlAllMod": "",
+    "getUrlByText2Hash": "",
+    "getUrlByHashCode": "",
+    "getUrlAllTask": ""
+  },
+  "bilibili": [
+    {
+      "roomId": "bilibili 房间号",
+      "username": "主播名字"
+    }
+  ]
 }
