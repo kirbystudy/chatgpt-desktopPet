@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>语音合成</title>
+    <link rel="stylesheet" href="speechSynthesis.css">
+</head>
+
+<body>
+    <div class="app">
+        <div class="synthesis-page">
+            <div class="app-head">
+                <div class="gradient"></div>
+                <div class="head-content">
+                    <div class="bili-avatar">
+                        <a href="https://space.bilibili.com/455899334" target="_blank">
+                            <img class="avatar" src="../../image/avatar.jpg" title="关注秋蒂Q喵">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <div class="section">
+                            <span class="name">dullwolf蠢狼</span>
+                            <img class="badge"
+                                src="https://img.shields.io/badge/dynamic/json?color=purple&label=关注数&query=data.following&url=https://api.bilibili.com/x/relation/stat?vmid=3434183"
+                                title="Bilibili关注数">
+                            <img class="badge"
+                                src="https://img.shields.io/badge/dynamic/json?color=purple&label=粉丝数&query=data.follower&url=https://api.bilibili.com/x/relation/stat?vmid=3434183"
+                                title="Bilibili粉丝数">
+                        </div>
+                        <div class="description">
+                            <span>我永远单推秋蒂Q，喵~秋蒂粉丝群：797583470</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="app-body">
+                <div class="app-io">
+                    <div class="app-title">
+                        <span>AI 语音合成</span>
+                    </div>
+                    <div class="input-row">
+                        <div class="input-container">
+                            <div class="textarea-container">
+                                <textarea id="textInput" class="input-area" placeholder="请输入文字"></textarea>
+                            </div>
+                        </div>
+                        <div class="input-container">
+                            <div class="option">
+                                <span class="tag">角色</span>
+                                <div class="select-box">
+                                    <div class="select-input" id="roleInput">
+                                        <input type="text" class="input-inner" id="role">
+                                        <span class="input-suffix" id="arrowDownRole">
+                                            <img src="../../image/arrow-down-bold.png" alt="">
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="select-dropdown" id="dropdownRole">
+                                    <div class="scrollbar">
+                                        <div class="select-dropdown-wrap">
+                                            <ul class="select-dropdown-list" id="dropdownRoleList"></ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="option">
+                                <span class="tag">语种</span>
+                                <div class="select-box">
+                                    <div class="select-input" id="languagesInput">
+                                        <input type="text" class="input-inner" id="languages" value="中文">
+                                        <span class="input-suffix" id="arrowDownLanguages">
+                                            <img src="../../image/arrow-down-bold.png" alt="">
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="select-dropdown" id="dropdownLanguages">
+                                    <div class="scrollbar">
+                                        <div class="select-dropdown-wrap">
+                                            <ul class="select-dropdown-list" id="dropdownLanguagesList">
+                                                <li class="select-dropdown-item display">中文</li>
+                                                <li class="select-dropdown-item">日语</li>
+                                                <li class="select-dropdown-item">英语</li>
+                                                <li class="select-dropdown-item">粤语</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="option">
+                                <span class="tag">语速</span>
+                                <input type="range" min="0" max="2" step="0.01" value="1" class="slide">
+                                <span class="param">1</span>
+                            </div>
+                            <div class="button-container">
+                                <button id="text-button">开始合成</button>
+                            </div>
+                            <div class="bar-container">
+                                <div id="progressBar" class="progress-bar">
+                                    <div class="progress">
+                                        <div id="progressText" class="progress-text"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tip-box">
+                                <span class="tip-message" id="tipMessage"></span>
+                            </div>
+                            <div class="intro">
+                                <div class="intro-item">输出音频</div>
+                                <div class="output-audio"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="app-bottom">
+                <div class="bottom-left">
+                    <div class="copyright">
+                        <p>使用此合成工具需配置参数，配置参数请加群获取哦！</p>
+                        <p>仅供学习交流，不可用于商业或非法用途</p>
+                        <p>群号：691432604</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
+
+<script src="speechSynthesis.js"></script>
+<script src="../../utils/WavAudioEncoder.js"></script>

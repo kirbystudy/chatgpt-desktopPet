@@ -20,12 +20,15 @@ const config = JSON.parse(jsonContent)
 const app = document.getElementById('app')
 const canvas = document.getElementById('canvas')
 const setting = document.getElementById('setting')
-const schedule = document.getElementById('schedule')
+const speechSynthesis = document.getElementById('speechSynthesis')
 const chatting = document.getElementById('chatting')
 const hide = document.getElementById('hide')
 
 const control_btn = document.querySelector('.control_btn')
 const control_item = document.querySelectorAll('.control_item')
+
+// 定时器的全局变量
+let timer = null
 
 window.onload = function () {
   loadLive2D()
@@ -34,8 +37,8 @@ window.onload = function () {
     ipcRenderer.send('Setting', 'Open')
   })
 
-  schedule.addEventListener('click', () => {
-    ipcRenderer.send('Schedule', 'Open')
+  speechSynthesis.addEventListener('click', () => {
+    ipcRenderer.send('speechSynthesis', 'Open')
   })
 
   chatting.addEventListener('click', () => {
@@ -65,18 +68,28 @@ window.onload = function () {
 
   control_item.forEach(item => {
     item.addEventListener('mouseover', (event) => {
-      if (event.target.innerText == '日程表') {
-        showMessage('要打开日程表吗?', 1500, true)
+      if (event.target.innerText == '语音') {
+        debounce(() => showMessage('要打开语音吗?', 1500, true))
       } else if (event.target.innerText == '聊天') {
-        showMessage('要打开聊天吗?', 1500, true)
+        debounce(() => showMessage('要打开聊天吗?', 1500, true))
       } else if (event.target.innerText == '关于') {
-        showMessage('要打开设置吗?', 1500, true)
+        debounce(() => showMessage('要打开设置吗?', 1500, true))
       } else if (event.target.innerText == '隐藏') {
-        showMessage('要隐藏模型吗?', 1500, true)
+        debounce(() => showMessage('要隐藏模型吗?', 1500, true))
       }
     })
   })
+}
 
+// 优化代码
+// 实现防抖机制，接收一个函数和一个延迟时间作为参数
+function debounce(fn, delay = 300) {
+  // 每次调用 debounce 函数时，清空之前的定时器
+  clearTimeout(timer)
+  // 设置一个新的定时器，并在一定时间后执行被包装的函数
+  timer = setTimeout(() => {
+    fn()
+  }, delay);
 }
 
 // 初始化live2d模型
@@ -158,7 +171,66 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   })
 
+  // 启动实时通知功能
+  setupLiveNotify()
+
 })
+
+// 调用函数启动实时通知功能
+function setupLiveNotify() {
+  let intervalId = null; // 定时器的 ID
+
+  // 启动定时器
+  const startTimer = () => {
+    if (intervalId === null) {
+      // 使用 setInterval 函数每隔 1分钟 调用 queryLiveNotify 函数
+      intervalId = setInterval(queryLiveNotify, 60000);
+    }
+  };
+
+  // 停止定时器
+  const stopTimer = () => {
+    if (intervalId !== null) {
+      // 使用 clearInterval 函数停止定时器
+      clearInterval(intervalId);
+      intervalId = null;
+    }
+  };
+
+  // 查询实时通知
+  const queryLiveNotify = () => {
+    // 使用 ipcRenderer 发送 liveNotify 事件
+    ipcRenderer.send('liveNotify');
+  };
+
+  // 初始化实时通知功能
+  const initLiveNotify = () => {
+    // 从本地存储中获取 isToggleOnLive 的值
+    const isToggleOnLive = localStorage.getItem('isToggleOnLive');
+
+    if (isToggleOnLive === 'true') {
+      // 如果 isToggleOnLive 的值为 'true'，启动定时器
+      startTimer();
+    } else if (isToggleOnLive === 'false') {
+      // 如果 isToggleOnLive 的值为 'false'，停止定时器
+      stopTimer();
+    }
+  }
+
+  // 处理存储变化事件
+  const handleStorageChange = (event) => {
+    if (event.key === 'isToggleOnLive') {
+      // 调用初始化实时通知功能
+      initLiveNotify();
+    }
+  };
+
+  // 监听 storage 事件，当本地存储发生变化时触发 handleStorageChange 函数
+  window.addEventListener('storage', handleStorageChange);
+
+  // 调用初始化实时通知功能
+  initLiveNotify()
+}
 
 // 鼠标拖拽事件
 function draggableHandle() {

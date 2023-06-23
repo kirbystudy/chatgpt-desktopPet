@@ -49,6 +49,11 @@ function createWindow() {
         mainWindow.webContents.openDevTools()
     })
 
+    globalShortcut.register('F11', () => {
+        // 禁止执行默认操作，即全屏切换
+        return false
+    })
+
     if (!ret) {
         console.log("注册快捷键失败")
     }

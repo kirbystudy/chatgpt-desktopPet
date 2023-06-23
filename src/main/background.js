@@ -1,10 +1,11 @@
-const { app, ipcMain, globalShortcut, screen, dialog,BrowserWindow } = require('electron')
+const { app, ipcMain, globalShortcut, screen, dialog, BrowserWindow } = require('electron')
 const createWindow = require('./windows/mainWindow')
 const createTrayMenu = require('./modules/tray')
 const createSettingShow = require('./windows/setting')
-// const createScheduleShow = require('./windows/schedule')
+const createSpeechSynthesisShow = require('./windows/speechSynthesis')
 const createChattingShow = require('./windows/chatting')
 const createHoverBox = require('./windows/hoverbox')
+const { liveNotify } = require('./modules/liveNotify')
 
 // 热加载
 if (process.env.NODE_ENV === 'development') {
@@ -123,43 +124,17 @@ ipcMain.on('Setting', (event, arg) => {
     global.settings.close()
   }
 
-  if(arg == 'Refresh') {
+  if (arg == 'Refresh') {
     global.settings.reload()
   }
 })
 
 // ipc监听，打开日程表窗口
-ipcMain.on('Schedule', (event, arg) => {
+ipcMain.on('speechSynthesis', (event, arg) => {
   if (arg == 'Open') {
-    // if (global.schedule == null || global.schedule.isDestroyed()) {
-    //   global.schedule = createScheduleShow()
-    // }
-    dialog.showMessageBox(global.schedule, {
-      type: 'info',
-      title: 'chatGPT桌宠',
-      message: '功能正在开发中,敬请期待...',
-      buttons: ['OK']
-    })
-  }
-})
-
-// ipc监听，关闭日程表
-ipcMain.on('closeSchedule', (event, arg) => {
-
-  if (arg == 'minimize') {
-    global.schedule.minimize()
-  }
-
-  if (arg == 'maximize') {
-    if (global.schedule.isMaximized()) {
-      global.schedule.unmaximize()
-    } else {
-      global.schedule.maximize()
+    if (global.speechSynthesis == null || global.speechSynthesis.isDestroyed()) {
+      global.speechSynthesis = createSpeechSynthesisShow()
     }
-  }
-
-  if (arg == 'close') {
-    global.schedule.close()
   }
 })
 
@@ -233,6 +208,11 @@ ipcMain.on('toggle_power', (event, enabled) => {
   const isEnabled = app.getLoginItemSettings().openAtLogin
   global.settings.webContents.send('toggle_power_status', isEnabled)
 })
+
+// ipc监听，实现bilibili直播通知的函数
+ipcMain.on('liveNotify', () => {
+  liveNotify()
+});
 
 // ipc监听，更换live2d
 ipcMain.on('selectedValue', (event, value) => {

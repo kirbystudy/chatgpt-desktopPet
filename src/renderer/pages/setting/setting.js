@@ -184,6 +184,7 @@ if (selectedOption === null) {
   }
 }
 
+/* ----------------------------- 开机自启动 ----------------------------- */
 
 // 获取开关按钮元素
 const toggle_power = document.getElementById('toggle_power')
@@ -226,6 +227,51 @@ function toggleSwitch() {
 function updateToggleStatus() {
   toggle_power.checked = isToggleOn
 }
+
+/* ----------------------------- 开机自启动 ----------------------------- */
+
+
+/* ----------------------------- Bilibili 直播通知 ----------------------------- */
+
+// 获取通知按钮元素
+const liveNotification = document.getElementById('liveNotification')
+// 从 localStorage 中获取通知状态，默认为 false
+let isToggleOnLive = localStorage.getItem('isToggleOnLive') === 'true'
+
+// 初始化时更新通知状态
+updateLiveToggleStatus()
+
+// 点击通知按钮时触发的事件处理函数
+liveNotification.addEventListener('click', toggleLiveSwitch)
+
+// 监听主进程反馈以更新通知状态
+ipcRenderer.on('liveNotificationStatus', (event, isEnabled) => {
+  // 更新通知状态
+  isToggleOnLive = isEnabled
+  // 更新通知按钮状态
+  updateLiveToggleStatus()
+  // 根据通知状态显示不同的消息提示
+  const message = isEnabled ? '已成功开启' : '已成功关闭'
+  // 打开弹窗
+  popupComponent.openPopup('chatGPT桌宠', message)
+})
+
+// 切换通知状态的函数
+function toggleLiveSwitch() {
+  // 反转通知状态
+  isToggleOnLive = !isToggleOnLive
+  // 更新通知按钮状态
+  updateLiveToggleStatus()
+  // 将最新的通知状态保存到 localStorage 中
+  localStorage.setItem('isToggleOnLive', isToggleOnLive)
+}
+
+// 更新通知按钮状态的函数
+function updateLiveToggleStatus() {
+  liveNotification.checked = isToggleOnLive
+}
+
+/* ----------------------------- Bilibili 直播通知 ----------------------------- */
 
 
 // 获取下拉框图标
