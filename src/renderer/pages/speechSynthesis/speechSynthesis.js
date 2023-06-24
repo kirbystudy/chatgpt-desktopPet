@@ -199,28 +199,35 @@ window.addEventListener('DOMContentLoaded', () => {
 })
 
 async function getTextHash() {
-    const text = textElement.value
 
-    const title = inputRoleElement.value
-    let languages
-    if (inputLanguagesElement.value === '中文') {
-        languages = '[ZH]'
-    } else if (inputLanguagesElement.value === '日语') {
-        languages = '[JA]'
-    } else if (inputLanguagesElement.value === '英语') {
-        languages = '[EN]'
-    } else if (inputLanguagesElement.value === '粤语') {
-        languages = '[GD]'
+    // 验证输入是否存在
+    if (!textElement || !inputRoleElement || !inputLanguagesElement) {
+        tipMessage.style.display = 'block'
+        tipMessage.innerHTML = '输入内容不存在'
+
+        setTimeout(() => {
+            tipMessage.style.display = 'none'
+        }, 5000);
+        return
     }
+
+
+    const text = textElement.value
+    const title = inputRoleElement.value
+
+    const languages = getLanguageCode(inputLanguagesElement.value)
 
     const { modelId, roleId } = getModelAndRole(dropdownOption, title)
 
     // 将进度条宽度设置为0
     progress.style.width = '0'
 
+    tipMessage.style.display = 'none'
+
     // audio音频控件隐藏
     const audioElements = document.getElementsByTagName('audio')
-    if (audioElements > 0) {
+
+    if (audioElements.length > 0) {
         const dataURI = audioElements[0].src
         // 释放 blob URL
         URL.revokeObjectURL(dataURI)
@@ -231,7 +238,6 @@ async function getTextHash() {
     setButtonStatus(textButton, true, '', true)
 
     try {
-
         const url = `${config.vits.getUrlByText2Hash}`
         const headers = {
             'uid': `${config.vits.header.uid}`,
@@ -254,16 +260,39 @@ async function getTextHash() {
         let urls = await getUrlByHashCode(data[0].hashCode)
         await playAudio(urls)
 
-        // 设置按钮状态
-        setButtonStatus(textButton, false, '开始合成', false)
+        clearInputFieldAndCheckButtonStatus()
 
-        textElement.value = ''
-        const inputValue = textElement.value.trim();
-        setButtonStatus(textButton, inputValue.length <= 3, '开始合成', false);
         intro.style.display = 'block'
 
     } catch (error) {
-        console.log('请求出错', error)
+        clearInputFieldAndCheckButtonStatus()
+
+        tipMessage.style.display = 'block'
+        tipMessage.innerHTML = '合成失败'
+
+        setTimeout(() => {
+            tipMessage.style.display = 'none'
+        }, 5000);
+
+    }
+}
+
+function clearInputFieldAndCheckButtonStatus() {
+    textElement.value = ''
+    const inputValue = textElement.value.trim();
+    setButtonStatus(textButton, inputValue.length <= 3, '开始合成', false);
+}
+
+function getLanguageCode(language) {
+    switch (language) {
+        case '中文':
+            return '[ZH]';
+        case '日语':
+            return '[JA]';
+        case '英语':
+            return '[EN]';
+        case '粤语':
+            return '[GD]';
     }
 }
 
