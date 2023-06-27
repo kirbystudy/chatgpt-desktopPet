@@ -40,10 +40,6 @@ git clone -b dev https://github.com/kirbystudy/chatgpt-desktopPet.git
   1. config文件夹下创建config.json文件，配置参数需自行填写
   ```json
   {
-    "gpt": {
-      "url": "chatgpt接口",
-      "ruleType": "规则类型"
-    },
     "feedBack": {
       "url": "留言反馈接口"
     },
