@@ -24,12 +24,12 @@ function createChattingShow() {
 
     // 加载本地文件
     chatting.loadFile(path.join(__dirname, '../../renderer/pages/chatting/chatting.html'))
+    chatting.webContents.openDevTools()
 
     // 监听鼠标点击 阻止跳转
     chatting.webContents.on('will-navigate', (event, url) => {
         // 阻止跳转
         event.preventDefault()
-        chatting.reload()
 
     })
 
