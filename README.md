@@ -82,9 +82,13 @@ git clone -b dev https://github.com/kirbystudy/chatgpt-desktopPet.git
 - [x] 支持 拖拽模型(单屏/双屏)
 - [x] 开机自启动
 - [x] 语音口型同步
-- [x] ChatGPT聊天
+- [x] ChatGPT聊天(自定义API/支持上下文)
 - [x] VITS语音合成
 - [x] Bilibili直播通知
+
+## 🚀 新增功能 -> 2023.6.27
+1、新增ChatGPT自定义API地址和密钥, 用户可查阅api2d的文档：https://api2d.com/wiki/doc
+2、新增ChatGPT对话上下文支持
 
 ## 🎉鸣谢 (Thanks)
 

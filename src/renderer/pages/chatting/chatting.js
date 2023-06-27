@@ -7,16 +7,11 @@ window.$ = window.jQuery = require('../../utils/jquery.min.js')
 // 引入 fs 和 path 模块
 const fs = require('fs')
 const path = require('path')
+const Api2d = require('../../utils/api2d.js')
 
 // 创建弹窗组件实例
 const popupComponent = new PopupComponent()
 
-// 读取config.json
-const configPath = path.resolve(__dirname, '../../../../config/config.json')
-const jsonContent = fs.readFileSync(configPath, 'utf-8')
-
-// 解析JSON
-const config = JSON.parse(jsonContent)
 
 maximizeBtn.addEventListener('mouseenter', () => {
   // 显示最大化按钮
@@ -178,6 +173,32 @@ window.addEventListener('DOMContentLoaded', () => {
   input_inner.value = defaultSelectedText
   useRole.innerText = `当前使用的角色名称：${defaultSelectedText}`
 
+  // 添加事件监听器，当input的值发生变化时触发
+  document.getElementById('mySwitch').addEventListener('change', function () {
+    localStorage.setItem('OpenContext', this.checked);
+  })
+
+  document.getElementById('key').addEventListener('input', function () {
+    localStorage.setItem('OpenAiKey', this.value);
+  })
+
+  document.getElementById('api').addEventListener('input', function () {
+    localStorage.setItem('OpenApi', this.value);
+  })
+
+  // 从localStorage中获取上次保存的值
+  const mySwitchValue = localStorage.getItem('OpenContext') === 'true';
+  const keyValue = localStorage.getItem('OpenAiKey') || '';
+  const apiValue = localStorage.getItem('OpenApi') || '';
+
+  // 设置mySwitch的初始值
+  document.getElementById('mySwitch').checked = mySwitchValue;
+
+  // 设置key的初始值
+  document.getElementById('key').value = keyValue;
+
+  // 设置api的初始值
+  document.getElementById('api').value = apiValue;
 })
 
 uploadBtn.addEventListener('click', () => {
@@ -213,7 +234,7 @@ setInterval(function () {
       previousValue = updatedValue
     }
   }
-}, 500)
+}, 1000)
 
 
 // 当点击下拉框图标 显示/隐藏 下拉内容，并切换图标状态
@@ -522,7 +543,7 @@ save_btn.addEventListener('click', () => {
     isNewRole = false // 重置为非新建角色状态
   } else {
     if (prev_role_name !== role_name) { // 角色名称、角色引导词一起修改
-      
+
       const dropdownOptions = JSON.parse(localStorage.getItem('dropdownOptions')) || []
       const index = dropdownOptions.indexOf(prev_role_name)
       if (index !== -1) {
@@ -562,7 +583,7 @@ save_btn.addEventListener('click', () => {
       localStorage.setItem(`role_text_${encodeURIComponent(role_name)}`, textarea.value)
 
     } else { // 只修改角色引导词
-      
+
       // 将字符串转换为JavaScript对象
       var roleAvatarMap = JSON.parse(localStorage.getItem('role_avatar_map'))
 
@@ -656,6 +677,15 @@ $(document).ready(function () {
   })
 })
 
+// 初始化对话上下文
+let conversation = []
+
+// 定义对话上下文的最大数量
+const maxContextLength = 20
+
+// 提示词
+var prompt = ''
+
 async function sending(userMessage) {
 
   if (userMessage.trim().length === 0) {
@@ -708,8 +738,14 @@ async function sending(userMessage) {
     }
   }
 
+
+  const openContext = localStorage.getItem('OpenContext') === 'true'
+  const openaiKey = localStorage.getItem('OpenAiKey')
+  const openApi = localStorage.getItem('OpenApi')
+
   // 创建实例对象
   let dialogBoxYou = new DialogBox('#chatlog', 'dialog-box1', '../../image/user.png')
+
 
   //构建对话框内容
   let dialogContentYou = userMessage
@@ -726,64 +762,63 @@ async function sending(userMessage) {
   // 对话框拉到底部
   scrollToBottom()
 
-  const formData = new FormData()
-  if (localStorage.getItem('role_type') === 'custom') {
-    formData.append('ruleType', localStorage.getItem('role_type'))
-    formData.append('roleText', `【附加说明：${localStorage.getItem(`role_text_${encodeURIComponent(localStorage.getItem('role_name'))}`)}】`)
-    formData.append('command', userMessage)
-  } else {
-    formData.append('ruleType', localStorage.getItem('role_type') === null ? 'umaru' : localStorage.getItem('role_type'))
-    formData.append('command', userMessage)
-  }
-
   lastUserMessage = userMessage
 
-  dialogBoxRobot.setContent(`${localStorage.getItem('role_name') === null ? '小埋' : localStorage.getItem('role_name')}正在思考...`)
+  if (localStorage.getItem('role_type') === 'custom') {
+    prompt = localStorage.getItem(`role_text_${encodeURIComponent(localStorage.getItem('role_name'))}`)
+  } else {
+    if (localStorage.getItem('role_type') === 'umaru') {
+      prompt = "【附加说明：1、目前在和你聊天的人是小埋的哥哥。2、小埋是个容貌秀丽！文武双全！ 任谁都会羡慕的完美女高中生，接下来你将扮演小埋。3、接下来你对话的每一句话都必须加上哥哥~。4、小埋和哥哥两人生活在一起，习惯性依赖哥哥，和哥哥分开会感到不安、寂寞。5、小埋在学校被谣传为家境富裕的大小姐。6、小埋性格温柔并且头脑又很好，被所有才能眷顾着的无可挑剔的美少女高中生，然而在家中的小埋却总是披着仓鼠斗篷，二头身，懒惰，任性的熊孩子形象！】"
+    } else if (localStorage.getItem('role_type') === 'xxb') {
+      prompt = "【附加说明：1、目前在和你聊天的人是您的主人，你是作为主人身体里中的一种细胞，叫血小板。2、血小板代表是一个棕发萝莉，偶尔会坐在红血球运送的氧气上左右摇摆，被称为队长。3、在白血球登场的时候，经常可看见白血球肩上背着一到两只的血小板，这里是根据血小板会借由依附白血球前往发炎处所做的小设定。4、激萌的血小板，帅气的白血球，路痴的红细胞，温婉的巨噬细胞，吃货的T细胞都是以细胞的拟人化作为角色！】"
+    }
+  }
 
-  await fetch(`${config.gpt.url}`, {
-    method: 'POST',
-    body: formData
+
+  const timeout = 1000 * 60
+  const api = new Api2d(openaiKey, openApi, timeout)
+
+  // 检查数组中是否已经存在role为assistant的对象
+  let assistantExists = conversation.some(obj => obj.content === prompt);
+
+  // 检查数组中是否已经存在role为assistant的对象
+  if (!assistantExists) {
+    conversation.shift()
+    conversation.unshift({ "role": "assistant", "content": prompt });
+  }
+
+  conversation.push(
+    {
+      role: 'user',
+      content: userMessage
+    }
+  )
+
+  // 如果对话上下文的长度超过最大限制，就进行截断
+  if (conversation.length > maxContextLength) {
+    conversation = conversation.slice(conversation.length - maxContextLength);
+  }
+
+  const response = await api.completion({
+    model: 'gpt-3.5-turbo',
+    messages: conversation,
+    noCache: true,
+    stream: openContext,
+    onMessage: (message, char) => {
+      dialogBoxRobot.appendContent(char)
+      scrollToBottom();
+    }
   })
-    .then(response => {
-      // 处理响应
-      return response.text()
-    })
-    .then(data => {
-      dialogBoxRobot.removeContent()
-      if (data === '系统繁忙，请稍后再试') {
-        dialogBoxRobot.appendContent(`${localStorage.getItem('role_name')}正拼命思考中，请稍后再试or点击重试按钮再发一次。`)
-        appendMessage()
-        scrollToBottom()
-      } else {
-        let parsedMessageRobot = marked.parse(data)
-        dialogBoxRobot.appendContent(parsedMessageRobot)
-        scrollToBottom()
-      }
 
-      // 设置发送请求的等待时间（毫秒）
-      const requestWaitTime = 3000
-      canSendRequest = false
+  if (openContext === false) {
+    dialogBoxRobot.appendContent(response.choices[0].message.content)
+    scrollToBottom();
+  }
 
-      // 在指定的等待时间后设置 canSendRequest 为 true，允许发送下一个请求
-      setTimeout(() => {
-        canSendRequest = true
-      }, requestWaitTime)
-    })
-    .catch(error => {
-      dialogBoxRobot.removeContent()
-      // 处理错误
-      dialogBoxRobot.appendContent(`请求发生错误，error：${error}`)
-    }).finally(() => {
-      // 启用按钮
-      message.disabled = false
-      myButton.classList.remove('disabled')
-      myButton.innerHTML = '提交'
-      myButton.classList.remove('loading')
-    })
-
-  let chat_log = document.getElementById('chatlog')
-  chat_log.scrollTop = chat_log.scrollHeight
-
+  message.disabled = false
+  myButton.classList.remove('disabled')
+  myButton.innerHTML = '提交'
+  myButton.classList.remove('loading')
 }
 
 function scrollToBottom() {

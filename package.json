@@ -1,6 +1,6 @@
 {
   "name": "chatgpt-desktoppet",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Anime DesktopPet",
   "main": "./src/main/background.js",
   "scripts": {
@@ -21,7 +21,10 @@
     "cross-env": "^7.0.3",
     "electron": "24.1.1",
     "electron-builder": "23.6.0",
-    "electron-reloader": "^1.2.3"
+    "electron-reloader": "^1.2.3",
+    "eventsource-parser": "^1.0.0",
+    "node-fetch": "^2.6.9",
+    "node-notifier": "^10.0.1"
   },
   "dependencies": {
     "@electron/remote": "^2.0.9"
