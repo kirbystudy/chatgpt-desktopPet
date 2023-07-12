@@ -1,10 +1,14 @@
-const { app, Menu, Tray, BrowserWindow } = require('electron')
+const { app, Menu, Tray } = require('electron')
 const createSettingShow = require('../windows/setting')
 const dialog = require('electron').dialog
 const path = require('path')
+const { refresh } = require("electron-as-wallpaper");
 
 // 系统托盘全局对象
 let appTray = null
+
+// 标记是否正在退出程序的状态，默认为false表示不在退出状态
+let isExiting = false
 
 // 创建系统托盘菜单
 function createTrayMenu() {
@@ -20,7 +24,14 @@ function createTrayMenu() {
         },
         {
             label: '退出',
-            click: function () {
+            click: () => {
+
+                if (isExiting) {
+                    return   // 如果正在退出程序，则不执行后续操作
+                }
+
+                // 设置正在退出状态
+                isExiting = true
 
                 // 退出程序
                 dialog.showMessageBox({
@@ -31,11 +42,21 @@ function createTrayMenu() {
                 }).then((res) => {
 
                     if (res.response == 1) {
+                        // 清除动态壁纸
+                        global.wallpaperHandle.forEach((wallpaper) => {
+                            if (wallpaper) wallpaper.close()
+                        })
+                        refresh()
+
+                        // 禁用点击托盘图标
+                        appTray.setContextMenu(null);
                         app.quit()
                     }
 
+                    isExiting = false   // 重置正在退出标志为false，允许再次进行退出操作
                 }).catch((error) => {
                     console.log(error)
+                    isExiting = false   // 出错时重置正在退出标志为false，允许再次进行退出操作
                 })
             }
         }

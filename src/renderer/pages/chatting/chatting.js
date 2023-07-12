@@ -91,18 +91,21 @@ $(document).ready(function () {
 async function sending(userMessage) {
 
   if (userMessage.trim().length === 0) {
-    popupComponent.openPopup('秋蒂桌宠', '文本内容不能为空')
+    // popupComponent.openPopup('秋蒂桌宠', '文本内容不能为空')
+    showMessage('文本内容不能为空', 'warning')
     return
   }
 
   if (userMessage.trim().length >= 500) {
     popupComponent.openPopup('秋蒂桌宠', '字数限制在500字内')
+    showMessage('字数限制在500字内', 'warning')
     message.value = ''
     return
   }
 
   if (!canSendRequest) {
-    popupComponent.openPopup('秋蒂桌宠', '请等待至少3秒后再发送请求')
+    // popupComponent.openPopup('秋蒂桌宠', '请等待至少3秒后再发送请求')
+    showMessage('请等待至少3秒后再发送请求', 'warning')
     message.value = ''
     return
   }

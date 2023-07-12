@@ -16,7 +16,7 @@ function createWindow() {
         skipTaskbar: true,         // 是否在任务栏中显示窗口
         frame: false,              // 设置为 false 时可以创建一个无边框窗口  
         transparent: true,         // 窗口透明
-        alwaysOnTop: false,         // 窗口是否永远在别的窗口的上面
+        alwaysOnTop: false,        // 窗口是否永远在别的窗口的上面
         resizable: false,          // 窗口大小是否可调整
         webPreferences: {
             enableRemoteModule: true,   // 允许使用remote
@@ -59,6 +59,7 @@ function createWindow() {
     }
 
     mainWindow.on('close', (event) => {
+
         // 阻止窗口关闭
         event.preventDefault()
 
@@ -66,8 +67,7 @@ function createWindow() {
         mainWindow.webContents.send('exitEvent')
 
         setTimeout(() => {
-            // 关闭窗口
-            mainWindow.destroy()
+            mainWindow.destroy() // 关闭窗口
         }, 4000)
     })
 

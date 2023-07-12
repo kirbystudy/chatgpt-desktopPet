@@ -1,10 +1,17 @@
-const { app, ipcMain, globalShortcut, screen, BrowserWindow } = require('electron')
+const { app, ipcMain, globalShortcut, screen } = require('electron')
 const createWindow = require('./windows/mainWindow')
 const createTrayMenu = require('./modules/tray')
 const createSettingShow = require('./windows/setting')
 const createScheduleShow = require('./windows/schedule')
 const createChattingShow = require('./windows/chatting')
+const createWallpaper = require('./windows/wallpaper')
 const createHoverBox = require('./windows/hoverbox')
+const { liveNotify } = require('./modules/liveNotify')
+require('./modules/handle')
+const wallpaper = require('wallpaper')
+
+// 解决使用win.hide()再使用win.show()会引起窗口闪烁问题
+app.commandLine.appendSwitch('wm-window-animations-disabled')
 
 // 热加载
 if (process.env.NODE_ENV === 'development') {
@@ -18,7 +25,7 @@ const isAppInstance = app.requestSingleInstanceLock()
 if (!isAppInstance) {
   app.exit(0)
 } else {
-  app.on('second-instance', (event, argv, workingDirectory, additionalData, ackCallback) => {
+  app.on('second-instance', () => {
     if (global.mainWindow.isMaximized()) {
       global.mainWindow.restore()
     }
@@ -105,22 +112,6 @@ ipcMain.on('Setting', (event, arg) => {
       global.settings = createSettingShow()
     }
   }
-
-  if (arg == 'minimize') {
-    global.settings.minimize()
-  }
-
-  if (arg == 'maximize') {
-    if (global.settings.isMaximized()) {
-      global.settings.unmaximize()
-    } else {
-      global.settings.maximize()
-    }
-  }
-
-  if (arg == 'close') {
-    global.settings.close()
-  }
 })
 
 // ipc监听，打开日程表窗口
@@ -132,36 +123,12 @@ ipcMain.on('Schedule', (event, arg) => {
   }
 })
 
-// ipc监听，关闭日程表
-ipcMain.on('closeSchedule', (event, arg) => {
-
-  if (arg == 'minimize') {
-    global.schedule.minimize()
-  }
-
-  if (arg == 'maximize') {
-    if (global.schedule.isMaximized()) {
-      global.schedule.unmaximize()
-    } else {
-      global.schedule.maximize()
-    }
-  }
-
-  if (arg == 'close') {
-    global.schedule.close()
-  }
-})
-
 // ipc监听，打开chat聊天窗口
 ipcMain.on('Chatting', (event, arg) => {
-  if (arg == 'Open') {
+  if (arg === 'Open') {
     if (global.chatting == null || global.chatting.isDestroyed()) {
       global.chatting = createChattingShow()
     }
-  }
-
-  if (arg == 'minimize-window') {
-    global.chatting.minimize()
   }
 
   if (arg == 'maximize-window') {
@@ -175,12 +142,20 @@ ipcMain.on('Chatting', (event, arg) => {
   if (arg == 'close-window') {
     global.chatting.close()
   }
-
 })
 
-// ipc监听，发送vits语音
-ipcMain.on('sendBuffer', (event, buffer) => {
-  global.mainWindow.webContents.send('playAudio', buffer)
+// ipc监听，打开壁纸窗口
+ipcMain.on('Wallpaper', (event, arg) => {
+  if (arg == 'Open') {
+    if (global.wallpaper == null || global.wallpaper.isDestroyed()) {
+      global.wallpaper = createWallpaper()
+    }
+  }
+
+  // 最小化窗口
+  if (arg == 'minimize-window') {
+    global.wallpaper.minimize()
+  }
 })
 
 // ipc监听，显示悬浮球
@@ -221,8 +196,23 @@ ipcMain.on('toggle_power', (event, enabled) => {
 
   // 发送反馈消息以更新开关状态
   const isEnabled = app.getLoginItemSettings().openAtLogin
-  global.settings.webContents.send('toggle_power_status', isEnabled)
+  global.settings.webContents.send('togglePowerStatus', isEnabled)
 })
+
+// ipc监听，实现bilibili直播通知的函数
+ipcMain.on('liveNotify', () => {
+  liveNotify()
+});
+
+// ipc监听，设置桌面静态壁纸
+ipcMain.on('set-wallpaper', (_, arg) => {
+  setWallpaper(arg)
+})
+
+function setWallpaper(wallpaperFile) {
+
+  wallpaper.set(wallpaperFile)
+}
 
 
 // 当Electron完成时，将调用此方法

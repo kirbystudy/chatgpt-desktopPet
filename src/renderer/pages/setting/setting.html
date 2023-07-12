@@ -8,22 +8,15 @@
   <title>设置</title>
   <link rel="stylesheet" href="./setting.css">
   <link rel="stylesheet" href="../../style/popup.css">
+  <link rel="stylesheet" href="../../style/message.css">
 </head>
 
 <body>
   <div class="container">
-    <div class="topbar">
-      <div class="title">设置</div>
-      <div class="close_btn">
-        <img id="minimize" src="../../image/window-minimize.png" title="最小化">
-        <img id="maximize" src="../../image/window-maximize.png" title="最大化">
-        <img id="close" src="../../image/window-close.png" title="关闭">
-      </div>
-    </div>
     <div class="selection">
       <div class="highlight" id="highlight"></div>
       <div class="selection_bar" id="versionInfoTab">版本信息</div>
-      <div class="selection_bar" id="modelSettingTab">启动设置</div>
+      <div class="selection_bar" id="modelSettingTab">功能设置</div>
     </div>
 
     <div class="setting_page" id="versionInfo">
@@ -59,7 +52,7 @@
     <div class="setting_page" id="modelSetting">
       <div class="setting_box">
         <div class="setting_header">
-          <h3>启动设置</h3>
+          <h3>功能设置</h3>
         </div>
         <div class="container_box">
           <span>开机自启动</span>
@@ -68,13 +61,31 @@
             <span class="slider round"></span>
           </label>
         </div>
+
+        <div class="container_box">
+          <span>秋蒂直播通知</span>
+          <label class="switch">
+            <input type="checkbox" id="liveNotification">
+            <span class="slider round"></span>
+          </label>
+        </div>
+
+        <div class="volume_box">
+          <span class="tag">音量控制</span>
+          <input type="range" min="0" max="1" step="0.01" class="volume_control" id="volumeControl">
+          <span class="param"></span>
+        </div>
       </div>
     </div>
+
+    <!-- 消息提示框 -->
+    <div class="message-container" id="message-container"></div>
   </div>
 
 </body>
 
 </html>
 
+<script src="../../utils/message.js"></script>
 <script src="../../utils/popup.js"></script>
 <script src="./setting.js"></script>

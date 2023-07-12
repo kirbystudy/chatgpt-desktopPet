@@ -23,6 +23,7 @@ const canvas = document.getElementById('canvas')
 const setting = document.getElementById('setting')
 const schedule = document.getElementById('schedule')
 const chatting = document.getElementById('chatting')
+const wallpaper = document.getElementById('wallpaper')
 const hide = document.getElementById('hide')
 
 const control_btn = document.querySelector('.control_btn')
@@ -44,6 +45,10 @@ window.onload = function () {
 
   chatting.addEventListener('click', () => {
     ipcRenderer.send('Chatting', 'Open')
+  })
+
+  wallpaper.addEventListener('click', () => {
+    ipcRenderer.send('Wallpaper', 'Open')
   })
 
   hide.addEventListener('click', () => {
@@ -72,7 +77,7 @@ window.onload = function () {
       if (event.target.innerText == '日程') {
         debounce(() => showMessage('要打开日程表吗?', 1500, true))
       } else if (event.target.innerText == '聊天') {
-        debounce(() =>  showMessage('要打开聊天吗?', 1500, true))
+        debounce(() => showMessage('要打开聊天吗?', 1500, true))
       } else if (event.target.innerText == '关于') {
         debounce(() => showMessage('要打开设置吗?', 1500, true))
       } else if (event.target.innerText == '隐藏') {
@@ -122,7 +127,8 @@ function playAudio(filePath) {
     fetch(`file:///${filePath}`)
       .then(res => res.arrayBuffer())
       .then(arrayBuffer => {
-        loadAudio(arrayBuffer)
+        const volume = localStorage.getItem('volumeParam')
+        loadAudio(arrayBuffer, volume)
       })
   } catch (error) {
     console.log(error)
@@ -188,7 +194,71 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   })
 
+  // 启动实时通知功能
+  setupLiveNotify()
+
+  // 初始化音量
+  if (localStorage.getItem('volumeParam') === null) {
+    localStorage.setItem('volumeParam', 0.5)
+  }
+
 })
+
+// 调用函数启动实时通知功能
+function setupLiveNotify() {
+  let intervalId = null; // 定时器的 ID
+
+  // 启动定时器
+  const startTimer = () => {
+    if (intervalId === null) {
+      // 使用 setInterval 函数每隔 1分钟 调用 queryLiveNotify 函数
+      intervalId = setInterval(queryLiveNotify, 60000);
+    }
+  };
+
+  // 停止定时器
+  const stopTimer = () => {
+    if (intervalId !== null) {
+      // 使用 clearInterval 函数停止定时器
+      clearInterval(intervalId);
+      intervalId = null;
+    }
+  };
+
+  // 查询实时通知
+  const queryLiveNotify = () => {
+    // 使用 ipcRenderer 发送 liveNotify 事件
+    ipcRenderer.send('liveNotify');
+  };
+
+  // 初始化实时通知功能
+  const initLiveNotify = () => {
+    // 从本地存储中获取 isToggleOnLive 的值
+    const isToggleOnLive = localStorage.getItem('isToggleOnLive');
+
+    if (isToggleOnLive === 'true') {
+      // 如果 isToggleOnLive 的值为 'true'，启动定时器
+      startTimer();
+    } else if (isToggleOnLive === 'false') {
+      // 如果 isToggleOnLive 的值为 'false'，停止定时器
+      stopTimer();
+    }
+  }
+
+  // 处理存储变化事件
+  const handleStorageChange = (event) => {
+    if (event.key === 'isToggleOnLive') {
+      // 调用初始化实时通知功能
+      initLiveNotify();
+    }
+  };
+
+  // 监听 storage 事件，当本地存储发生变化时触发 handleStorageChange 函数
+  window.addEventListener('storage', handleStorageChange);
+
+  // 调用初始化实时通知功能
+  initLiveNotify()
+}
 
 // 鼠标拖拽事件
 function draggableHandle() {

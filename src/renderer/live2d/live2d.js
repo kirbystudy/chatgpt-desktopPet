@@ -1,7 +1,7 @@
 async function loadModel(store, view) {
 
     store.model = await PIXI.live2d.Live2DModel.from(store.path)
-    
+
     const app = new PIXI.Application({
         view: view,
         autoStart: true,
@@ -18,18 +18,22 @@ async function loadModel(store, view) {
 
         if (hitAreas.includes('摸头')) {
             store.model.motion('tap_head')
+            playAudio(path.join(__dirname, '../../../model/qiudi/摸头.wav'))
         }
 
-        if (hitAreas.includes('摸胸')) {
+        if (hitAreas[0] === '摸胸' || hitAreas[1] === '摸手臂' || hitAreas[2] === '摸腿') {
             store.model.motion('tap_body')
+            playAudio(path.join(__dirname, '../../../model/qiudi/摸胸.wav'))
         }
 
-        if (hitAreas.includes('摸手臂')) {
+        if (hitAreas[0] === '摸手臂') {
             store.model.motion('tap_hand')
+            playAudio(path.join(__dirname, '../../../model/qiudi/摸手.wav'))
         }
 
-        if (hitAreas.includes('摸腿')) {
+        if (hitAreas[0] === '摸腿') {
             store.model.motion('tap_shank')
+            playAudio(path.join(__dirname, '../../../model/qiudi/摸腿.wav'))
         }
     })
 

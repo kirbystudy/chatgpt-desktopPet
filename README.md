@@ -55,9 +55,22 @@
 ## 鸣谢 (Thanks)
 
 - Live2D For Web 组件 [pixi-live2d-display](https://github.com/guansss/pixi-live2d-display)
-  
+- Wallpaper [wallpaper](https://github.com/sindresorhus/wallpaper)
+- Electron As Wallpaper [electron-as-wallpaper](https://github.com/meslzy/electron-as-wallpaper)
 
 ## 参考链接
 
 1. 秋蒂的B站主页：https://space.bilibili.com/455899334
 
+## 新增功能 -> 2023.6.28
+
+1. 新增Bilibili直播通知
+2. 新增支持用户设置调节音频音量
+
+## 新增功能 -> 2023.7.12
+
+1. 新增壁纸功能
+2. 支持静态 / 动态壁纸
+3. 新增壁纸登录功能
+4. 壁纸按标签名进行分类
+5. 新增壁纸投稿功能

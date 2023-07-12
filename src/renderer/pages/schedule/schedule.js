@@ -67,7 +67,7 @@ var wType = [
 var Timetable = null
 
 $(function () {
-    
+
     $.get('http://osu.natapp1.cc/qd/sch', function (resp) {
         var data = JSON.parse(resp)
         for (let w = 1; w <= 7; w++) {
@@ -92,7 +92,8 @@ $(function () {
             highlightWeek: weekDay,
             gridOnClick: function (e) {
                 var num = e.index - 1
-                popupComponent.openPopup('秋蒂桌宠', e.name + ' ' + e.week.split('\n')[0] + ' ' + wType[num].name)
+                // popupComponent.openPopup('秋蒂桌宠', e.name + ' ' + e.week.split('\n')[0] + ' ' + wType[num].name)
+                showMessage(`${e.name + '' + e.week.split('\n')[0] + ' ' + wType[num].name}`, 'success')
             },
             styles: {
                 Gheight: 50
@@ -100,28 +101,3 @@ $(function () {
         })
     })
 })
-
-
-window.onload = function () {
-
-    $('#minimize').on('click', () => {
-        ipcRenderer.send('closeSchedule', 'minimize')
-    })
-
-    let originalTitle = $('#maximize').attr('title')
-    let isTitleChanged = false
-    $('#maximize').on('click', () => {
-        ipcRenderer.send('closeSchedule', 'maximize')
-        if (isTitleChanged) {
-            $('#maximize').attr('title', originalTitle)
-            isTitleChanged = false
-        } else {
-            $('#maximize').attr('title', '还原')
-            isTitleChanged = true
-        }
-    })
-
-    $('#close').on('click', () => {
-        ipcRenderer.send('closeSchedule', 'close')
-    })
-}

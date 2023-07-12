@@ -3,7 +3,7 @@ let audioCtx; let analyser; let frequencyData;
 let playing = false; let o = 80;
 
 // 获取音频
-async function loadAudio(buffer) {
+async function loadAudio(buffer, volume) {
     createAnalyser()
     audioCtx.decodeAudioData(buffer)
         .then((decodeData) => {
@@ -15,7 +15,7 @@ async function loadAudio(buffer) {
             gainNode.connect(audioCtx.destination)
 
             // 设置音量级别在 0 到 1 之间
-            gainNode.gain.value = 0.5
+            gainNode.gain.value = volume
 
             // 新建Buffer源
             const source = audioCtx.createBufferSource()

@@ -1,0 +1,32 @@
+.message-container {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+}
+
+.message {
+  position: relative;
+  padding: 10px 20px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  color: #fff;
+  text-align: center;
+  font-size: 14px;
+  opacity: 0;
+  transform: translateY(-100px);
+  transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+}
+
+.success {
+  background-color: #67c23a;
+}
+
+.warning {
+  background-color: #e6a23c;
+}
+
+.error {
+  background-color: #f56c6c;
+}
