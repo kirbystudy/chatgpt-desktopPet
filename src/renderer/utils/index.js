@@ -212,7 +212,7 @@ function setupLiveNotify() {
   const startTimer = () => {
     if (intervalId === null) {
       // 使用 setInterval 函数每隔 1分钟 调用 queryLiveNotify 函数
-      intervalId = setInterval(queryLiveNotify, 10000)
+      intervalId = setInterval(queryLiveNotify, 60000)
     }
   }
 
