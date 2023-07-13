@@ -13,9 +13,13 @@
     "dist-mac": "electron-builder build --mac",
     "dist-linux": "electron-builder build --linux"
   },
-  "keywords": [],
+  "keywords": [
+    "electron",
+    "chatgpt",
+    "live2d"
+  ],
   "author": "kirbystudy, dullwolf",
-  "license": "ISC",
+  "license": "BSD 2-Clause",
   "devDependencies": {
     "@electron/remote": "^2.0.9",
     "cross-env": "^7.0.3",
