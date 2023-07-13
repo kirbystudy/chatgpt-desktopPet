@@ -1,6 +1,6 @@
 {
   "name": "chatgpt-desktoppet",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "DesktopPet Electron",
   "main": "./src/main/background.js",
   "scripts": {

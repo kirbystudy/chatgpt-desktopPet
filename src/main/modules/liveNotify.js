@@ -16,8 +16,8 @@ const cacheFile = path.resolve(__dirname, '../../../config/bilibili/cache.json')
 
 let cache = {}
 
-// 每隔5分钟收到直播通知，缓存标记为1
-const CACHE_EXPIRATION = 6 * 60 * 60 * 1000 // 6小时
+// 设置缓存过期时间为6小时
+const CACHE_EXPIRATION = 6 * 60 * 60 * 1000
 
 async function getLiveRoomData(room_id) {
     const url = `https://api.live.bilibili.com/xlive/web-room/v1/index/getInfoByRoom?room_id=${room_id}`
@@ -93,11 +93,14 @@ async function showNotify(room, title) {
         wait: true
     },
         function (err, response) {
-            // 用户点击通知
-            if (response === 'activate') {
+            console.log(response)
+            
+            if (response === 'activate') {  // 用户点击通知
                 const URL = `https://live.bilibili.com/${room.room_id}`
                 openURL(URL)
-                updateCache(room.room_id);
+                updateCache(room.room_id)
+            } else if(response === 'dismissed') {   // 用户点击关闭
+                updateCache(room.room_id)
             }
         }
     )
