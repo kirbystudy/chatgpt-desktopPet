@@ -23,7 +23,7 @@ function createWallpaper() {
 
     // 加载本地文件
     wallpaper.loadFile(path.join(__dirname, '../../renderer/pages/wallpaper/wallpaper.html'))
-    wallpaper.webContents.openDevTools()
+
     // 监听closed事件后执行
     wallpaper.on('closed', () => { wallpaper = null })
 
