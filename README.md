@@ -86,4 +86,4 @@
 5. 修复直播推送通知不显示的问题
 
 ## 许可证 (License)
-BSD 2-Clause[https://raw.githubusercontent.com/kirbystudy/chatgpt-desktopPet/main_v1.2.x/LICENSE]
+[BSD 2-Clause](https://raw.githubusercontent.com/kirbystudy/chatgpt-desktopPet/main_v1.2.x/LICENSE)
