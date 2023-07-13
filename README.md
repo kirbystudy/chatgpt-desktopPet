@@ -84,3 +84,6 @@
 3. 修复点击隐藏模型后，再点击浮动图标后显示闪烁的问题
 4. 修复壁纸功能应用桌面，触发多次事件的问题
 5. 修复直播推送通知不显示的问题
+
+## 许可证 (License)
+BSD 2-Clause[https://raw.githubusercontent.com/kirbystudy/chatgpt-desktopPet/main_v1.2.x/LICENSE]
