@@ -2,36 +2,19 @@ const { ipcMain, BrowserWindow, screen } = require("electron")
 const { attach, detach, refresh } = require("electron-as-wallpaper")
 const path = require('path')
 
-let wallpapers = []
+let wallpaper
 
 ipcMain.handle('ask-open-wallpaper', async (event, someArgument) => {
-    const { msg, URL } = someArgument
+    try {
+        const { msg, URL } = someArgument
 
-    // 配置全局变量
-    global.shareVariable = {
-        url: URL
-    }
-
-    const displays = screen.getAllDisplays()
-
-    if (displays.length === 0) {
-        throw new Error('没有连接的显示器')
-    }
-
-    // 取消当前的动态壁纸绑定
-    wallpapers.forEach((wallpaper) => {
-        if (wallpaper) {
-            wallpaper.close()
+        // 配置全局变量
+        global.shareVariable = {
+            imgUrl: URL
         }
-        refresh()
-    })
 
-    wallpapers = []
-
-    // 创建或更新窗口
-    for (let i = 0; i < displays.length; i++) {
-        if (!wallpapers[i]) {
-            const wallpaper = new BrowserWindow({
+        if (!wallpaper) {
+            wallpaper = new BrowserWindow({
                 enableLargerThanScreen: true,
                 autoHideMenuBar: true,
                 fullscreen: true,
@@ -45,59 +28,40 @@ ipcMain.handle('ask-open-wallpaper', async (event, someArgument) => {
                     webviewTag: true
                 }
             })
-
-            wallpaper.on('closed', () => wallpapers[i] = null)
-            wallpapers[i] = wallpaper
+        }
+        
+        if (wallpaper) {
             require('@electron/remote/main').enable(wallpaper.webContents)
-
-            wallpaper.loadFile(path.resolve(
-                __dirname,
-                '../../renderer/pages/wallpaper/wallWindow.html'
-            )).then(() => {
-                attach(wallpaper)
-                wallpaper.show()
-                refresh()
-            }).catch((error) => {
-                console.log(error)
-            })
         }
 
-        const display = displays[i]
+        await wallpaper.loadURL(path.resolve(
+            __dirname,
+            '../../renderer/pages/wallpaper/wallWindow.html'
+        ))
 
-        // 设置窗口边界
-        const { width, height } = display.workAreaSize
-        wallpapers[i].setBounds({ width, height, x: display.bounds.x, y: display.bounds.y })
+        // 沉于桌面图标之下图层
+        attach(wallpaper)
+        wallpaper.show()
+        refresh()
 
-        // 发送URL到壁纸窗口的渲染进程
-        wallpapers[i].webContents.send('update-wallpaper-url', URL);
+        return 'ok'
+    } catch (error) {
+        console.error('询问打开壁纸时出错：', error)
+        return 'error'
     }
 
-    // 显示分辨率更改时
-    screen.on('display-metrics-changed', () => {
-        const displays = screen.getAllDisplays()
-
-        if (displays.length === 0) {
-            throw new Error('没有连接的显示器')
-        }
-
-        // 更新窗口边界
-        for (let i = 0; i < displays.length; i++) {
-            const display = displays[i]
-            const { width, height } = display.workAreaSize
-            wallpapers[i].setBounds({ width, height, x: display.bounds.x, y: display.bounds.y })
-        }
-    })
-
-    return 'ok'
 })
 
-global.wallpaperHandle = wallpapers
+// 暴露壁纸窗口数组给全局对象
+global.wallpaperHandle = wallpaper
 
-ipcMain.on('ask-close-wallpaper', (event, arg) => {
-    wallpapers.forEach((wallpaper) => {
+ipcMain.on('ask-close-wallpaper', () => {
+    try {
         if (wallpaper) {
-            wallpaper.close()
+            wallpaper.hide()
         }
-    })
-    refresh()
+        refresh()
+    } catch (error) {
+        console.error('请求关闭壁纸时出错:', error)
+    }
 })

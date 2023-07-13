@@ -1,8 +1,10 @@
-const { ipcRenderer } = require('electron');
+const { getGlobal } = require('@electron/remote')
+const video = document.getElementById('video')
+const { imgUrl } = getGlobal('shareVariable')
 
-ipcRenderer.on('update-wallpaper-url', (event, URL) => {
-    // 更新视频标签的src属性
-    const video = document.getElementById('video')
-    video.src = URL.replaceAll('\\','/')
-})
+// 更新视频标签的src属性
+if (imgUrl) {
+    video.src = imgUrl.replaceAll('\\', '/')
+}
+
 

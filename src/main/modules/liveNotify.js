@@ -11,6 +11,14 @@ const jsonContent = fs.readFileSync(configPath, 'utf-8')
 // 解析JSON
 const config = JSON.parse(jsonContent)
 
+// 本地缓存，用于记录用户收到直播通知的状态
+const cacheFile = path.resolve(__dirname, '../../../config/bilibili/cache.json')
+
+let cache = {}
+
+// 每隔5分钟收到直播通知，缓存标记为1
+const CACHE_EXPIRATION = 6 * 60 * 60 * 1000 // 6小时
+
 async function getLiveRoomData(room_id) {
     const url = `https://api.live.bilibili.com/xlive/web-room/v1/index/getInfoByRoom?room_id=${room_id}`
 
@@ -47,12 +55,15 @@ function parseRoomData(room_id, json) {
 
     const status = json.data.room_info.live_status
 
-    if (status !== room.status) {
-        room.status = status
+    if (status) {
         switch (status) {
             case 0:
                 break
             case 1:
+                // 判断是否需要推送通知
+                if (!isCacheExpired(room_id)) {
+                    break
+                }
                 showNotify(room, '{name}正在直播')
                 break
             case 2:
@@ -70,8 +81,8 @@ async function showNotify(room, title) {
 
     const date = new Date().toLocaleString()
     console.log(`${title} ${room.title} ${date}`)
-    require('../../renderer/image')
-    const fileName = path.resolve(__dirname + `../../renderer/image/avatar_${room.room_id}.jpg`)
+
+    const fileName = path.resolve(__dirname + `../../../renderer/image/avatar_${room.room_id}.jpg`)
     await saveFile(room.avatar, fileName)
 
     notifier.notify({
@@ -82,9 +93,11 @@ async function showNotify(room, title) {
         wait: true
     },
         function (err, response) {
+            // 用户点击通知
             if (response === 'activate') {
                 const URL = `https://live.bilibili.com/${room.room_id}`
                 openURL(URL)
+                updateCache(room.room_id);
             }
         }
     )
@@ -126,10 +139,42 @@ const roomList = config.bilibili.map(item => {
     return {
         room_id: item.roomId,
         name: item.username,
-        status: 0,
         cover: '',
         avatar: '',
         title: '',
+    }
+})
+
+// 检查缓存是否过期
+function isCacheExpired(room_id) {
+    if (cache[room_id] && cache[room_id].timestamp) {
+        const expirationDate = new Date(cache[room_id].timestamp + CACHE_EXPIRATION)
+        return expirationDate <= new Date()
+    }
+    return true
+}
+
+// 更新缓存时间戳
+function updateCache(room_id) {
+    cache[room_id] = {
+        timestamp: new Date().getTime()
+    }
+
+    fs.writeFile(cacheFile, JSON.stringify(cache), (err) => {
+        if (err) {
+            console.error(`更新缓存文件失败 ${room_id}: ${err}`)
+        }
+    })
+}
+
+// 读取缓存文件
+fs.readFile(cacheFile, 'utf-8', (err, data) => {
+    if (!err) {
+        try {
+            cache = JSON.parse(data)
+        } catch (error) {
+            console.error(`文件解析失败：${error}`)
+        }
     }
 })
 

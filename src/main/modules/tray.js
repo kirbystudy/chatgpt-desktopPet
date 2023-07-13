@@ -43,9 +43,7 @@ function createTrayMenu() {
 
                     if (res.response == 1) {
                         // 清除动态壁纸
-                        global.wallpaperHandle.forEach((wallpaper) => {
-                            if (wallpaper) wallpaper.close()
-                        })
+                        if (global.wallpaperHandle) global.wallpaperHandle.close()
                         refresh()
 
                         // 禁用点击托盘图标

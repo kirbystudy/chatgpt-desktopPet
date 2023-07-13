@@ -206,42 +206,42 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // 调用函数启动实时通知功能
 function setupLiveNotify() {
-  let intervalId = null; // 定时器的 ID
+  let intervalId = null // 定时器的 ID
 
   // 启动定时器
   const startTimer = () => {
     if (intervalId === null) {
       // 使用 setInterval 函数每隔 1分钟 调用 queryLiveNotify 函数
-      intervalId = setInterval(queryLiveNotify, 60000);
+      intervalId = setInterval(queryLiveNotify, 10000)
     }
-  };
+  }
 
   // 停止定时器
   const stopTimer = () => {
     if (intervalId !== null) {
       // 使用 clearInterval 函数停止定时器
-      clearInterval(intervalId);
-      intervalId = null;
+      clearInterval(intervalId)
+      intervalId = null
     }
-  };
+  }
 
   // 查询实时通知
   const queryLiveNotify = () => {
     // 使用 ipcRenderer 发送 liveNotify 事件
-    ipcRenderer.send('liveNotify');
+    ipcRenderer.send('liveNotify')
   };
 
   // 初始化实时通知功能
   const initLiveNotify = () => {
     // 从本地存储中获取 isToggleOnLive 的值
-    const isToggleOnLive = localStorage.getItem('isToggleOnLive');
+    const isToggleOnLive = localStorage.getItem('isToggleOnLive')
 
     if (isToggleOnLive === 'true') {
       // 如果 isToggleOnLive 的值为 'true'，启动定时器
-      startTimer();
+      startTimer()
     } else if (isToggleOnLive === 'false') {
       // 如果 isToggleOnLive 的值为 'false'，停止定时器
-      stopTimer();
+      stopTimer()
     }
   }
 
@@ -249,12 +249,12 @@ function setupLiveNotify() {
   const handleStorageChange = (event) => {
     if (event.key === 'isToggleOnLive') {
       // 调用初始化实时通知功能
-      initLiveNotify();
+      initLiveNotify()
     }
   };
 
   // 监听 storage 事件，当本地存储发生变化时触发 handleStorageChange 函数
-  window.addEventListener('storage', handleStorageChange);
+  window.addEventListener('storage', handleStorageChange)
 
   // 调用初始化实时通知功能
   initLiveNotify()

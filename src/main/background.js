@@ -131,6 +131,10 @@ ipcMain.on('Chatting', (event, arg) => {
     }
   }
 
+  if (arg == 'minimize-window') {
+    global.chatting.minimize()
+  }
+
   if (arg == 'maximize-window') {
     if (global.chatting.isMaximized()) {
       global.chatting.unmaximize()

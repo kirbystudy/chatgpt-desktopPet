@@ -70,6 +70,7 @@
     padding: 8px 25px;
     border-radius: 8px;
     background-color: #FB7299;
+    user-select: none;
     cursor: pointer;
 }
 
@@ -326,6 +327,7 @@
     height: 200px;
     overflow: hidden;
     cursor: pointer;
+    user-select: none;
 }
 
 .img img {
@@ -365,6 +367,7 @@
     background-color: #1e2336;
     color: #888888;
     padding: 0 10px;
+    user-select: none;
 }
 
 .desc .rarityData {
@@ -816,8 +819,8 @@
 
 .delete-img {
     position: absolute;
-    top: 0;
-    right: 0;
+    top: 5px;
+    right: 5px;
     color: #fff;
     cursor: pointer;
 }
@@ -849,7 +852,6 @@
 .uploading-img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
 }
 
 .selected {
@@ -1084,6 +1086,7 @@ th {
 .card .user-avatar {
     width: 100px;
     height: 100px;
+    user-select: none;
 }
 
 .card .user-avatar img {
@@ -1134,6 +1137,7 @@ th {
     border-radius: 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
     overflow: hidden;
+    user-select: none;
 }
 
 /* 图片样式 */

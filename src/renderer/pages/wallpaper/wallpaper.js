@@ -1,6 +1,9 @@
 // 引入 fs 和 path 模块
 const fs = require('fs')
 const path = require('path')
+const os = require('os')
+const { ipcRenderer } = require('electron')
+const openBtn = require('../../../main/modules/ipcEvent')
 
 // 读取config.json
 const configPath = path.resolve(__dirname, '../../../../config/config.json')
@@ -8,8 +11,6 @@ const jsonContent = fs.readFileSync(configPath, 'utf-8')
 
 // 解析JSON
 const _config = JSON.parse(jsonContent)
-
-
 
 const width = 300           // 单个元素宽度
 const height = 240          // 单个元素高度
@@ -152,7 +153,7 @@ function updateVisibleList() {
     visibleList = Object.freeze(find(startIndex, catchList, (img) => img._top > top && img._top < bottom))
     catchScrollTop = scrollTop
 
-    renderImages(catchList)
+    renderImages(visibleList)
 
 }
 
@@ -160,71 +161,30 @@ function updateVisibleList() {
 // 获取图片数据
 async function getList(reset = false) {
     try {
+
         const response = await fetch(`${_config.wallpaper.bzlist}`, { method: 'GET' })
         if (response.ok) {
             const data = await response.json()
+            console.log(data)
             addHandler(data, reset)
             renderTags(data)
+            renderImages(data)
+            addClickHandler()
+
         } else {
             throw new Error('网络响应不正常')
         }
-        skeleton = false
+
     } catch (error) {
         skeleton = false
         showMessage(error, 'error')
+    } finally {
+        skeleton = false
     }
 
     const tabItem = Array.from(document.querySelectorAll('.checkbox-item'))
-    const visibleList = document.querySelector('.visible-list')
 
     let currentTagName = '' // 当前选中的标签名
-
-    function addClickHandler() {
-        const listItem = document.querySelectorAll('.visible-list-item')
-        const poster = document.querySelectorAll('#poster')
-
-        function clickHandler(event, index) {
-            let id = listItem[index].id
-            imageView(event, id)
-        }
-
-        // 点击图片区域监听
-        poster.forEach((item, index) => {
-            item.addEventListener('click', (event) => clickHandler(event, index))
-        })
-
-        // 点击view图标监听
-        const viewDetails = document.querySelectorAll('#viewDetails')
-        viewDetails.forEach((item, index) => {
-            item.addEventListener('click', (event) => clickHandler(event, index))
-        })
-
-        // 设为桌面
-        const setDesktop = document.getElementById('setDesktop')
-        setDesktop.addEventListener('click', async (event) => {
-            var storedUrl = localStorage.getItem('storedUrl')
-            await setWallpaperDeskTop(event, storedUrl)
-        })
-    }
-
-    async function fetchData(tagName = '') {
-        try {
-            const response = await fetch(`${_config.wallpaper.bzlist}${tagName ? `?tagName=${tagName}` : ''}`, { method: 'GET' })
-            if (response.ok) {
-                visibleList.innerHTML = '' // 清空 visible-list 元素
-                const data = await response.json()
-                addHandler(data, true)
-                updateVisibleList()
-                addClickHandler()
-            } else {
-                throw new Error('网络响应不正常')
-            }
-            skeleton = false
-        } catch (error) {
-            skeleton = false
-            showMessage(error, 'error')
-        }
-    }
 
     function tabItemClickHandler(event) {
         const tagName = event.target.textContent
@@ -244,56 +204,77 @@ async function getList(reset = false) {
     }
 
     tabItem.forEach((item) => {
-        item.addEventListener('click', tabItemClickHandler)
+        item.addEventListener('click', tabItemClickHandler)     // 绑定新的事件处理器
     })
 }
 
-let isFlag = false
+async function fetchData(tagName = '') {
+    const visibleList = document.querySelector('.visible-list')
+    // 开启loading加载动画
+    loading = true
+    setTimeout(async () => {
+        try {
+            const response = await fetch(`${_config.wallpaper.bzlist}${tagName ? `?tagName=${tagName}` : ''}`, { method: 'GET' })
+            if (response.ok) {
+                visibleList.innerHTML = '' // 清空 visible-list 元素
+                const data = await response.json()
+                addHandler(data, true)
+                renderImages(data)
+                addClickHandler()
+            } else {
+                throw new Error('网络响应不正常')
+            }
+            skeleton = false
+        } catch (error) {
+            skeleton = false
+            showMessage(error, 'error')
+        } finally {
+            loading = false
+        }
+    }, 1000)
+
+}
+
+let setDesktopHandlerBound = false  // 是否已经绑定了设为桌面事件
+
+function addClickHandler() {
+    addPosterClickHandler()
+
+    const setDesktop = document.getElementById('setDesktop')
+
+    if (!setDesktopHandlerBound) {
+        // 设为桌面监听
+        setDesktop.addEventListener('click', async (event) => {
+            var storedUrl = localStorage.getItem('storedUrl')
+            setWallpaperDeskTop(event, storedUrl)
+        })
+        setDesktopHandlerBound = true
+    }
+
+}
+
+function addPosterClickHandler() {
+    const poster = document.querySelectorAll('#poster')
+    const viewDetails = document.querySelectorAll('#viewDetails')
+
+    // 点击图片区域监听
+    poster.forEach((item, index) => {
+        item.addEventListener('click', (event) => clickHandler(event, index))
+        viewDetails[index].addEventListener('click', (event) => clickHandler(event, index))
+    })
+}
 
 // 渲染图片
 function renderImages(visibleList) {
     for (const item of visibleList) {
         updateImageCard(item)
     }
+}
 
+function clickHandler(event, index) {
     const listItem = document.querySelectorAll('.visible-list-item')
-    const poster = document.querySelectorAll("#poster")
-
-    if (isFlag) {
-        return
-    }
-
-    function clickHandler(event, index) {
-        let id = listItem[index].id
-        imageView(event, id)
-    }
-
-    isFlag = true
-
-    poster.forEach((item, index) => {
-        item.addEventListener('click', (event) => clickHandler(event, index))
-    })
-
-    // 查看详情
-    const viewDetails = document.querySelectorAll('#viewDetails')
-    viewDetails.forEach((item, index) => {
-        item.addEventListener('click', (event) => clickHandler(event, index))
-    })
-
-    // 下载壁纸
-    // const download = document.getElementById('download')
-    // download.addEventListener('click', async () => {
-    //     var storedUrl = localStorage.getItem('storedUrl')
-    //     await wallpaperDownloadHandler(storedUrl)
-    // })
-
-    // 设为桌面
-    const setDesktop = document.getElementById('setDesktop')
-    setDesktop.addEventListener('click', (event) => {
-        var storedUrl = localStorage.getItem('storedUrl')
-        setWallpaperDeskTop(event, storedUrl)
-    })
-
+    let id = listItem[index].id
+    imageView(event, id)
 }
 
 // 壁纸下载的函数
@@ -342,16 +323,13 @@ async function wallpaperDownloadHandler(src) {
     }
 }
 
+
 // 壁纸应用桌面
 async function setWallpaperDeskTop(event, src) {
-    const os = require('os')
-    const fs = require('fs')
-    const path = require('path')
-    const { ipcRenderer } = require('electron')
-    const openBtn = require('../../../main/modules/ipcEvent')
 
     // 获取文件名
     const fileName = src.split('/').pop()
+
     // 获取文件后缀名
     const fileExtension = fileName.split('.').pop()
 
@@ -383,19 +361,12 @@ async function setWallpaperDeskTop(event, src) {
     }
 
     if (fileExtension === 'png') {
-        openBtn.closeWallPaper()
         ipcRenderer.send('set-wallpaper', filePath)
+        ipcRenderer.send('ask-close-wallpaper')
         showMessage('图片设置成功', 'success')
-        setTimeout(() => {
-            ipcRenderer.send('Wallpaper', 'minimize-window')
-        }, 1500)
-
     } else if (fileExtension === 'mp4') {
         openBtn.openChildWind(event, 'mp4', filePath)
         showMessage('视频设置成功', 'success')
-        setTimeout(() => {
-            ipcRenderer.send('Wallpaper', 'minimize-window')
-        }, 1500)
     }
 }
 
@@ -438,13 +409,11 @@ function imageView(event, id) {
                 let img = document.querySelector('.img-view img')
                 let video = document.querySelector('.img-view video')
 
-                init(event)
-
                 if (result.data.source === 'png') {
                     video.style.display = 'none'
                     img.style.display = 'block'
                     img.src = result.data.url
-
+                    initImage(event)
                 } else if (result.data.source === 'mp4') {
                     img.style.display = 'none'
                     video.style.display = 'block'
@@ -457,7 +426,7 @@ function imageView(event, id) {
                 showMessage('请求出错', error)
                 loading = false
             })
-    }, 1500)
+    }, 1000)
 }
 
 function closeImageView() {
@@ -540,8 +509,8 @@ function setRarityColor(rarityData) {
     return color
 }
 
-// 详情页初始化
-function init(event) {
+// 详情页图片初始化
+function initImage(event) {
     let { x, y } = event.target.getClientRects()[0]
 
     const resize = () => {
@@ -579,15 +548,14 @@ function init(event) {
         ]
 
         const options = {
-            duration: 300,
+            duration: 500,
             easing: "cubic-bezier(0, 0, 0.32, 1)"
         }
 
-        const animate = document.querySelector('.imgView').animate(keyframes, options)
+        const animate = imgView.animate(keyframes, options)
 
         animate.onfinish = () => {
             const { width, height } = aspectRatioToWH(clientWidthView - 200, clientHeightView - 200, ratio, naturalWidth, naturalHeight)
-            // document.querySelector('.img').addEventListener('wheel', setImgWH)
             imgStyle = {
                 width: `${width}px`,
                 height: `${height}px`,
@@ -598,43 +566,6 @@ function init(event) {
             imgView.style.transform = imgStyle.transform
         }
     })
-}
-
-// 获取等比高度
-function setImgWH(e) {
-    let img = document.querySelector('.imgView')
-    if (img) {
-        let { x, y } = img.getBoundingClientRect()
-
-        let { width, height } = this.imgStyle
-        width = parseFloat(width.replace('px', ''))
-        height = parseFloat(height.replace('px', ''))
-
-        let oX = x + width / 2
-        let oY = y + height / 2
-
-        if (e.wheelDeltaY > 0) {
-            width += width * 0.1
-            height += height * 0.1
-        } else {
-            width -= width * 0.1
-            height -= height * 0.1
-        }
-
-        if (width < this.minImg.width) {
-            width = this.minImg.width
-        }
-
-        if (height < this.minImg.height) {
-            height = this.minImg.height
-        }
-
-        this.imgStyle.width = width + 'px'
-        this.imgStyle.height = height + 'px'
-
-        img.style.transform = `translate(${oX - width / 2}px, ${oY - height / 2}px)`
-
-    }
 }
 
 // 更新图片
@@ -908,7 +839,7 @@ let isLoading = false
 
 Object.defineProperty(window, 'loading', {
     get() {
-        return skeletonValue
+        return isLoading
     },
     set(value) {
         isLoading = value
@@ -1341,29 +1272,29 @@ async function getUserList() {
     // 将壁纸元素添加到元素中
     const wallpaperContainer = document.querySelector('.wallpaper-container')
 
-    try {
-        isUserListRequest = true
-        wallpaperContainer.innerHTML = ''
-        const response = await fetch(`${_config.wallpaper.myList}${userId}`)
-        const data = await response.json()
+    setTimeout(async () => {
+        try {
+            isUserListRequest = true
+            wallpaperContainer.innerHTML = ''
+            const response = await fetch(`${_config.wallpaper.myList}${userId}`)
+            const data = await response.json()
 
-        data.forEach(userList => {
-            // 解构用户列表信息
-            const { url, id, dateStr, isUp, remark, rarityData } = userList
+            data.forEach(userList => {
+                // 解构用户列表信息
+                const { url, id, dateStr, isUp, remark, rarityData } = userList
 
-            const wallpaperElement = createWallpaperElement(url, id, dateStr, isUp, remark, rarityData)
+                const wallpaperElement = createWallpaperElement(url, id, dateStr, isUp, remark, rarityData)
 
-            wallpaperContainer.appendChild(wallpaperElement)
-        })
+                wallpaperContainer.appendChild(wallpaperElement)
+            })
 
-        isUserListRequest = false
-    } catch (error) {
-        showMessage(error, 'error')
-        loading = false
-    } finally {
-        isUserListRequest = false
-    }
-
+        } catch (error) {
+            showMessage(error, 'error')
+            loading = false
+        } finally {
+            isUserListRequest = false
+        }
+    }, 1000)
 }
 
 
@@ -1376,22 +1307,16 @@ function createWallpaperElement(url, id, dateStr, isUp, remark, rarityData) {
     // 创建并设置图片
     const imageElement = document.createElement('img')
     imageElement.draggable = false
-
-    imageElement.onload = function () {
-        loading = false
-    }
     imageElement.src = url
-    wallpaperElement.appendChild(imageElement)
+    imageElement.addEventListener('load', loadWallpaperInfo)
 
-    loadWallpaperInfo()
+    wallpaperElement.appendChild(imageElement)
 
     // 辅助函数，创建信息元素并添加到 wallpaperElement 中
     function appendInfo(label, value, tag = 'p', classList = []) {
         const infoElement = document.createElement(tag)
         infoElement.textContent = `${label}：${value}`
-        classList.forEach(className => {
-            infoElement.classList.add(className)
-        })
+        infoElement.classList.add(...classList)
         wallpaperElement.appendChild(infoElement)
     }
 
@@ -1421,6 +1346,7 @@ function createWallpaperElement(url, id, dateStr, isUp, remark, rarityData) {
         // 创建并设置稀有度
         appendInfo('稀有度', rarityData, 'span', ['rarity-list'])
     }
+    loading = false
 
     return wallpaperElement
 
@@ -1671,12 +1597,14 @@ async function uploadFile(file) {
                         showMessage(xhr.responseText, 'error')
                         updateProgress(0)
                         document.querySelector('.progress-bar').style.display = 'none'
+                        new Promise(() => setTimeout(() => { loading = false }, 1000))
                     }
 
                 } else {
                     showMessage(xhr.responseText, 'error')
                     updateProgress(0)
                     document.querySelector('.progress-bar').style.display = 'none'
+                    new Promise(() => setTimeout(() => { loading = false }, 1000))
                 }
             }
         }
@@ -1693,6 +1621,7 @@ async function uploadFile(file) {
         showMessage(error, 'error')
         updateProgress(0)
         document.querySelector('.progress-bar').style.display = 'none'
+        new Promise(() => setTimeout(() => { loading = false }, 1000))
     }
 
 }
@@ -1848,6 +1777,7 @@ function analyzeRarity(userId, token, fileId) {
                                     }
 
                                 }).catch(error => {
+                                    loading = false
                                     showMessage(error, 'error')
                                 }).finally(() => {
                                     isPublishRequesting = false // 请求完成后，重置发布请求标识
@@ -1918,17 +1848,27 @@ function analyzeRarity(userId, token, fileId) {
                                 localStorage.setItem('uploadFileCache', JSON.stringify(uploadFileList))
                             }
 
-                            document.querySelector('.rarity-rule').style.display = 'none'
-                            document.querySelector('.release-btn').style.display = 'none'
+                            // 判断uploadFileCache缓存是否有数据，并获取其长度
+                            var uploadFileCache = JSON.parse(localStorage.getItem('uploadFileCache'))
+                            var cacheLength = uploadFileCache ? uploadFileCache.length : 0
+
+                            // 如果没有缓存数据，隐藏rarity-rule和release-btn
+                            if (cacheLength === 0) {
+                                document.querySelector('.rarity-rule').style.display = 'none'
+                                document.querySelector('.release-btn').style.display = 'none'
+                                document.querySelector('.progress-bar').style.display = 'none'
+                            }
                         }
                     })
 
                 } catch (error) {
+                    loading = false
                     console.error('分析uploadFileCache时出错：', error)
                 }
             }
         }
     }).catch(error => {
+        loading = false
         showMessage(error, 'error')
         console.log(error)
     })
@@ -2019,10 +1959,12 @@ function handlerScroll(e) {
     updateScrollTop(scrollTop)
 }
 
+/**
+ * 实现一个函数，用于在下一帧渲染之前执行回调函数。
+ * @param {*} callback - 回调函数，将在下一帧渲染之前执行。
+ */
 function nextTick(callback) {
-    requestAnimationFrame(() => {
-        requestAnimationFrame(callback)
-    })
+    requestAnimationFrame(callback)
 }
 
 // 防抖函数
