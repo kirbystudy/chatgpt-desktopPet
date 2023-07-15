@@ -28,12 +28,35 @@ const hide = document.getElementById('hide')
 
 const control_btn = document.querySelector('.control_btn')
 const control_item = document.querySelectorAll('.control_item')
+const controlBox = document.querySelector('.control_box')
+
+controlBox.addEventListener('click', () => {
+  control_btn.classList.toggle('active')
+  controlBox.classList.toggle('clicked')
+})
 
 // 定时器的全局变量
 let timer = null
 
 window.onload = function () {
   loadLive2D()
+
+  const upArrow = document.getElementById('up_arrow')
+  const downArrow = document.getElementById('down_arrow')
+
+  control_btn.addEventListener('scroll', function () {
+    if (control_btn.scrollTop === 0) {
+      upArrow.style.opacity = '0'
+    } else {
+      upArrow.style.opacity = '1'
+    }
+
+    if (control_btn.scrollTop + control_btn.clientHeight === control_btn.scrollHeight) {
+      downArrow.style.opacity = '0'
+    } else {
+      downArrow.style.opacity = '1'
+    }
+  })
 
   setting.addEventListener('click', () => {
     ipcRenderer.send('Setting', 'Open')
@@ -62,14 +85,6 @@ window.onload = function () {
       showMessage("我回来啦", 3000, true)
     }, 1300)
 
-  })
-
-  app.addEventListener('mouseover', () => {
-    control_btn.style.opacity = 1
-  })
-
-  app.addEventListener('mouseout', () => {
-    control_btn.style.opacity = 0
   })
 
   control_item.forEach(item => {

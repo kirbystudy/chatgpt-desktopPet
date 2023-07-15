@@ -7,20 +7,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Live2D DesktopPet</title>
   <link rel="stylesheet" href="../style/index.css">
-</head>  
+  <link rel="stylesheet" href="../style/font/iconfont.css">
+</head>
 
 <body>
   <div id="app">
     <div id="message_box"></div>
     <canvas id="canvas"></canvas>
+
     <div class="control_btn">
+      <div class="iconfont icon-xiangshang" id="up_arrow"></div>
       <div class="control_item" id="schedule">日程</div>
       <div class="control_item" id="chatting">聊天</div>
       <div class="control_item" id="wallpaper">壁纸</div>
       <div class="control_item" id="setting">关于</div>
       <div class="control_item" id="hide">隐藏</div>
+      <div class="iconfont icon-xiangxia" id="down_arrow"></div>
     </div>
-  </div>  
+
+    <div class="control_box"></div>
+  </div>
 </body>
 
 <script src="../live2d/live2dcubismcore.min.js"></script>

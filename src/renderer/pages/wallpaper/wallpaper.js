@@ -2,7 +2,7 @@
 const fs = require('fs')
 const path = require('path')
 const os = require('os')
-const { ipcRenderer } = require('electron')
+const { ipcRenderer, dialog } = require('electron')
 const openBtn = require('../../../main/modules/ipcEvent')
 
 // 读取config.json
@@ -157,6 +157,40 @@ function updateVisibleList() {
 
 }
 
+// 下载图片
+async function downloadImage(url, picPath) {
+    // 获取文件名
+    const fileName = url.split('/').pop()
+
+    const dir = path.join(process.cwd(), 'wallpaper-gallery', `${picPath}`)
+
+    if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir)
+    }
+
+    const filePath = path.join(dir, fileName)
+
+    // 判断文件是否存在
+    if (!fs.existsSync(filePath)) {
+        try {
+            const controller = new AbortController()
+            const timeoutId = setTimeout(() => controller.abort(), 60 * 1000)
+            const response = await fetch(url, { signal: controller.signal })
+            clearTimeout(timeoutId)
+
+            if (!response.ok) {
+                throw new Error(`下载图片失败：${response.status} ${response.statusText}`)
+            }
+
+            const buffer = await response.arrayBuffer()
+            fs.writeFileSync(filePath, Buffer.from(buffer))
+        } catch (error) {
+            showMessage(error, 'error')
+        }
+    }
+
+    return filePath
+}
 
 // 获取图片数据
 async function getList(reset = false) {
@@ -165,7 +199,13 @@ async function getList(reset = false) {
         const response = await fetch(`${_config.wallpaper.bzlist}`, { method: 'GET' })
         if (response.ok) {
             const data = await response.json()
-            console.log(data)
+
+            // 下载所有图片或使用已下载的本地图片
+            for (const imageData of data) {
+                const filePath = await downloadImage(imageData.poster, 'blurryPic')
+                // 使用本地图片路径替换远程路径
+                imageData.poster = filePath.replaceAll('\\', '/')
+            }
             addHandler(data, reset)
             renderTags(data)
             renderImages(data)
@@ -176,6 +216,7 @@ async function getList(reset = false) {
         }
 
     } catch (error) {
+        console.log(error)
         skeleton = false
         showMessage(error, 'error')
     } finally {
@@ -212,12 +253,21 @@ async function fetchData(tagName = '') {
     const visibleList = document.querySelector('.visible-list')
     // 开启loading加载动画
     loading = true
+
     setTimeout(async () => {
         try {
             const response = await fetch(`${_config.wallpaper.bzlist}${tagName ? `?tagName=${tagName}` : ''}`, { method: 'GET' })
             if (response.ok) {
                 visibleList.innerHTML = '' // 清空 visible-list 元素
                 const data = await response.json()
+
+                // 下载所有图片或使用已下载的本地图片
+                for (const imageData of data) {
+                    const filePath = await downloadImage(imageData.poster, 'blurryPic')
+                    // 使用本地图片路径替换远程路径
+                    imageData.poster = filePath.replaceAll('\\', '/')
+                }
+
                 addHandler(data, true)
                 renderImages(data)
                 addClickHandler()
@@ -246,7 +296,7 @@ function addClickHandler() {
         // 设为桌面监听
         setDesktop.addEventListener('click', async (event) => {
             var storedUrl = localStorage.getItem('storedUrl')
-            setWallpaperDeskTop(event, storedUrl)
+            setWallpaperDeskTop(event, storedUrl, 'highResPic')
         })
         setDesktopHandlerBound = true
     }
@@ -277,55 +327,10 @@ function clickHandler(event, index) {
     imageView(event, id)
 }
 
-// 壁纸下载的函数
-async function wallpaperDownloadHandler(src) {
-    const os = require('os')
-    const fs = require('fs')
-    const path = require('path')
-
-    // 获取文件名
-    const fileName = src.split('/').pop()
-    // 获取文件后缀名
-    const fileExtension = fileName.split('.').pop()
-
-    const dir = path.join(os.homedir(), '/wallpaper-gallery')
-
-    if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir)
-    }
-
-    const filePath = path.join(dir, fileName)
-
-    // 判断文件是否存在
-    if (!fs.existsSync(filePath)) {
-        try {
-            const controller = new AbortController()
-            const timeoutId = setTimeout(() => controller.abort(), 60 * 1000)
-            const response = await fetch(src, { signal: controller.signal })
-            clearTimeout(timeoutId)
-
-            if (!response.ok) {
-                throw new Error(`·下载图片失败：${response.status} ${response.statusText}`)
-            }
-
-            const buffer = await response.arrayBuffer()
-            fs.writeFileSync(filePath, Buffer.from(buffer))
-
-        } catch (error) {
-            showMessage(error, 'error')
-        }
-    }
-
-    if (fileExtension === 'png') {
-        showMessage('图片下载成功!', 'success')
-    } else if (fileExtension === 'mp4') {
-        showMessage('视频下载成功!', 'success')
-    }
-}
-
-
 // 壁纸应用桌面
-async function setWallpaperDeskTop(event, src) {
+async function setWallpaperDeskTop(event, src, picPath) {
+
+    loading = true
 
     // 获取文件名
     const fileName = src.split('/').pop()
@@ -333,7 +338,7 @@ async function setWallpaperDeskTop(event, src) {
     // 获取文件后缀名
     const fileExtension = fileName.split('.').pop()
 
-    const dir = path.join(os.homedir(), '/wallpaper-gallery')
+    const dir = path.join(os.homedir(), `/wallpaper-gallery/${picPath}`)
 
     if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir)
@@ -359,6 +364,8 @@ async function setWallpaperDeskTop(event, src) {
             showMessage(error, 'error')
         }
     }
+
+    loading = false
 
     if (fileExtension === 'png') {
         ipcRenderer.send('set-wallpaper', filePath)
@@ -393,55 +400,74 @@ function imageView(event, id) {
     }
 
     setTimeout(async () => {
-        await fetchImageURL(jsonData)
-            .then(result => {
-
-                if (result.code === '10400') {
-                    loading = false
-                    showMessage('会员壁纸无权限查看', 'error')
-                    return
+        try {
+            const response = await fetch(`${_config.wallpaper.getUrlByImgId}`, {
+                method: 'POST',
+                body: JSON.stringify(jsonData),
+                headers: {
+                    'content-type': 'application/json'
                 }
+            })
 
+            const result = await response.json()
+
+            if (result.code === '10400') {
                 loading = false
+                showMessage('会员壁纸无权限查看', 'error')
+                return
+            }
 
-                animationContent.classList.add('active')
+            loading = false
 
-                let img = document.querySelector('.img-view img')
-                let video = document.querySelector('.img-view video')
+            animationContent.classList.add('active')
 
-                if (result.data.source === 'png') {
+            let img = document.querySelector('.img-view img')
+            let video = document.querySelector('.img-view video')
+
+            const filePath = await downloadImage(result.data.url, 'highResPic')
+            // 使用本地图片路径替换远程路径
+            result.data.url = filePath.replaceAll('\\', '/')
+
+            if (result.data.source === 'png') {
+                // 判断本地文件下是否存在图片
+                if (fs.existsSync(filePath)) {
+                    video.style.display = 'none'
+                    img.style.display = 'block'
+                    img.src = filePath
+                } else {
                     video.style.display = 'none'
                     img.style.display = 'block'
                     img.src = result.data.url
-                    initImage(event)
-                } else if (result.data.source === 'mp4') {
+                }
+                initImage(event)
+            } else if (result.data.source === 'mp4') {
+                // 判断本地文件下是否存在视频
+                if (fs.existsSync(filePath)) {
+                    img.style.display = 'none'
+                    video.style.display = 'block'
+                    video.src = filePath
+                } else {
                     img.style.display = 'none'
                     video.style.display = 'block'
                     video.src = result.data.url
                 }
+            }
 
-                updateWallpaperInfo(result.data)
-                localStorage.setItem('storedUrl', result.data.url)
-            }).catch(error => {
-                showMessage('请求出错', error)
-                loading = false
-            })
-    }, 1000)
+            updateWallpaperInfo(result.data)
+            localStorage.setItem('storedUrl', result.data.url)
+        } catch (error) {
+            console.log(error)
+            loading = false
+            showMessage('请求出错', 'error')
+        }
+
+    }, 1000);
+
 }
 
 function closeImageView() {
     const animationContent = document.querySelector('.animation-content')
     animationContent.classList.remove('active')
-}
-
-function fetchImageURL(jsonData) {
-    return fetch(`${_config.wallpaper.getUrlByImgId}`, {
-        method: 'POST',
-        body: JSON.stringify(jsonData),
-        headers: {
-            'content-type': 'application/json'
-        }
-    }).then(response => response.json())
 }
 
 // 更新壁纸详情信息
@@ -1301,23 +1327,40 @@ async function getUserList() {
 // 创建壁纸元素
 function createWallpaperElement(url, id, dateStr, isUp, remark, rarityData) {
     // 创建壁纸元素
-    const wallpaperElement = document.createElement('div')
+    const wallpaperElement = document.createElement('li')
     wallpaperElement.classList.add('wallpaper')
+
+    // 创建图片容器
+    const imageContainer = document.createElement('div')
+    imageContainer.classList.add('image')
+
+    // 创建图片描述容器
+    const imageDesc = document.createElement('div')
+    imageDesc.classList.add('image-desc')
 
     // 创建并设置图片
     const imageElement = document.createElement('img')
+
     imageElement.draggable = false
     imageElement.src = url
+
     imageElement.addEventListener('load', loadWallpaperInfo)
 
-    wallpaperElement.appendChild(imageElement)
+    imageContainer.appendChild(imageElement)
+
+    // 创建并设置稀有度
+    const imageInfo = document.createElement('div')
+    imageInfo.classList.add('rarity-list')
+    imageInfo.style.color = setRarityColor(rarityData)
+    imageInfo.innerHTML = `稀有度：${rarityData}`
+
+    imageContainer.appendChild(imageInfo)
 
     // 辅助函数，创建信息元素并添加到 wallpaperElement 中
-    function appendInfo(label, value, tag = 'p', classList = []) {
+    function appendInfo(label, value, tag = 'div') {
         const infoElement = document.createElement(tag)
         infoElement.textContent = `${label}：${value}`
-        infoElement.classList.add(...classList)
-        wallpaperElement.appendChild(infoElement)
+        imageDesc.appendChild(infoElement)
     }
 
     function loadWallpaperInfo() {
@@ -1342,11 +1385,12 @@ function createWallpaperElement(url, id, dateStr, isUp, remark, rarityData) {
         if (remark) {
             appendInfo('备注', remark)
         }
-
-        // 创建并设置稀有度
-        appendInfo('稀有度', rarityData, 'span', ['rarity-list'])
     }
+
     loading = false
+
+    wallpaperElement.appendChild(imageContainer)
+    wallpaperElement.appendChild(imageDesc)
 
     return wallpaperElement
 
@@ -1459,9 +1503,8 @@ function convertToMonthsDaysHoursMinutesSeconds(remainingTime) {
 function updateRemainingTime(expireTime) {
     setInterval(() => {
         const remainderText = convertToMonthsDaysHoursMinutesSeconds(expireTime)
-        document.querySelector('.time-left').innerHTML = remainderText
+        document.querySelector('.remaining-time').innerHTML = remainderText
     }, 1000)
-
 }
 
 function handleAvatarClick() {
@@ -2040,5 +2083,106 @@ function aspectRatioToWH(width, height, r, iw, ih) {
         return {
             width, height
         }
+    }
+}
+
+class FlipCard {
+    constructor(currentNumber, nextNumber) {
+        this.duration = 500
+        this.isRunning = false
+
+        this.createRootNode()
+        this.craeteNodes()
+        this.setFrontNumber(currentNumber)
+        this.setBackNumber(nextNumber)
+    }
+
+    createRootNode() {
+        this.root = document.createElement('div')
+        this.root.classList.add('flip-card')
+    }
+
+    craeteNodes() {
+        this.frontNode = document.createElement('div')
+        this.frontNode.classList.add('digital', 'front')
+        this.backNode = document.createElement('div')
+        this.backNode.classList.add('digital', 'back')
+        this.root.append(this.frontNode, this.backNode)
+    }
+
+    setFrontNumber(number) {
+        this.frontNode.dataset.number = number
+    }
+
+    setBackNumber(number) {
+        this.backNode.dataset.number = number
+    }
+
+    flipDown(currentNumber, nextNumber) {
+        if (this.isRunning) {
+            return
+        }
+        this.isRunning = true
+        this.root.classList.add('running')
+        this.setFrontNumber(currentNumber)
+        this.setBackNumber(nextNumber)
+        setTimeout(() => {
+            this.root.classList.remove('running')
+            this.setFrontNumber(nextNumber)
+            this.isRunning = false
+        }, this.duration);
+    }
+}
+
+class FlipClock {
+    constructor(id) {
+        this.root = document.querySelector(`#${id}`)
+        this.init()
+    }
+
+    getTimeFromDate(date) {
+        return date.toTimeString().slice(0, 8).split(":").join("")
+    }
+
+    refreshTime() {
+        const now = new Date()
+        this.nowTimeStr = this.getTimeFromDate(new Date(now.getTime() - 1000))
+        this.nextTimeStr = this.getTimeFromDate(now)
+    }
+
+    init() {
+        this.refreshTime()
+        this.flipCards = this.buildFlipCards()
+        this.initFliping()
+    }
+
+    initFliping() {
+        this.interval = setInterval(() => {
+            this.refreshTime()
+            this.flipCards.forEach((item, index) => {
+                if (this.nowTimeStr[index] === this.nextTimeStr[index]) {
+                    return
+                }
+                item.flipDown(this.nowTimeStr[index], this.nextTimeStr[index])
+            })
+        }, 1000);
+    }
+
+    buildFlipCards() {
+        let flipCards = []
+        for (let i = 0; i < 6; i++) {
+            const flipCard = new FlipCard(this.nowTimeStr[i], this.nextTimeStr[i])
+            this.root.append(flipCard.root)
+
+            if (i === 1 || i === 3) {
+                const divider = document.createElement('div')
+                divider.classList.add('divider')
+                divider.textContent = ':'
+                this.root.append(divider)
+            }
+
+            flipCards.push(flipCard)
+        }
+        return flipCards
     }
 }
