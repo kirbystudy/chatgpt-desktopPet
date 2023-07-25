@@ -112,6 +112,10 @@ window.onload = function () {
         debounce(() => showMessage('要隐藏模型吗?', 1500, true))
       } else if (event.target.innerText == '壁纸') {
         debounce(() => showMessage('要打开壁纸吗?', 1500, true))
+      } else if (event.target.innerText == '语音') {
+        debounce(() => showMessage('要打开语音吗?', 1500, true))
+      } else if (event.target.innerText == '社区') {
+        debounce(() => showMessage('要打开社区吗?', 1500, true))
       }
     })
   })
