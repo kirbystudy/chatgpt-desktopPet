@@ -272,11 +272,11 @@ const localxAxis = localStorage.getItem('xAxis')
 const localyAxis = localStorage.getItem('yAxis')
 const localScaling = localStorage.getItem('scaling')
 
-if(localxAxis && localyAxis && localScaling) {
+if (localxAxis && localyAxis && localScaling) {
   xAxis.value = localxAxis
   yAxis.value = localyAxis
   scaling.value = localScaling
-} 
+}
 
 uploadFile.addEventListener('click', () => {
   localModelSelect.value = null
@@ -299,11 +299,15 @@ updateModelBtn.addEventListener('click', () => {
   config.live2d.y = yAxis.value
   config.live2d.scale = scaling.value
 
+  showMessage('更新成功', 'success')
+
   localStorage.setItem('xAxis', xAxis.value)
   localStorage.setItem('yAxis', yAxis.value)
   localStorage.setItem('scaling', scaling.value)
 
-  fs.writeFileSync(configPath, JSON.stringify(config, null, 2))
+  setTimeout(() => {
+    fs.writeFileSync(configPath, JSON.stringify(config, null, 2))
+  }, 1500)
 })
 
 /* ----------------------------- 上传本地模型文件 ----------------------------- */
