@@ -1,8 +1,7 @@
 // 引入 fs 和 path 模块
 const fs = require('fs')
 const path = require('path')
-const os = require('os')
-const { ipcRenderer, dialog } = require('electron')
+const { ipcRenderer, shell } = require('electron')
 const openBtn = require('../../../main/modules/ipcEvent')
 
 // 读取config.json
@@ -11,6 +10,7 @@ const jsonContent = fs.readFileSync(configPath, 'utf-8')
 
 // 解析JSON
 const _config = JSON.parse(jsonContent)
+
 
 const width = 300           // 单个元素宽度
 const height = 240          // 单个元素高度
@@ -28,7 +28,7 @@ let scrollTop = 0           // 滚动条高度
 let catchIndex = 0          // 缓存下标
 let catchScrollTop = 0      // 缓存滚动高度
 
-var selectedImgFile = null  // 用于存储选中的图片文件
+let selectedImgFile = null  // 用于存储选中的图片文件
 
 let clientWidthView = 0
 let clientHeightView = 0
@@ -36,9 +36,6 @@ let clientHeightView = 0
 let naturalWidth = 0        // 图片实际宽度
 let naturalHeight = 0       // 图片实际高度
 let ratio = 0               // 图片比例
-
-let placeholderHeightDiv = document.querySelector('.placeholderHeight')
-
 
 let updateScrollTop = debounce((top) => {
     isAnimate = false
@@ -159,14 +156,20 @@ function updateVisibleList() {
 
 // 下载图片
 async function downloadImage(url, picPath) {
+
     // 获取文件名
     const fileName = url.split('/').pop()
 
-    const dir = path.join(process.cwd(), 'wallpaper-gallery', `${picPath}`)
-
-    if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir)
+    // 创建目录
+    const createDirectory = (dirPath) => {
+        if (!fs.existsSync(dirPath)) {
+            fs.mkdirSync(dirPath, { recursive: true });
+        }
     }
+
+    // 指定工作目录
+    const dir = path.join(process.cwd(), `/cache/wallpaper-gallery/`, picPath)
+    createDirectory(dir)
 
     const filePath = path.join(dir, fileName)
 
@@ -200,15 +203,28 @@ async function getList(reset = false) {
         if (response.ok) {
             const data = await response.json()
 
+            document.querySelector('.visible-result span').innerHTML = `共 ${data.length} 张壁纸`
+
             // 下载所有图片或使用已下载的本地图片
-            for (const imageData of data) {
+            const downloadTasks = data.map(async (imageData) => {
                 const filePath = await downloadImage(imageData.poster, 'blurryPic')
                 // 使用本地图片路径替换远程路径
                 imageData.poster = filePath.replaceAll('\\', '/')
-            }
+            })
+
+            // 等待所有下载任务完成
+            await Promise.all(downloadTasks)
+
+            // 添加处理器
             addHandler(data, reset)
+
+            // 渲染标签
             renderTags(data)
+
+            // 渲染图片
             renderImages(data)
+
+            // 添加点击事件处理器
             addClickHandler()
 
         } else {
@@ -250,6 +266,7 @@ async function getList(reset = false) {
 }
 
 async function fetchData(tagName = '') {
+
     const visibleList = document.querySelector('.visible-list')
     // 开启loading加载动画
     loading = true
@@ -260,13 +277,16 @@ async function fetchData(tagName = '') {
             if (response.ok) {
                 visibleList.innerHTML = '' // 清空 visible-list 元素
                 const data = await response.json()
-
+                document.querySelector('.visible-result span').innerHTML = `共 ${data.length} 张壁纸`
                 // 下载所有图片或使用已下载的本地图片
-                for (const imageData of data) {
+                const downloadTasks = data.map(async (imageData) => {
                     const filePath = await downloadImage(imageData.poster, 'blurryPic')
                     // 使用本地图片路径替换远程路径
                     imageData.poster = filePath.replaceAll('\\', '/')
-                }
+                })
+
+                // 等待所有下载任务完成
+                await Promise.all(downloadTasks)
 
                 addHandler(data, true)
                 renderImages(data)
@@ -285,12 +305,33 @@ async function fetchData(tagName = '') {
 
 }
 
+// 获取分类标签数据
+async function getTagList(element) {
+    try {
+        const categorySelect = element
+
+        const response = await fetch(`${_config.wallpaper.tagList}`)
+        const data = await response.json()
+        data.forEach(item => {
+            const option = document.createElement('option')
+            option.value = item.tag
+            option.text = item.tag
+            categorySelect.appendChild(option)
+        })
+    } catch (error) {
+        showMessage(error, 'error')
+    }
+}
+
 let setDesktopHandlerBound = false  // 是否已经绑定了设为桌面事件
 
 function addClickHandler() {
     addPosterClickHandler()
 
     const setDesktop = document.getElementById('setDesktop')
+    const viewInfo = document.getElementById('viewInfo')
+    const viewInfoDialog = document.getElementById('viewInfoDialog')
+    const viewInfoClose = document.getElementById('viewInfoClose')
 
     if (!setDesktopHandlerBound) {
         // 设为桌面监听
@@ -300,6 +341,16 @@ function addClickHandler() {
         })
         setDesktopHandlerBound = true
     }
+
+    // 监听查看信息事件
+    viewInfo.addEventListener('click', () => {
+        viewInfoDialog.classList.add('active')
+    })
+
+    // 监听查看信息关闭事件
+    viewInfoClose.addEventListener('click', () => {
+        viewInfoDialog.classList.remove('active')
+    })
 
 }
 
@@ -331,61 +382,77 @@ function clickHandler(event, index) {
 async function setWallpaperDeskTop(event, src, picPath) {
 
     loading = true
+    showMessage('正在设置壁纸，请稍等...', 'warning')
 
-    // 获取文件名
-    const fileName = src.split('/').pop()
-
-    // 获取文件后缀名
-    const fileExtension = fileName.split('.').pop()
-
-    const dir = path.join(os.homedir(), `/wallpaper-gallery/${picPath}`)
-
-    if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir)
-    }
-
-    const filePath = path.join(dir, fileName)
-
-    // 判断文件是否存在
-    if (!fs.existsSync(filePath)) {
-        try {
-            const controller = new AbortController()
-            const timeoutId = setTimeout(() => controller.abort(), 60 * 1000)
-            const response = await fetch(src, { signal: controller.signal })
-            clearTimeout(timeoutId)
-
-            if (!response.ok) {
-                throw new Error(`下载图片失败：${response.status} ${response.statusText}`)
-            }
-
-            const buffer = await response.arrayBuffer()
-            fs.writeFileSync(filePath, Buffer.from(buffer))
-        } catch (error) {
-            showMessage(error, 'error')
+    // 创建目录
+    const createDirectory = (dirPath) => {
+        if (!fs.existsSync(dirPath)) {
+            fs.mkdirSync(dirPath, { recursive: true });
         }
     }
 
-    loading = false
+    try {
+        // 获取文件名
+        const fileName = src.split('/').pop()
+        // 获取文件后缀名
+        const fileExtension = fileName.split('.').pop()
+        const dir = path.join(process.cwd(), '/cache/wallpaper-gallery/', picPath)
 
-    if (fileExtension === 'png') {
-        ipcRenderer.send('set-wallpaper', filePath)
-        ipcRenderer.send('ask-close-wallpaper')
-        showMessage('图片设置成功', 'success')
-    } else if (fileExtension === 'mp4') {
-        openBtn.openChildWind(event, 'mp4', filePath)
-        showMessage('视频设置成功', 'success')
+        createDirectory(dir)
+
+        const filePath = path.join(dir, fileName)
+
+        // 判断文件是否存在
+        if (!fs.existsSync(filePath)) {
+            await downloadFile(src, filePath)
+        }
+
+        switch (fileExtension) {
+            case 'png':
+                setTimeout(() => {
+                    ipcRenderer.send('set-wallpaper', filePath)
+                    ipcRenderer.invoke('ask-close-wallpaper')
+                    showMessage('静态壁纸设置成功', 'success')
+                    loading = false
+                }, 1500);
+                break
+            case 'mp4':
+                setTimeout(() => {
+                    openBtn.openChildWind(event, 'mp4', filePath)
+                    showMessage('动态壁纸设置成功', 'success')
+                    loading = false
+                }, 1500)
+                break
+            default:
+                break
+        }
+
+    } catch (error) {
+        loading = false
+        showMessage(error, 'error')
     }
 }
 
-function imageView(event, id) {
+// 文件下载函数
+async function downloadFile(src, filePath) {
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 60 * 1000)
+    const response = await fetch(src, { signal: controller.signal })
+    clearTimeout(timeoutId)
 
-    // 加载loading动画效果
-    loading = true
+    if (!response.ok) {
+        throw new Error(`下载图片失败：${response.status} ${response.statusText}`)
+    }
+
+    const buffer = await response.arrayBuffer()
+    fs.writeFileSync(filePath, Buffer.from(buffer))
+}
+
+async function imageView(event, id) {
 
     const animationContent = document.querySelector('.animation-content')
     const closeButton = document.querySelector('.icon-guanbi')
 
-    // 移除之前的关闭按钮的点击事件监听器
     closeButton.removeEventListener('click', closeImageView)
 
     // 为关闭按钮添加新的点击事件监听器
@@ -399,75 +466,82 @@ function imageView(event, id) {
         "bzId": parseInt(id)
     }
 
-    setTimeout(async () => {
-        try {
-            const response = await fetch(`${_config.wallpaper.getUrlByImgId}`, {
-                method: 'POST',
-                body: JSON.stringify(jsonData),
-                headers: {
-                    'content-type': 'application/json'
-                }
-            })
+    const img = document.querySelector('.img-view img')
+    const video = document.querySelector('.img-view video')
 
-            const result = await response.json()
-
-            if (result.code === '10400') {
-                loading = false
-                showMessage('会员壁纸无权限查看', 'error')
-                return
+    try {
+        const response = await fetch(`${_config.wallpaper.getUrlByImgId}`, {
+            method: 'POST',
+            body: JSON.stringify(jsonData),
+            headers: {
+                'content-type': 'application/json'
             }
+        })
 
-            loading = false
+        const result = await response.json()
 
-            animationContent.classList.add('active')
+        if (result.code === '10400') {
+            showMessage('会员壁纸无权限查看', 'error')
+            return
+        }
 
-            let img = document.querySelector('.img-view img')
-            let video = document.querySelector('.img-view video')
+        const filePath = await new Promise((resolve) => {
+            downloadImage(result.data.url, 'highResPic')
+                .then((filePath) => resolve(filePath))
+                .catch(() => {
+                    showMessage('下载图片出错', 'error')
+                    resolve(null)
+                })
+        })
 
-            const filePath = await downloadImage(result.data.url, 'highResPic')
+        if (filePath) {
             // 使用本地图片路径替换远程路径
             result.data.url = filePath.replaceAll('\\', '/')
 
             if (result.data.source === 'png') {
-                // 判断本地文件下是否存在图片
-                if (fs.existsSync(filePath)) {
-                    video.style.display = 'none'
-                    img.style.display = 'block'
-                    img.src = filePath
-                } else {
-                    video.style.display = 'none'
-                    img.style.display = 'block'
-                    img.src = result.data.url
+                const isLocalFileExists = fs.existsSync(filePath)
+                video.style.display = 'none'
+                img.style.display = 'block'
+                img.src = isLocalFileExists ? filePath : result.data.url
+
+                animationContent.classList.add('active')
+
+                if (isLocalFileExists) {
+                    initImage(event)
                 }
-                initImage(event)
             } else if (result.data.source === 'mp4') {
-                // 判断本地文件下是否存在视频
-                if (fs.existsSync(filePath)) {
-                    img.style.display = 'none'
-                    video.style.display = 'block'
-                    video.src = filePath
-                } else {
-                    img.style.display = 'none'
-                    video.style.display = 'block'
-                    video.src = result.data.url
-                }
+                const isLocalFileExists = fs.existsSync(filePath)
+                img.style.display = 'none'
+                video.style.display = 'block'
+                video.src = isLocalFileExists ? filePath : result.data.url
+
+                animationContent.classList.add('active')
+
             }
 
             updateWallpaperInfo(result.data)
             localStorage.setItem('storedUrl', result.data.url)
-        } catch (error) {
-            console.log(error)
-            loading = false
-            showMessage('请求出错', 'error')
         }
 
-    }, 1000);
-
+    } catch (error) {
+        console.log(error)
+        loading = false
+        showMessage('请求出错', 'error')
+    }
 }
 
 function closeImageView() {
     const animationContent = document.querySelector('.animation-content')
     animationContent.classList.remove('active')
+
+    const viewInfoDialog = document.getElementById('viewInfoDialog')
+    viewInfoDialog.classList.remove('active')
+
+    const img = document.querySelector('.img-view img')
+    const video = document.querySelector('.img-view video')
+
+    img.src = ''
+    video.src = ''
 }
 
 // 更新壁纸详情信息
@@ -478,12 +552,13 @@ function updateWallpaperInfo(data) {
     const author = document.querySelector('.author')
     const authorAvatar = document.querySelector('.author-avatar img')
     const uploadDate = document.querySelector('.upload-date')
+    const imgSource = document.querySelector('.img-source')
 
     wallpaperId.innerHTML = `壁纸ID：${data.id}`
     label.innerHTML = `标签分类：${data.tagName}`
 
     if (data.rarityData !== '官方限定') {
-        rarityData.innerHTML = `稀有度：${data.rarityData}`
+        rarityData.innerHTML = `壁纸稀有度：${data.rarityData}`
         rarityData.style.color = `${setRarityColor(data.rarityData)}`
     } else {
         rarityData.innerHTML = ''
@@ -495,6 +570,11 @@ function updateWallpaperInfo(data) {
     var dateArray = data.dateStr.split('-')
     var formattedDate = dateArray[0] + '年' + dateArray[1] + '月' + dateArray[2] + '日'
     uploadDate.innerHTML = `上传日期：${formattedDate}`
+    if (data.fromPic) {
+        imgSource.innerHTML = `作品出处：${data.fromPic}`
+    } else {
+        imgSource.innerHTML = ''
+    }
 }
 
 // 获取用户信息
@@ -698,6 +778,9 @@ function renderImageCard(item) {
     listItem.style.transform = item.style.transform
     listItem.setAttribute('id', item.id)
 
+    // 定义有效的稀有度值数组
+    const validRarities = ['SSS', 'SS', 'S']
+
     const html = `
         <div class="img">
             <img id="poster" draggable="false" src="${item.poster}" style="height: ${item.style.height}"/>
@@ -711,7 +794,7 @@ function renderImageCard(item) {
             </div>
         </div>
         <div class="desc">
-            <span class="rarityData" style="color: ${(item.rarityData === 'SSS' || item.rarityData === 'SS') ? '#FFDF00' : '#66ccff'}">
+            <span class="rarityData" style="color: ${validRarities.includes(item.rarityData) ? '#FFDF00' : '#66ccff'}">
                 稀有度：${item.rarityData}
             </span>
             <span id="viewDetails" class="iconfont icon-view-fill" title="查看" style="cursor: pointer"></span>
@@ -747,7 +830,7 @@ function addHandler(imgs, reset = false) {
     catchList.push(...newImgs)
     placeholderHeight = maxVal(this.sumHeight)
 
-    placeholderHeightDiv.style.height = `${placeholderHeight + 60}px`
+    document.querySelector('.placeholderHeight').style.height = `${placeholderHeight}px`
 }
 
 // 重置处理器
@@ -875,11 +958,19 @@ Object.defineProperty(window, 'loading', {
 
 /* ----------------------------- Loading加载 ----------------------------- */
 
-
 document.addEventListener('DOMContentLoaded', () => {
+
+    // 头部按钮
+    initHeaderIcon()
 
     // 获取壁纸列表
     getList()
+
+    // 获取分类标签
+    getTagList(document.getElementById('category'))
+
+    // 定时清除userData文件夹
+    clearUserDataFolder()
 
     // 检查并删除过期的缓存
     checkExpiredCache()
@@ -914,7 +1005,7 @@ document.addEventListener('DOMContentLoaded', () => {
     })
 
     const forgot = document.querySelector('.forgot')
-    const { shell } = require('electron')
+
     // 点击令牌进入b站专栏
     forgot.addEventListener('click', () => {
         shell.openExternal('https://www.bilibili.com/read/cv24947669')
@@ -1018,6 +1109,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             } else if (result.code === '0') {
                 showMessage('登录成功', 'success')
+
                 document.querySelector('.login-show').classList.remove('active')
 
                 let userAvatar = `http://q1.qlogo.cn/g?b=qq&nk=${result.data.userId}&s=100`
@@ -1069,6 +1161,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const uploadBtn = document.getElementById('uploadBtn')
     uploadBtn.addEventListener('click', () => {
         const currentUserId = localStorage.getItem('userId')
+        if (currentUserId) {
+            const expirationStatus = getExpirationTime(currentUserId)
+            const { text } = expirationStatus
+            if (text === '会员状态：已过期') {
+                showMessage('账户已过期', 'warning')
+                return
+            }
+        }
+
         if (isUserLoggedIn(currentUserId)) {
             uploadDialogWrapper.style = 'block'
         } else {
@@ -1086,8 +1187,12 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelector('.progress-bar').style.display = 'none'
         document.querySelector('.rarity-rule').style.display = 'none'
         document.querySelector('.release-btn').style.display = 'none'
+        document.querySelector('.form-container').style.display = 'none'
+        document.getElementById('category').value = ''
+        document.getElementById('source').value = ''
+        document.querySelector('.compress-image').classList.remove('active')
         var imgSpans = document.querySelectorAll('.img-span')
-        imgSpans.forEach(function (imgSpan) {
+        imgSpans.forEach((imgSpan) => {
             imgSpan.remove()
         })
     })
@@ -1111,7 +1216,21 @@ document.addEventListener('DOMContentLoaded', () => {
         dropArea.style.backgroundColor = ''
 
         var file = event.dataTransfer.files[0]
-        resetAndUploadFile(file)
+
+        // 判断文件大小是否大于10M
+        if (file && file.size <= 10 * 1024 * 1024) {
+            resetAndUploadFile(file)
+        } else {
+            showMessage('文件大小超过限制，请选择10MB以内的文件', 'error')
+
+            const compressImage = document.querySelector('.compress-image')
+            compressImage.classList.add('active')
+
+            compressImage.addEventListener('click', () => {
+                shell.openExternal('https://yasuo.xunjiepdf.com/img/')
+            })
+        }
+
     })
 
     uploadFile.addEventListener('click', () => {
@@ -1122,7 +1241,87 @@ document.addEventListener('DOMContentLoaded', () => {
     // 添加监听事件
     fileInput.addEventListener('change', (event) => {
         var file = event.target.files[0]
-        resetAndUploadFile(file)
+
+        if (file && file.size <= 10 * 1024 * 1024) {
+            resetAndUploadFile(file)
+        } else {
+            showMessage('文件大小超过限制，请选择10MB以内的文件', 'error')
+
+            const compressImage = document.querySelector('.compress-image')
+            compressImage.classList.add('active')
+
+            compressImage.addEventListener('click', () => {
+                shell.openExternal('https://yasuo.xunjiepdf.com/img/')
+            })
+        }
+    })
+
+    // 发布按钮
+    const releaseBtn = document.querySelector('.release-btn')
+    const publishBtn = document.getElementById('publishBtn')
+    const categorySelect = document.getElementById('category')
+    const source = document.getElementById('source')
+
+    releaseBtn.addEventListener('click', () => {
+        handleReleaseBtnClick()
+    })
+
+    function handleReleaseBtnClick() {
+
+        if (source.value > 50) {
+            showMessage('作品出处限制在50字内', 'error')
+            document.querySelector('.release-dialog-wrapper').style.display = 'none'
+            return
+        }
+
+        if (!selectedImgFile) {
+            showMessage('请选择要发布的图片', 'error')
+            document.querySelector('.release-dialog-wrapper').style.display = 'none'
+            return
+        }
+
+        document.querySelector('.release-dialog-wrapper').style.display = 'block'
+    }
+
+    publishBtn.addEventListener('click', () => {
+
+        const { userId, token } = getCurrentUser()
+
+        const jsonData = {
+            'uId': userId,
+            'token': token,
+            'imgId': selectedImgFile.id,
+            "tagName": categorySelect.value,
+            "fromPic": source.value
+        }
+
+        fetch(`${_config.wallpaper.upBz}`, {
+            method: 'POST',
+            body: JSON.stringify(jsonData),
+            headers: {
+                'content-type': 'application/json'
+            }
+        }).then(response => {
+            return response.json()
+        }).then(response => {
+            if (response.code === '0') {
+                document.querySelector('.release-dialog-wrapper').style.display = 'none'
+                showMessage(`${response.msg}，请等待后台审核`, 'success')
+                setTimeout(() => {
+                    location.reload()
+                }, 1500)
+
+            } else if (response.code === '10400') {
+                document.querySelector('.release-dialog-wrapper').style.display = 'none'
+                showMessage(response.msg, 'error')
+            }
+
+        }).catch(error => {
+            loading = false
+            showMessage(error, 'error')
+        }).finally(() => {
+            selectedImgFile = null      // 发布完成后将选中的图片设为空值
+        })
     })
 
     // 获取导航条相关元素
@@ -1157,6 +1356,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
         } else if (event.target.textContent === '我的') {
             const currentUserId = localStorage.getItem('userId')
+            if (currentUserId) {
+                const expirationStatus = getExpirationTime(currentUserId)
+                const { text } = expirationStatus
+                if (text === '会员状态：已过期') {
+                    showMessage('账户已过期', 'warning')
+                    return
+                }
+            }
+
             if (isUserLoggedIn(currentUserId)) {
                 // 移除所有导航项的 active 类
                 navTable.forEach(element => element.classList.remove('active'))
@@ -1189,6 +1397,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const myAccount = document.getElementById('myAccount')
     myAccount.addEventListener('click', async (event) => {
         const currentUserId = localStorage.getItem('userId')
+        const expirationStatus = getExpirationTime(currentUserId)
+        const { text } = expirationStatus
+        if (text === '会员状态：已过期') {
+            showMessage('账户已过期', 'warning')
+            return
+        }
+
         if (isUserLoggedIn(currentUserId)) {
             // 移除所有导航项的 active 类
             navTable.forEach(element => element.classList.remove('active'))
@@ -1214,9 +1429,63 @@ document.addEventListener('DOMContentLoaded', () => {
                 loginShow.classList.add('active')
             }, 1000)
         }
-
     })
 
+    const editBtn = document.getElementById('editBtn')
+    const editInfoClose = document.getElementById('editInfoClose')
+
+    editBtn.addEventListener('click', handleEditBtnClick)
+
+    // 处理编辑按钮点击事件
+    async function handleEditBtnClick() {
+        isHandleEditBtnClickExecuted = true
+
+        const { userId, token } = getCurrentUser()
+        const bzId = parseInt(document.querySelector('.edit-wallpaper-id').innerHTML.replace('壁纸ID: ', ''))
+        const tagName = document.getElementById('editCategory').value
+        const fromPic = document.getElementById('editSource').value
+
+        const jsonData = {
+            "uId": userId,
+            "token": token,
+            "bzId": bzId,
+            "tagName": tagName,
+            "fromPic": fromPic
+        }
+
+        try {
+            const response = await fetch(`${_config.wallpaper.updateById}`, {
+                method: 'POST',
+                body: JSON.stringify(jsonData),
+                headers: {
+                    'content-type': 'application/json'
+                }
+            });
+
+            const data = await response.json();
+
+            if (data.code === '0') {
+                showMessage('更新成功', 'success')
+                setTimeout(async () => {
+                    editInfoDialog.classList.remove('active')
+                    editCategory.innerHTML = ''
+                    // 获取用户列表
+                    await getUserList()
+                }, 1500);
+            } else {
+                showMessage('更新失败', 'error')
+            }
+        } catch (error) {
+            showMessage(error, 'error')
+        }
+
+    }
+
+    editInfoClose.addEventListener('click', () => {
+        editInfoDialog.classList.remove('active')
+        // 清空editCategory中的所有option元素
+        editCategory.innerHTML = ''
+    })
 })
 
 let isUserInfoRequest = false // 判断是否正在请求用户信息数据
@@ -1305,15 +1574,104 @@ async function getUserList() {
             const response = await fetch(`${_config.wallpaper.myList}${userId}`)
             const data = await response.json()
 
+            // 下载所有图片或使用已下载的本地图片
+            const downloadTasks = data.map(async (imageData) => {
+                const filePath = await downloadImage(imageData.url, 'userData')
+                // 使用本地图片路径替换远程路径
+                imageData.url = filePath.replaceAll('\\', '/')
+            })
+
+            // 等待所有下载任务完成
+            await Promise.all(downloadTasks)
+
             data.forEach(userList => {
                 // 解构用户列表信息
                 const { url, id, dateStr, isUp, remark, rarityData } = userList
-
                 const wallpaperElement = createWallpaperElement(url, id, dateStr, isUp, remark, rarityData)
 
                 wallpaperContainer.appendChild(wallpaperElement)
             })
 
+            const editInfoDialog = document.getElementById('editInfoDialog')
+            const editFormContainer = document.querySelector('.edit-form-container')
+            const editCategory = document.getElementById('editCategory')
+            const editSource = document.getElementById('editSource')
+            const editInfo = document.querySelectorAll('#editInfo')
+
+            // 缓存数据
+            let dataCache = {}
+
+            editInfo.forEach(edit => {
+                edit.addEventListener('click', async (event) => {
+                    const target = event.target
+
+                    if (target.classList.contains('edit-info')) {
+                        editInfoDialog.classList.add('active')
+                        editFormContainer.style.display = 'block'
+                        const id = target.parentNode.children[0].getAttribute('data-id')
+                        await handleEditInfoClick(id)
+                    }
+                })
+            })
+
+            // 处理编辑信息点击事件
+            async function handleEditInfoClick(bzId) {
+                const { userId, token } = getCurrentUser()
+
+                if (!dataCache[bzId]) {
+                    const jsonData = {
+                        "uId": userId,
+                        "token": token,
+                        "bzId": parseInt(bzId)
+                    }
+                    try {
+                        const response = await fetch(`${_config.wallpaper.getUrlByImgId}`, {
+                            method: 'POST',
+                            body: JSON.stringify(jsonData),
+                            headers: {
+                                'content-type': 'application/json'
+                            }
+                        })
+
+                        const { data } = await response.json()
+                        dataCache[bzId] = data
+                    } catch (error) {
+                        showMessage(error, 'error')
+                        return
+                    }
+                }
+
+                document.querySelector('.edit-wallpaper-id').innerHTML = `壁纸ID: ${bzId}`
+                const option = document.createElement('option')
+                editCategory.appendChild(option)
+                editCategory.options[0].text = dataCache[bzId].tagName
+                editCategory.options[0].value = dataCache[bzId].tagName
+                editCategory.options[0].disabled = true
+
+                const option1 = document.createElement('option')
+                option1.text = '用户上传'
+                option1.value = '用户上传'
+                editCategory.appendChild(option1)
+
+                try {
+                    const response = await fetch(`${_config.wallpaper.tagList}`)
+                    const data = await response.json()
+                    data.forEach(item => {
+                        const option = document.createElement('option')
+                        option.value = item.tag
+                        option.text = item.tag
+                        editCategory.appendChild(option)
+                    })
+                } catch (error) {
+                    showMessage(error, 'error')
+                }
+
+                if (dataCache[bzId].fromPic) {
+                    editSource.value = dataCache[bzId].fromPic
+                } else {
+                    editSource.value = ''
+                }
+            }
         } catch (error) {
             showMessage(error, 'error')
             loading = false
@@ -1343,6 +1701,8 @@ function createWallpaperElement(url, id, dateStr, isUp, remark, rarityData) {
 
     imageElement.draggable = false
     imageElement.src = url
+    imageElement.setAttribute('id', 'userWallpaper')
+    imageElement.setAttribute('data-id', id)
 
     imageElement.addEventListener('load', loadWallpaperInfo)
 
@@ -1354,7 +1714,17 @@ function createWallpaperElement(url, id, dateStr, isUp, remark, rarityData) {
     imageInfo.style.color = setRarityColor(rarityData)
     imageInfo.innerHTML = `稀有度：${rarityData}`
 
+    const editInfo = document.createElement('div')
+
+    // 已上架状态显示编辑图标
+    if (isUp === 1) {
+        editInfo.setAttribute('class', 'iconfont icon-edit edit-info')
+        editInfo.setAttribute('id', 'editInfo')
+        editInfo.title = '编辑'
+    }
+
     imageContainer.appendChild(imageInfo)
+    imageContainer.appendChild(editInfo)
 
     // 辅助函数，创建信息元素并添加到 wallpaperElement 中
     function appendInfo(label, value, tag = 'div') {
@@ -1448,7 +1818,7 @@ function convertTimestampToExpireTime(timestamp) {
     const day = days > 0 ? `${days}天` : ''
 
     // 判断过期时间是否不到1天
-    if (days < 1) {
+    if (remainingTime < 24 * 60 * 60 * 1000) {
         return { text: '会员剩余时间：不足1天啦！', color: '#DC143C' }
     } else {
         const text = `会员剩余时间：${month}${day}`
@@ -1464,7 +1834,7 @@ function formatTimestamp(timestamp) {
     const month = dateObj.getMonth() + 1 > 0 ? `${dateObj.getMonth() + 1}月` : '' // 月份从 0 开始，所以要加上 1
     const day = dateObj.getDate() > 0 ? `${dateObj.getDate()}日` : ''
     const hours = dateObj.getHours() > 0 ? `${dateObj.getHours()}点` : ''
-    const minutes = dateObj.getMinutes() > 0 ? `${dateObj.getMinutes()}分` : ''
+    const minutes = dateObj.getMinutes() > 0 ? `${dateObj.getMinutes()}分` : `${dateObj.getMinutes()}分`
     const seconds = dateObj.getSeconds() > 0 ? `${dateObj.getSeconds()}秒` : ''
 
     const formattedDate = `${year}${month}${day} ${hours}${minutes}`
@@ -1507,7 +1877,7 @@ function updateRemainingTime(expireTime) {
     }, 1000)
 }
 
-function handleAvatarClick() {
+async function handleAvatarClick() {
     const loginShow = document.querySelector('.login-show')
 
     const currentUserId = localStorage.getItem('userId')
@@ -1515,6 +1885,25 @@ function handleAvatarClick() {
         // 打开登录页面
         loginShow.classList.add('active')
     }
+
+    if (currentUserId) {
+        const response = await fetch(`${_config.wallpaper.myInfo}${currentUserId}`)
+        const data = await response.json()
+
+        const { time } = data
+
+        const users = localStorage.getItem('users')
+        if (!users) return {}
+
+        const userList = JSON.parse(users)
+
+        const currentUserIndex = userList.findIndex((user) => user.userId == currentUserId)
+        if (currentUserIndex !== -1) {
+            userList[currentUserIndex].expireTime = time
+            localStorage.setItem('users', JSON.stringify(userList))
+        }
+    }
+
 }
 
 // 用户是否已经登录
@@ -1567,9 +1956,8 @@ function resetAndUploadFile(file) {
     const progressBar = document.querySelector('.progress-bar')
     progressBar.style.display = 'block'
 
-    setTimeout(async () => {
-        await uploadFile(file)
-    }, 1000)
+    uploadFile(file)
+
 }
 
 // 将对象添加到上传文件缓存中
@@ -1592,10 +1980,11 @@ function addToUploadFileCache(data) {
 
 // 上传文件
 async function uploadFile(file) {
+    loading = true
+    showMessage('正在上传文件，请稍等...', 'success')
 
     const currentUserId = localStorage.getItem('userId')
     const users = JSON.parse(localStorage.getItem('users'))
-
 
     // 查找当前用户的信息
     const currentUser = users.find((user) => user.userId == currentUserId)
@@ -1617,12 +2006,9 @@ async function uploadFile(file) {
         })
 
         xhr.onreadystatechange = function () {
-            loading = true
-
             if (xhr.readyState === XMLHttpRequest.DONE) {
                 if (xhr.status === 200) {
                     try {
-
                         var response = JSON.parse(xhr.response)
                         // 创建一个对象来存储id和url
                         var data = {
@@ -1633,9 +2019,11 @@ async function uploadFile(file) {
                         addToUploadFileCache(data)
 
                         // 分析稀有度
+                        showMessage('上传成功，正在分析壁纸稀有度...', 'success')
                         setTimeout(() => {
                             analyzeRarity(userId, token, response.id)
-                        }, 1500)
+                        }, 2000);
+
                     } catch (error) {
                         showMessage(xhr.responseText, 'error')
                         updateProgress(0)
@@ -1644,7 +2032,7 @@ async function uploadFile(file) {
                     }
 
                 } else {
-                    showMessage(xhr.responseText, 'error')
+                    showMessage('网络异常，请稍后再试', 'error')
                     updateProgress(0)
                     document.querySelector('.progress-bar').style.display = 'none'
                     new Promise(() => setTimeout(() => { loading = false }, 1000))
@@ -1669,8 +2057,6 @@ async function uploadFile(file) {
 
 }
 
-// 发布请求标识
-let isPublishRequesting = false
 
 // 分析稀有度接口
 function analyzeRarity(userId, token, fileId) {
@@ -1734,24 +2120,17 @@ function analyzeRarity(userId, token, fileId) {
                         // 向uploadImgs节点添加新节点
                         uploadImgs.appendChild(imgSpan)
 
-                        // 初始化添加事件监听器
-                        addClickEventListeners()
+                    })
 
-                        // 添加选中图片监听
-                        function addClickEventListeners() {
-                            var imgElements = document.getElementsByClassName('uploading-img')
-                            for (var i = 0; i < imgElements.length; i++) {
-                                imgElements[i].addEventListener('click', selectImage)
-                            }
-                        }
+                    // 选中图片事件处理函数
+                    function selectImage(event) {
+                        event.stopPropagation()
 
-                        // 选中图片事件处理函数
-                        function selectImage(event) {
-                            event.stopPropagation()
-
-                            // 判断当前点击的图片是否已经被选中
-                            if (event.target.classList.contains('selected')) return
-
+                        // 判断当前点击的图片是否已经被选中
+                        if (event.target.classList.contains('selected')) {
+                            event.target.classList.remove('selected')   // 取消选中状态
+                            selectedImgFile = null  // 清空选中的图片文件
+                        } else {
                             var imgElements = document.getElementsByClassName('uploading-img')
                             for (var i = 0; i < imgElements.length; i++) {
                                 imgElements[i].classList.remove('selected')
@@ -1764,156 +2143,130 @@ function analyzeRarity(userId, token, fileId) {
 
                             // 获取选中的图片文件
                             selectedImgFile = getSelectedImageFile(imgValue)
-
-                            // 发布按钮
-                            const releaseBtn = document.querySelector('.release-btn')
-                            const releaseClose = document.getElementById('releaseClose')
-                            const releaseCancel = document.getElementById('releaseCancel')
-                            const publishBtn = document.getElementById('publishBtn')
-                            const releaseDialogWrapper = document.querySelector('.release-dialog-wrapper')
-                            releaseBtn.style.display = 'block'
-
-                            releaseBtn.addEventListener('click', () => {
-                                releaseDialogWrapper.style.display = 'block'
-                            })
-
-                            releaseClose.addEventListener('click', () => {
-                                releaseDialogWrapper.style.display = 'none'
-                            })
-
-                            releaseCancel.addEventListener('click', () => {
-                                releaseDialogWrapper.style.display = 'none'
-                            })
-
-                            publishBtn.addEventListener('click', () => {
-                                if (isPublishRequesting) {
-                                    return // 已经触发了请求，直接返回
-                                }
-
-                                const jsonData = {
-                                    'uId': userId,
-                                    'token': token,
-                                    'imgId': selectedImgFile.id
-                                }
-
-                                // 设置为正在请求状态
-                                isPublishRequesting = true
-
-                                fetch(`${_config.wallpaper.upBz}`, {
-                                    method: 'POST',
-                                    body: JSON.stringify(jsonData),
-                                    headers: {
-                                        'content-type': 'application/json'
-                                    }
-                                }).then(response => {
-                                    return response.json()
-                                }).then(response => {
-                                    if (response.code === '0') {
-                                        releaseDialogWrapper.style.display = 'none'
-                                        showMessage(`${response.msg}，请等待后台审核`, 'success')
-                                        setTimeout(() => {
-                                            location.reload()
-                                        }, 1500)
-                                    } else if (response.code === '10400') {
-                                        releaseDialogWrapper.style.display = 'none'
-                                        showMessage(response.msg, 'error')
-                                    }
-
-                                }).catch(error => {
-                                    loading = false
-                                    showMessage(error, 'error')
-                                }).finally(() => {
-                                    isPublishRequesting = false // 请求完成后，重置发布请求标识
-                                })
-                            })
-
-                            // 查看稀有度规则
-                            const uploadDialogHeader = document.querySelector('.upload-dialog-header')
-                            const rarityRule = document.querySelector('.rarity-rule')
-                            const scoreContainer = document.querySelector('.score-container')
-                            const returnUpper = document.getElementById('returnUpper')
-                            const progressBar = document.querySelector('.progress-bar')
-
-                            rarityRule.style.display = 'block'
-
-                            rarityRule.addEventListener('click', () => {
-                                uploadDialogHeader.style.display = 'none'
-                                dropArea.style.display = 'none'
-                                rarityRule.style.display = 'none'
-                                progressBar.style.display = 'none'
-                                uploadImgs.style.display = 'none'
-                                releaseBtn.style.display = 'none'
-                                scoreContainer.style.display = 'block'
-                            })
-
-                            returnUpper.addEventListener('click', () => {
-                                scoreContainer.style.display = 'none'
-                                uploadDialogHeader.style.display = 'block'
-                                dropArea.style.display = 'block'
-                                progressBar.style.display = 'block'
-                                uploadImgs.style.display = 'block'
-                                releaseBtn.style.display = 'block'
-                                rarityRule.style.display = 'block'
-                            })
-
                         }
+                    }
 
-                        // 获取选中图片的对象
-                        function getSelectedImageFile(imgValue) {
-                            return uploadFileList.find(file => file.id === imgValue) || null
-                        }
+                    // 选择分类标签和作者出处
+                    const formContainer = document.querySelector('.form-container')
 
-                        // 添加删除图片监听
-                        var deleteButtons = document.getElementsByClassName('delete-img')
-                        for (var i = 0; i < deleteButtons.length; i++) {
-                            deleteButtons[i].addEventListener('click', deleteImage)
-                        }
+                    formContainer.style.display = 'block'
 
-                        // 删除图片事件处理函数
-                        function deleteImage(event) {
-                            event.stopPropagation()
+                    const releaseBtn = document.querySelector('.release-btn')
+                    const releaseClose = document.getElementById('releaseClose')
+                    const releaseCancel = document.getElementById('releaseCancel')
+                    const releaseDialogWrapper = document.querySelector('.release-dialog-wrapper')
+                    releaseBtn.style.display = 'block'
 
-                            // 获取当前点击的删除按钮所在的父级元素
-                            var parentElement = this.parentNode
-
-                            // 获取该图片元素的值
-                            var imgValue = this.nextElementSibling.getAttribute('value')
-
-                            // 从DOM中移除图片和删除按钮
-                            parentElement.remove()
-
-                            // 在uploadFileList中查找并删除对应的对象
-                            var index = uploadFileList.findIndex(file => file.id === imgValue)
-
-                            if (index !== -1) {
-                                uploadFileList.splice(index, 1)
-
-                                localStorage.setItem('uploadFileCache', JSON.stringify(uploadFileList))
-                            }
-
-                            // 判断uploadFileCache缓存是否有数据，并获取其长度
-                            var uploadFileCache = JSON.parse(localStorage.getItem('uploadFileCache'))
-                            var cacheLength = uploadFileCache ? uploadFileCache.length : 0
-
-                            // 如果没有缓存数据，隐藏rarity-rule和release-btn
-                            if (cacheLength === 0) {
-                                document.querySelector('.rarity-rule').style.display = 'none'
-                                document.querySelector('.release-btn').style.display = 'none'
-                                document.querySelector('.progress-bar').style.display = 'none'
-                            }
-                        }
+                    releaseClose.addEventListener('click', () => {
+                        releaseDialogWrapper.style.display = 'none'
                     })
 
+                    releaseCancel.addEventListener('click', () => {
+                        releaseDialogWrapper.style.display = 'none'
+                    })
+
+                    // 查看稀有度规则
+                    const uploadDialogHeader = document.querySelector('.upload-dialog-header')
+                    const rarityRule = document.querySelector('.rarity-rule')
+                    const scoreContainer = document.querySelector('.score-container')
+                    const returnUpper = document.getElementById('returnUpper')
+                    const progressBar = document.querySelector('.progress-bar')
+
+                    rarityRule.style.display = 'block'
+
+                    rarityRule.addEventListener('click', () => {
+                        uploadDialogHeader.style.display = 'none'
+                        dropArea.style.display = 'none'
+                        rarityRule.style.display = 'none'
+                        progressBar.style.display = 'none'
+                        uploadImgs.style.display = 'none'
+                        releaseBtn.style.display = 'none'
+                        formContainer.style.display = 'none'
+                        scoreContainer.style.display = 'block'
+                    })
+
+                    returnUpper.addEventListener('click', () => {
+                        scoreContainer.style.display = 'none'
+                        uploadDialogHeader.style.display = 'block'
+                        dropArea.style.display = 'block'
+                        progressBar.style.display = 'block'
+                        uploadImgs.style.display = 'block'
+                        releaseBtn.style.display = 'block'
+                        rarityRule.style.display = 'block'
+                        formContainer.style.display = 'block'
+                    })
+
+
+                    // 初始化添加事件监听器
+                    addClickEventListeners()
+
+                    // 添加选中图片监听
+                    function addClickEventListeners() {
+                        var imgElements = document.querySelectorAll('.uploading-img')
+                        imgElements.forEach(item => {
+                            item.addEventListener('click', selectImage)
+                        })
+                    }
+
+                    // 获取选中图片的对象
+                    function getSelectedImageFile(imgValue) {
+                        return uploadFileList.find(file => file.id === imgValue) || null
+                    }
+
+                    // 添加删除图片监听
+                    var deleteButtons = document.getElementsByClassName('delete-img')
+                    for (var i = 0; i < deleteButtons.length; i++) {
+                        deleteButtons[i].addEventListener('click', deleteImage)
+                    }
+
+                    // 删除图片事件处理函数
+                    function deleteImage(event) {
+                        event.stopPropagation()
+
+                        // 将选中的图片设为空值
+                        selectedImgFile = null
+
+                        // 获取当前点击的删除按钮所在的父级元素
+                        var parentElement = this.parentNode
+
+                        // 获取该图片元素的值
+                        var imgValue = this.nextElementSibling.getAttribute('value')
+
+                        // 从DOM中移除图片和删除按钮
+                        parentElement.remove()
+
+                        // 在uploadFileList中查找并删除对应的对象
+                        var index = uploadFileList.findIndex(file => file.id === imgValue)
+
+                        if (index !== -1) {
+                            uploadFileList.splice(index, 1)
+
+                            localStorage.setItem('uploadFileCache', JSON.stringify(uploadFileList))
+                        }
+
+                        // 判断uploadFileCache缓存是否有数据，并获取其长度
+                        var uploadFileCache = JSON.parse(localStorage.getItem('uploadFileCache'))
+                        var cacheLength = uploadFileCache ? uploadFileCache.length : 0
+
+                        // 如果没有缓存数据，隐藏rarity-rule和release-btn
+                        if (cacheLength === 0) {
+                            document.querySelector('.rarity-rule').style.display = 'none'
+                            document.querySelector('.release-btn').style.display = 'none'
+                            document.querySelector('.progress-bar').style.display = 'none'
+                            document.querySelector('.form-container').style.display = 'none'
+                        }
+                    }
+
                 } catch (error) {
+                    console.log(error)
                     loading = false
-                    console.error('分析uploadFileCache时出错：', error)
+                    showMessage('分析uploadFileCache时出错', 'error')
                 }
             }
         }
     }).catch(error => {
         loading = false
         showMessage(error, 'error')
-        console.log(error)
     })
 }
 
@@ -1992,7 +2345,7 @@ function resetLayout() {
     isAnimate = true
     placeholderHeight = maxVal(this.sumHeight)
 
-    placeholderHeightDiv.style.height = `${placeholderHeight + 60}px`
+    document.querySelector('.placeholderHeight').style.height = `${placeholderHeight}px`
 
 }
 
@@ -2086,103 +2439,46 @@ function aspectRatioToWH(width, height, r, iw, ih) {
     }
 }
 
-class FlipCard {
-    constructor(currentNumber, nextNumber) {
-        this.duration = 500
-        this.isRunning = false
+// 定时清除userData文件夹
+function clearUserDataFolder() {
+    const currentDate = new Date()
 
-        this.createRootNode()
-        this.craeteNodes()
-        this.setFrontNumber(currentNumber)
-        this.setBackNumber(nextNumber)
-    }
-
-    createRootNode() {
-        this.root = document.createElement('div')
-        this.root.classList.add('flip-card')
-    }
-
-    craeteNodes() {
-        this.frontNode = document.createElement('div')
-        this.frontNode.classList.add('digital', 'front')
-        this.backNode = document.createElement('div')
-        this.backNode.classList.add('digital', 'back')
-        this.root.append(this.frontNode, this.backNode)
-    }
-
-    setFrontNumber(number) {
-        this.frontNode.dataset.number = number
-    }
-
-    setBackNumber(number) {
-        this.backNode.dataset.number = number
-    }
-
-    flipDown(currentNumber, nextNumber) {
-        if (this.isRunning) {
-            return
-        }
-        this.isRunning = true
-        this.root.classList.add('running')
-        this.setFrontNumber(currentNumber)
-        this.setBackNumber(nextNumber)
-        setTimeout(() => {
-            this.root.classList.remove('running')
-            this.setFrontNumber(nextNumber)
-            this.isRunning = false
-        }, this.duration);
+    // 检查是否每个月的1号
+    if (currentDate.getDate() === 1) {
+        const userDataPath = path.join(process.cwd(), '/cache/wallpaper-gallery/userData')
+        // 调用删除文件夹的递归函数
+        deleteFolderRecursive(userDataPath)
     }
 }
 
-class FlipClock {
-    constructor(id) {
-        this.root = document.querySelector(`#${id}`)
-        this.init()
-    }
-
-    getTimeFromDate(date) {
-        return date.toTimeString().slice(0, 8).split(":").join("")
-    }
-
-    refreshTime() {
-        const now = new Date()
-        this.nowTimeStr = this.getTimeFromDate(new Date(now.getTime() - 1000))
-        this.nextTimeStr = this.getTimeFromDate(now)
-    }
-
-    init() {
-        this.refreshTime()
-        this.flipCards = this.buildFlipCards()
-        this.initFliping()
-    }
-
-    initFliping() {
-        this.interval = setInterval(() => {
-            this.refreshTime()
-            this.flipCards.forEach((item, index) => {
-                if (this.nowTimeStr[index] === this.nextTimeStr[index]) {
-                    return
-                }
-                item.flipDown(this.nowTimeStr[index], this.nextTimeStr[index])
-            })
-        }, 1000);
-    }
-
-    buildFlipCards() {
-        let flipCards = []
-        for (let i = 0; i < 6; i++) {
-            const flipCard = new FlipCard(this.nowTimeStr[i], this.nextTimeStr[i])
-            this.root.append(flipCard.root)
-
-            if (i === 1 || i === 3) {
-                const divider = document.createElement('div')
-                divider.classList.add('divider')
-                divider.textContent = ':'
-                this.root.append(divider)
+// 删除文件夹的递归函数
+function deleteFolderRecursive(path) {
+    if (fs.existsSync(path)) {
+        fs.readdirSync(path).forEach((file, index) => {
+            const curPath = path + '/' + file
+            // 判断是否是文件夹
+            if (fs.lstatSync(curPath).isDirectory()) {
+                deleteFolderRecursive(curPath)
+            } else {
+                // 删除文件
+                fs.unlinkSync(curPath)
             }
-
-            flipCards.push(flipCard)
-        }
-        return flipCards
+        })
+        // 删除空文件夹
+        fs.rmdirSync(path)
     }
+}
+
+function initHeaderIcon() {
+    document.querySelector('.icon-minimize').addEventListener('click', () => {
+        ipcRenderer.send('Wallpaper', 'minimize-window')
+    })
+
+    document.querySelector('.icon-maximize').addEventListener('click', () => {
+        ipcRenderer.send('Wallpaper', 'maximize-window')
+    })
+
+    document.querySelector('.icon-close').addEventListener('click', () => {
+        ipcRenderer.send('Wallpaper', 'close-window')
+    })
 }

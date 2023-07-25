@@ -16,25 +16,29 @@ async function loadModel(store, view) {
 
     store.model.on('hit', (hitAreas) => {
 
-        if (hitAreas.includes('摸头')) {
-            store.model.motion('tap_head')
-            playAudio(path.join(__dirname, '../../../model/qiudi/摸头.wav'))
+        // 检查是否在播放
+        if (!playAudioing) {
+            if (hitAreas.includes('摸头')) {
+                store.model.motion('tap_head')
+                playAudio(path.join(__dirname, '../../../model/qiudi/摸头.wav'))
+            }
+
+            if (hitAreas[0] === '摸胸' || hitAreas[1] === '摸手臂' || hitAreas[2] === '摸腿') {
+                store.model.motion('tap_body')
+                playAudio(path.join(__dirname, '../../../model/qiudi/摸胸.wav'))
+            }
+
+            if (hitAreas[0] === '摸手臂') {
+                store.model.motion('tap_hand')
+                playAudio(path.join(__dirname, '../../../model/qiudi/摸手.wav'))
+            }
+
+            if (hitAreas[0] === '摸腿') {
+                store.model.motion('tap_shank')
+                playAudio(path.join(__dirname, '../../../model/qiudi/摸腿.wav'))
+            }
         }
 
-        if (hitAreas[0] === '摸胸' || hitAreas[1] === '摸手臂' || hitAreas[2] === '摸腿') {
-            store.model.motion('tap_body')
-            playAudio(path.join(__dirname, '../../../model/qiudi/摸胸.wav'))
-        }
-
-        if (hitAreas[0] === '摸手臂') {
-            store.model.motion('tap_hand')
-            playAudio(path.join(__dirname, '../../../model/qiudi/摸手.wav'))
-        }
-
-        if (hitAreas[0] === '摸腿') {
-            store.model.motion('tap_shank')
-            playAudio(path.join(__dirname, '../../../model/qiudi/摸腿.wav'))
-        }
     })
 
     return app

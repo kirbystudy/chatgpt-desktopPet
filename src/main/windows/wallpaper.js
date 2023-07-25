@@ -11,18 +11,31 @@ function createWallpaper() {
         height: 768,
         minWidth: 800,
         minHeight: 600,
+        frame: false,
         icon: path.join(__dirname, '../../../assets/app_128.ico'),
         webPreferences: {
             nodeIntegration: true,
             enableRemoteModule: true,
-            contextIsolation: false
+            contextIsolation: false,
+            allowFileAccess: true
         }
     })
 
-    Menu.setApplicationMenu(null)
 
     // 加载本地文件
     wallpaper.loadFile(path.join(__dirname, '../../renderer/pages/wallpaper/wallpaper.html'))
+
+    if (process.platform === 'win32') {
+        // hook掉标题栏右键菜单
+        wallpaper.hookWindowMessage(278, () => {
+            wallpaper.setEnabled(false)
+
+            setTimeout(() => {
+                wallpaper.setEnabled(true)
+            }, 100)
+            return true
+        })
+    }
 
     // 监听closed事件后执行
     wallpaper.on('closed', () => { wallpaper = null })

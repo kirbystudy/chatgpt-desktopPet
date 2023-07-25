@@ -52,8 +52,7 @@ function createTrayMenu() {
                     }
 
                     isExiting = false   // 重置正在退出标志为false，允许再次进行退出操作
-                }).catch((error) => {
-                    console.log(error)
+                }).catch(() => {
                     isExiting = false   // 出错时重置正在退出标志为false，允许再次进行退出操作
                 })
             }

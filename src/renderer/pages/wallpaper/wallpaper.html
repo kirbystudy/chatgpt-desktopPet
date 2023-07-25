@@ -13,193 +13,221 @@
 <body>
     <div class="app">
         <!-- 头部导航栏 -->
-        <ul class="nav-wrapper">
-            <li class="avatar">
-                <img draggable="false" src="../../image/avatar.png">
-                <div class="popper_content one-border">
-                    <div class="user-extended">
-                        <div class="info">
-                            <div class="user-id"></div>
-                            <div class="expire-time"></div>
-                        </div>
-                        <div class="user-item" id="myAccount">
-                            <span class="iconfont icon-huiyuan"></span>
-                            <span>个人中心</span>
-                            <span class="iconfont icon-right"></span>
-                        </div>
-                        <div class="user-item" id="exitAccount">
-                            <span class="iconfont icon-tuichu"></span>
-                            <span>退出账号</span>
-                            <span class="iconfont icon-right"></span>
-                        </div>
-                    </div>
-                    <div class="popper_arrow"></div>
+        <div class="layout-nav">
+            <div class="layout-header">
+                <div class="logo">
+                    <img src="../../image/qiudi.jpg">
+                    <div class="logo-title">秋蒂壁纸</div>
                 </div>
-            </li>
-
-            <li class="nav-item active">壁纸</li>
-            <li class="nav-item">我的</li>
-            <div class="slider"></div>
-
-            <div id="uploadBtn" class="nav-right">
-                <span class="iconfont icon-upload"></span>
-                <span class="contribute-title">投稿</span>
+                <div class="opt-btns">
+                    <span class="opt-btn iconfont icon-minimize"></span>
+                    <span class="opt-btn iconfont icon-maximize"></span>
+                    <span class="opt-btn iconfont icon-close"></span>
+                </div>
             </div>
-
-            <!-- 投稿上传页面 -->
-            <div class="upload-dialog-wrapper" style="display: none;">
-                <div class="upload-dialog one-border bottom">
-                    <div class="upload-dialog-header">
-                        <div class="title">投稿</div>
-                        <span class="iconfont icon-close" id="uploadClose"></span>
-                    </div>
-
-                    <div id="dropArea" class="upload-drop-area">
-                        <div class="upload-area">
-                            <div class="upload-wrapper">
-                                <span class="iconfont icon-upload"></span>
-                                <div class="upload-text">拖拽文件可上传</div>
-                                <div id="uploadFile" class="upload-btn">选择文件</div>
-                                <input accept=".jpg,.png,.jpeg" type="file" id="fileInput" multiple="multiple"
-                                    style="display: none;">
+            <ul class="nav-wrapper">
+                <li class="avatar">
+                    <img draggable="false" src="../../image/avatar.png">
+                    <div class="popper_content one-border">
+                        <div class="user-extended">
+                            <div class="info">
+                                <div class="user-id"></div>
+                                <div class="expire-time"></div>
+                            </div>
+                            <div class="user-item" id="myAccount">
+                                <span class="iconfont icon-huiyuan"></span>
+                                <span>个人中心</span>
+                                <span class="iconfont icon-right"></span>
+                            </div>
+                            <div class="user-item" id="exitAccount">
+                                <span class="iconfont icon-tuichu"></span>
+                                <span>退出账号</span>
+                                <span class="iconfont icon-right"></span>
                             </div>
                         </div>
+                        <div class="popper_arrow"></div>
                     </div>
+                </li>
 
-                    <div class="progress-bar" style="display: none;">
+                <li class="nav-item active">壁纸</li>
+                <li class="nav-item">我的</li>
+                <div class="slider"></div>
 
-                        <div id="progress" class="progress">
-                            <div id="progressText" class="progress-text"></div>
+                <div id="uploadBtn" class="nav-right">
+                    <span class="iconfont icon-upload"></span>
+                    <span class="contribute-title">投稿</span>
+                </div>
+
+                <!-- 投稿上传页面 -->
+                <div class="upload-dialog-wrapper" style="display: none">
+                    <div class="upload-dialog one-border bottom">
+                        <div class="upload-dialog-header">
+                            <div class="title">投稿</div>
+                            <span class="iconfont icon-close" id="uploadClose"></span>
                         </div>
-                    </div>
 
-                    <div class="upload-imgs"></div>
-
-                    <div class="rarity-rule">查看规则说明</div>
-                    <div class="release-btn">点击发布</div>
-
-                    <div class="release-dialog-wrapper" style="display: none;">
-                        <div class="release-dialog one-border bottom">
-                            <div class="release-dialog-header">
-                                <span class="iconfont icon-close" id="releaseClose"></span>
+                        <div id="dropArea" class="upload-drop-area">
+                            <div class="upload-area">
+                                <div class="upload-wrapper">
+                                    <span class="iconfont icon-upload"></span>
+                                    <div class="upload-text">拖拽文件可上传</div>
+                                    <div id="uploadFile" class="upload-btn">选择文件</div>
+                                    <input accept=".jpg,.png,.jpeg" type="file" id="fileInput" multiple="multiple"
+                                        style="display: none;">
+                                </div>
                             </div>
-                            <div class="release-area">
-                                <div class="title">你确定要选这张发布吗？</div>
-                                <div class="release-btns">
-                                    <span class="releasebtn" id="publishBtn">确定</span>
-                                    <span class="releasebtn" id="releaseCancel">取消</span>
+                            <div class="compress-image">如何压缩图片?</div>
+                        </div>
+
+                        <div class="progress-bar" style="display: none">
+
+                            <div id="progress" class="progress">
+                                <div id="progressText" class="progress-text"></div>
+                            </div>
+                        </div>
+
+                        <div class="upload-imgs"></div>
+
+                        <div class="form-container">
+                            <label for="category">选择标签分类</label>
+                            <select id="category">
+                                <option value="">默认分类(用户上传)</option>
+                            </select>
+
+                            <label for="source">作品出处</label>
+                            <input type="text" id="source" placeholder="例如：该作品图是出自V社的作品">
+                        </div>
+
+                        <div class="rarity-rule">查看规则说明</div>
+                        <div class="release-btn">点击发布</div>
+
+                        <div class="release-dialog-wrapper" style="display: none;">
+                            <div class="release-dialog one-border bottom">
+                                <div class="release-dialog-header">
+                                    <span class="iconfont icon-close" id="releaseClose"></span>
+                                </div>
+                                <div class="release-area">
+                                    <div class="title">你确定要选这张发布吗？</div>
+                                    <div class="release-btns">
+                                        <span class="releasebtn" id="publishBtn">确定</span>
+                                        <span class="releasebtn" id="releaseCancel">取消</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
+                        <div class="score-container">
+                            <span class="iconfont icon-fanhui return-upper" id="returnUpper" title="返回"></span>
+                            <h2 class="rarity-text">稀有度积分规则</h2>
+                            <table>
+                                <tr>
+                                    <th>稀有度</th>
+                                    <th>获得积分</th>
+                                    <th>价值</th>
+                                </tr>
+                                <tr class="rarity-f">
+                                    <td>F</td>
+                                    <td>0</td>
+                                    <td>-</td>
+                                </tr>
+                                <tr class="rarity-e">
+                                    <td>E</td>
+                                    <td>1</td>
+                                    <td>10日元</td>
+                                </tr>
+                                <tr class="rarity-d">
+                                    <td>D</td>
+                                    <td>3</td>
+                                    <td>30日元</td>
+                                </tr>
+                                <tr class="rarity-c">
+                                    <td>C</td>
+                                    <td>5</td>
+                                    <td>50日元</td>
+                                </tr>
+                                <tr class="rarity-b">
+                                    <td>B</td>
+                                    <td>10</td>
+                                    <td>100日元</td>
+                                </tr>
+                                <tr class="rarity-a">
+                                    <td>A</td>
+                                    <td>15</td>
+                                    <td>150日元</td>
+                                </tr>
+                                <tr class="rarity-s">
+                                    <td>S</td>
+                                    <td>20</td>
+                                    <td>200日元</td>
+                                </tr>
+                                <tr class="rarity-ss">
+                                    <td>SS</td>
+                                    <td>50</td>
+                                    <td>500日元</td>
+                                </tr>
+                                <tr class="rarity-sss">
+                                    <td>SSS</td>
+                                    <td>100</td>
+                                    <td>1000日元</td>
+                                </tr>
+                            </table>
+                            <div class="rarity-desc">
+                                <p>1、稀有度越高可获得积分越多，积分后面可以兑换礼物和现金。</p>
+                                <p>2、上传图片每5分钟只能上传2次，每次上传后会返回当前图片的稀有度。</p>
+                                <p style="color: #DC143C;"><span style="color: #DC143C; font-size: 14px;">*
+                                    </span>3、上传之后在我的个人中心可查看，后台审核通过并上架就能获得积分。</p>
+                                <p style="color: #DC143C;"><span style="color: #DC143C; font-size: 14px;">*
+                                    </span>4、每天只能选中一张发布投稿，请慎重选择你觉得稀有度最高的图片去发布。</p>
+                            </div>
+                        </div>
 
-                    <div class="score-container">
-                        <span class="iconfont icon-fanhui return-upper" id="returnUpper" title="返回"></span>
-                        <h2 class="rarity-text">稀有度积分规则</h2>
-                        <table>
-                            <tr>
-                                <th>稀有度</th>
-                                <th>获得积分</th>
-                                <th>价值</th>
-                            </tr>
-                            <tr class="rarity-f">
-                                <td>F</td>
-                                <td>0</td>
-                                <td>-</td>
-                            </tr>
-                            <tr class="rarity-e">
-                                <td>E</td>
-                                <td>1</td>
-                                <td>10日元</td>
-                            </tr>
-                            <tr class="rarity-d">
-                                <td>D</td>
-                                <td>3</td>
-                                <td>30日元</td>
-                            </tr>
-                            <tr class="rarity-c">
-                                <td>C</td>
-                                <td>5</td>
-                                <td>50日元</td>
-                            </tr>
-                            <tr class="rarity-b">
-                                <td>B</td>
-                                <td>10</td>
-                                <td>100日元</td>
-                            </tr>
-                            <tr class="rarity-a">
-                                <td>A</td>
-                                <td>15</td>
-                                <td>150日元</td>
-                            </tr>
-                            <tr class="rarity-s">
-                                <td>S</td>
-                                <td>20</td>
-                                <td>200日元</td>
-                            </tr>
-                            <tr class="rarity-ss">
-                                <td>SS</td>
-                                <td>50</td>
-                                <td>500日元</td>
-                            </tr>
-                            <tr class="rarity-sss">
-                                <td>SSS</td>
-                                <td>100</td>
-                                <td>1000日元</td>
-                            </tr>
-                        </table>
-                        <div class="rarity-desc">
-                            <p>1、稀有度越高可获得积分越多，积分后面可以兑换礼物和现金。</p>
-                            <p>2、上传图片每5分钟只能上传2次，每次上传后会返回当前图片的稀有度。</p>
-                            <p style="color: #DC143C;"><span style="color: #DC143C; font-size: 14px;">*
-                                </span>3、上传之后在我的个人中心可查看，后台审核通过并上架就能获得积分。</p>
-                            <p style="color: #DC143C;"><span style="color: #DC143C; font-size: 14px;">*
-                                </span>4、每天只能选中一张发布投稿，请慎重选择你觉得稀有度最高的图片去发布。</p>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </ul>
-
-        <!-- 壁纸页面 -->
-        <div class="wrapper-page content active">
-            <div class="wrapper-category-placeholder ">
-                <div class="wrapper-category">
-                    <div class="checkbox-group view">
-                        <div class="checkbox-label">标签分类</div>
-                        <div class="checkbox-value">
-                            <div class="checkbox-item active">全部</div>
-                        </div>
-                    </div>
-                    <div class="wrapper-more">
-                        <div class="more-icon">
-                            <span class="iconfont icon-zhankai" title="展开"></span>
-                        </div>
-                    </div>
-                    <div class="more">
-                        <div class="checkbox-group">
-                            <div class="checkbox-label"></div>
-                            <div class="checkbox-value"></div>
-                        </div>
                     </div>
                 </div>
-            </div>
+            </ul>
+        </div>
 
-            <div class="visible-container">
+        <!-- 主体页面 -->
+        <div class="main">
+            <!-- 壁纸页面 -->
+            <div class="wrapper-page content active">
+                <div class="wrapper-category-placeholder">
+                    <div class="wrapper-category">
+                        <div class="checkbox-group view">
+                            <div class="checkbox-label">标签分类</div>
+                            <div class="checkbox-value">
+                                <div class="checkbox-item active">全部</div>
+                            </div>
+                        </div>
+                        <div class="wrapper-more">
+                            <div class="more-icon">
+                                <span class="iconfont icon-zhankai" title="展开"></span>
+                            </div>
+                        </div>
+                        <div class="more">
+                            <div class="checkbox-group">
+                                <div class="checkbox-label"></div>
+                                <div class="checkbox-value"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-                <!-- 骨架屏容器 -->
-                <div class="skeleton-wrapper"></div>
+                <div class="visible-container">
 
-                <ul class="visible-list"></ul>
-                <div class="placeholderHeight"></div>
+                    <!-- 骨架屏容器 -->
+                    <div class="skeleton-wrapper"></div>
+
+                    <ul class="visible-list"></ul>
+                    <div class="placeholderHeight"></div>
+                </div>
+                <div class="visible-result">
+                    <span></span>
+                </div>
             </div>
         </div>
 
         <!-- 个人页面 -->
         <div class="my-page content">
-            <!-- <div class="user-info">个人信息</div> -->
             <div class="card">
                 <div class="user-avatar"></div>
                 <div class="personal-info">
@@ -212,11 +240,29 @@
 
             <div class="month-wallpaper">本月投稿壁纸</div>
             <ul class="wallpaper-container"></ul>
-
         </div>
 
-        <!-- 动画加载效果 -->
-        <div class="wavy-wrapper" style="display: none"></div>
+        <!-- 编辑个人壁纸 -->
+        <div id="editInfoDialog" class="edit-dialog-wrapper">
+            <div class="edit-dialog one-border bottom">
+                <div class="edit-dialog-header">
+                    <div class="title">编辑壁纸</div>
+                    <span class="iconfont icon-close" id="editInfoClose"></span>
+                </div>
+
+                <div class="edit-form-container">
+                    <div class="edit-wallpaper-id"></div>
+                    <label for="editCategory">选择标签分类</label>
+                    <select id="editCategory"></select>
+
+                    <label for="editSource">作品出处</label>
+                    <input type="text" id="editSource" placeholder="例如：该作品图是出自V社的作品">
+                    <div id="editBtn" class="edit-btn">更新信息</div>
+
+                </div>
+
+            </div>
+        </div>
 
         <!-- 图片详情信息页面 -->
         <div class="animation-content">
@@ -224,28 +270,38 @@
             <div class="img-view">
                 <img class="imgView" draggable="false" style="display: none; width: 300; height: 200px;">
                 <video style="display: none; width: 100%; height: 100%; object-fit: cover;" autoplay loop muted></video>
-                <div class="author-intro">
-                    <div class="left-section">
-                        <div class="wallpaper-id"></div>
-                        <div class="label"></div>
-                    </div>
-                    <div class="middle-section">
-                        <div class="rarity-detail"></div>
-                    </div>
-                    <div class="right-section">
-                        <div class="author-avatar">
-                            <img></img>
-                        </div>
-                        <div class="author"></div>
-                        <div class="upload-date"></div>
-                    </div>
-                </div>
             </div>
 
             <div class="btns">
                 <div class="button iconfont icon-guanbi" title="关闭"></div>
-                <div id="download" style="display: none" class="button iconfont icon-yunxiazai" title="下载"></div>
+                <!-- <div id="download" class="button iconfont icon-yunxiazai" title="下载"></div> -->
                 <div id="setDesktop" class="button iconfont icon-zhuomian" title="设为桌面"></div>
+                <div id="viewInfo" class="button iconfont icon-info" title="信息"></div>
+            </div>
+
+            <!-- 壁纸信息 -->
+            <div id="viewInfoDialog" class="view-dialog-wrapper">
+                <div class="view-dialog one-border bottom">
+                    <div class="view-dialog-header">
+                        <span class="iconfont icon-close" id="viewInfoClose"></span>
+                    </div>
+
+                    <div class="rarity-detail"></div>
+
+                    <div class="imgInfo-container">
+                        <div class="author-avatar">
+                            <img draggable="false" />
+                        </div>
+                        <div class="details" id="details">
+                            <div class="author"></div>
+                            <div class="wallpaper-id"></div>
+                            <div class="label"></div>
+
+                            <div class="upload-date"></div>
+                            <div class="img-source"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -272,6 +328,9 @@
                 </div>
             </div>
         </div>
+
+        <!-- Loading 动画加载效果 -->
+        <div class="wavy-wrapper" style="display: none"></div>
 
         <!-- 消息提示框 -->
         <div class="message-container" id="message-container"></div>

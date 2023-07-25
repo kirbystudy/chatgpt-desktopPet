@@ -12,7 +12,7 @@ const jsonContent = fs.readFileSync(configPath, 'utf-8')
 const config = JSON.parse(jsonContent)
 
 // 本地缓存，用于记录用户收到直播通知的状态
-const cacheFile = path.resolve(__dirname, '../../../config/bilibili/cache.json')
+const cacheFile = path.join(process.cwd(), '/cache/bilibili/cache.json')
 
 let cache = {}
 
@@ -82,7 +82,14 @@ async function showNotify(room, title) {
     const date = new Date().toLocaleString()
     console.log(`${title} ${room.title} ${date}`)
 
-    const fileName = path.resolve(__dirname + `../../../renderer/image/avatar_${room.room_id}.jpg`)
+    const folderPath = path.join(process.cwd(), 'cache', 'bilibili')
+
+    if (!fs.existsSync(folderPath)) {
+        fs.mkdirSync(folderPath, { recursive: true })
+    }
+
+    const fileName = path.join(folderPath, `bilibili_${room.room_id}.jpg`)
+
     await saveFile(room.avatar, fileName)
 
     notifier.notify({
@@ -93,13 +100,11 @@ async function showNotify(room, title) {
         wait: true
     },
         function (err, response) {
-            console.log(response)
-            
             if (response === 'activate') {  // 用户点击通知
                 const URL = `https://live.bilibili.com/${room.room_id}`
                 openURL(URL)
                 updateCache(room.room_id)
-            } else if(response === 'dismissed') {   // 用户点击关闭
+            } else if (response === 'dismissed') {   // 用户点击关闭
                 updateCache(room.room_id)
             }
         }

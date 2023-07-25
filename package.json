@@ -1,6 +1,6 @@
 {
   "name": "chatgpt-desktoppet",
-  "version": "1.2.4",
+  "version": "1.2.8",
   "description": "DesktopPet Electron",
   "main": "./src/main/background.js",
   "scripts": {
@@ -23,7 +23,7 @@
   "devDependencies": {
     "@electron/remote": "^2.0.9",
     "cross-env": "^7.0.3",
-    "electron": "24.1.1",
+    "electron": "^21.4.4",
     "electron-builder": "23.6.0",
     "electron-reloader": "^1.2.3"
   },

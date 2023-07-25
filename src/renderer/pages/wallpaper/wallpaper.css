@@ -24,6 +24,67 @@
     background-color: #191d30;
 }
 
+.app .main {
+    height: calc(100vh - 110px);
+    position: relative;
+    overflow: hidden;
+}
+
+.layout-nav {
+    height: 110px;
+    color: #fff;
+}
+
+.layout-nav .layout-header {
+    -webkit-app-region: drag;
+    background-color: #111420e1;
+    color: #e4e4e4;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    flex-wrap: wrap;
+    height: 30px;
+    line-height: 30px;
+}
+
+.layout-header .logo {
+    width: 160px;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+}
+
+.layout-header .logo img {
+    width: 20px;
+    border-radius: 50%;
+    margin-right: 6px;
+}
+
+.layout-header .logo-title {
+    font-size: 12px;
+}
+
+.layout-header .opt-btns {
+    width: 160px;
+    letter-spacing: 2px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    -webkit-app-region: no-drag;
+}
+
+.layout-header .opt-btns .opt-btn {
+    font: 14px;
+    width: 40px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.opt-btn:hover {
+    color: #38acfa;
+}
+
 .nav-wrapper {
     list-style: none;
     display: flex;
@@ -321,6 +382,17 @@
     box-shadow: 0 1px 3px #00000005, 4px 4px 11px -4px #587c7da3;
 }
 
+.visible-result {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.visible-result span {
+    font-size: 14px;
+    color: #40a8fe;
+    user-select: none;
+}
+
 .img {
     position: relative;
     width: 300px;
@@ -374,25 +446,6 @@
     font-size: 12px;
 }
 
-/* .desc .role {
-    height: 100%;
-    display: flex;
-    align-items: center;
-}
-
-.desc .role img {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    object-fit: cover;
-} */
-
-/* .desc .role .role-name {
-    font-size: 12px;
-    color: #66ccff;
-    padding-left: 5px;
-} */
-
 .animation-content {
     display: none;
     background-color: #000000b5;
@@ -435,63 +488,6 @@
     position: absolute;
 }
 
-.img-view .author-intro {
-    position: absolute;
-    right: 0;
-    left: 0;
-    bottom: 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #272D45;
-    padding: 20px;
-}
-
-.left-section,
-.middle-section,
-.right-section {
-    display: flex;
-    justify-content: center;
-}
-
-.wallpaper-id,
-.label,
-.rarity-detail,
-.author,
-.upload-date {
-    padding: 10px;
-    font-size: 16px;
-    color: #ffffff;
-    border-radius: 8px;
-}
-
-.wallpaper-id,
-.label {
-    margin-right: 10px;
-}
-
-.upload-date {
-    margin-left: 10px;
-}
-
-.author-avatar {
-    position: relative;
-    padding: 10px;
-    width: 40px;
-    height: 40px;
-    overflow: hidden;
-}
-
-.author-avatar img {
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    object-fit: cover;
-}
-
 .btns {
     position: absolute;
     right: 20px;
@@ -526,6 +522,7 @@
     cursor: not-allowed;
     pointer-events: none;
 }
+
 
 /* 登录界面样式 */
 .login-show {
@@ -725,6 +722,7 @@
     width: 400px;
     border: 2px dashed #ccc;
     margin: 10px auto;
+    position: relative;
 }
 
 .upload-drop-area .upload-area {
@@ -763,6 +761,28 @@
     background-color: #00a1d6;
     user-select: none;
     white-space: nowrap;
+}
+
+.compress-image {
+    opacity: 0;
+    visibility: hidden;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    font-size: 12px;
+    color: #00a1d6;
+    cursor: pointer;
+    user-select: none;
+    transition: opacity 0.6s ease-in-out;
+}
+
+.compress-image.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.compress-image:hover {
+    border-bottom: 1px solid #00a1d6;
 }
 
 .progress-bar {
@@ -1057,7 +1077,7 @@ th {
     top: 80px;
     width: 100%;
     height: calc(100% - 80px);
-    margin: 0 auto;
+    margin: 20px auto;
     overflow-y: auto;
 }
 
@@ -1069,18 +1089,6 @@ th {
     background-image: url(../../image/background.png);
     padding: 20px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-.user-info {
-    display: block;
-    margin: 20px;
-    width: 150px;
-    height: 50px;
-    line-height: 50px;
-    text-align: center;
-    border-radius: 6px;
-    background-color: #00a1d6;
-    color: #fff;
 }
 
 .card .user-avatar {
@@ -1109,7 +1117,7 @@ th {
 
 .month-wallpaper {
     display: block;
-    margin: 20px;
+    margin: 20px auto;
     width: 150px;
     height: 50px;
     line-height: 50px;
@@ -1126,32 +1134,29 @@ th {
     display: flex;
     flex-wrap: wrap;
     margin-left: 130px;
+    margin-bottom: 20px;
 }
 
 /* 壁纸样式 */
 .wallpaper {
     width: 300px;
-    height: 300px;
+    height: 310px;
     margin: 20px;
-    border-radius: 10px;
     background-color: #fff;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-    font-family: sans-serif;
     overflow: hidden;
     user-select: none;
     position: relative;
 }
 
 .wallpaper .image {
-    position: relative;
     width: 300px;
     height: 200px;
-    user-select: none;
 }
 
 .image img {
     width: 100%;
     height: 100%;
+    overflow: hidden;
     transition: transform 0.3s ease-in-out;
 }
 
@@ -1170,6 +1175,18 @@ th {
     font-size: 12px;
 }
 
+.wallpaper .edit-info {
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.edit-info:hover {
+    color: #00a1d6;
+}
+
 .wallpaper .image-desc {
     margin: 0 auto;
     font-size: 14px;
@@ -1177,9 +1194,8 @@ th {
 }
 
 .image-desc div {
-    padding-top: 5px;
+    padding-top: 8px;
 }
-
 
 /* -------------------------- 骨架屏样式 -------------------------- */
 .skeleton-wrapper {
@@ -1281,4 +1297,265 @@ th {
     100% {
         transform: translateY(0);
     }
+}
+
+
+/* ------------------- 投稿选择分类样式 ------------------- */
+
+.form-container {
+    display: none;
+    width: 400px;
+    margin: 10px auto;
+    background-color: #fff;
+    border: 2px solid #00a1d6;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+label {
+    display: block;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    font-weight: 550;
+}
+
+select,
+input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    outline: none;
+}
+
+/* ------------------- 投稿选择分类样式 ------------------- */
+
+
+/* ------------------- 图片详情信息样式 ------------------- */
+
+.view-dialog-wrapper {
+    display: none;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    overflow: auto;
+    background-color: #000000c2;
+    z-index: 3000;
+}
+
+.view-dialog-wrapper.active {
+    display: block;
+    animation: animationView 0.6s cubic-bezier(0.075, 0.82, 0.165, 1) forwards;
+}
+
+@keyframes animationView {
+    from {
+        transform: translateX(50px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0px);
+        opacity: 1;
+    }
+}
+
+.view-dialog-wrapper .view-dialog {
+    width: 400px;
+    position: absolute;
+    background-color: #3B3F5F;
+    color: #2c2e35;
+    left: 50%;
+    top: 14%;
+    transform: translate(-50%);
+    box-shadow: 2px 2px 10px 0 #8a8a8aad;
+}
+
+.view-dialog-header {
+    font-size: 16px;
+    padding: 6px 8px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.view-dialog-header span {
+    cursor: pointer;
+    font-size: 22px;
+    color: #fff;
+}
+
+.view-dialog-header span:hover {
+    color: #3DA7FE;
+}
+
+.imgInfo-container {
+    width: 100%;
+    margin: 20px auto;
+}
+
+.author-avatar {
+    margin-top: 20px;
+    text-align: center;
+    user-select: none;
+}
+
+.author-avatar img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+}
+
+.imgInfo-container .details {
+    margin: 10px auto;
+    color: #fff;
+    user-select: none;
+}
+
+.details .wallpaper-id,
+.label,
+.date,
+.author,
+.upload-date,
+.img-source {
+    font-size: 14px;
+    margin: 10px auto;
+    text-align: center;
+}
+
+.rarity-detail {
+    text-align: center;
+    font-size: 24px;
+}
+
+.img-source {
+    user-select: text;
+    /* 文字超过容器的宽度自动换行*/
+    white-space: normal;
+}
+
+/* ------------------- 图片详情信息样式 ------------------- */
+
+
+/* 个人中心壁纸编辑样式 */
+.edit-dialog-wrapper {
+    display: none;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    overflow: auto;
+    background-color: #000000c2;
+    z-index: 3000;
+}
+
+.edit-dialog-wrapper.active {
+    display: block;
+    animation: animationEdit 0.6s cubic-bezier(0.075, 0.82, 0.165, 1) forwards;
+}
+
+@keyframes animationEdit {
+    from {
+        transform: translateX(50px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0px);
+        opacity: 1;
+    }
+}
+
+.edit-dialog-wrapper .edit-dialog {
+    width: 500px;
+    position: absolute;
+    background-color: #3B3F5F;
+    color: #2c2e35;
+    left: 50%;
+    top: 30%;
+    transform: translate(-50%);
+    box-shadow: 2px 2px 10px 0 #8a8a8aad;
+}
+
+.edit-dialog-header {
+    font-size: 16px;
+    padding: 6px 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.edit-dialog-header .title {
+    font-size: 18px;
+    font-weight: 550;
+    color: #fff;
+}
+
+.edit-dialog-header span {
+    cursor: pointer;
+    font-size: 22px;
+    color: #fff;
+}
+
+.edit-dialog-header span:hover {
+    color: #3DA7FE;
+}
+
+.edit-form-container {
+    display: none;
+    width: 400px;
+    margin: 10px auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.edit-form-container label {
+    display: block;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    font-weight: 550;
+}
+
+.edit-form-container select,
+input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    outline: none;
+}
+
+.edit-wallpaper-id {
+    font-size: 14px;
+    text-align: center;
+    margin-bottom: 10px;
+    font-weight: 550;
+}
+
+.edit-btn {
+    font-size: 14px;
+    text-align: center;
+    padding: 10px;
+    margin-top: 10px;
+    background-color: #00a1d6;
+    color: #fff;
+    user-select: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.edit-btn:hover {
+    background-color: #3DA7FE;
+}
+
+.edit-btn:active {
+    transform: scale(0.98);
 }

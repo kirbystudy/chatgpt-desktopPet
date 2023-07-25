@@ -15,6 +15,17 @@
     "y": 60,
     "scale": 0.15
   },
+  "vits": {
+    "intro": "VITS 配置参数需加群获取，群号：691432604",
+    "header": {
+      "uid": "",
+      "token": ""
+    },
+    "getUrlAllMod": "",
+    "getUrlByText2Hash": "",
+    "getUrlByHashCode": "",
+    "getUrlAllTask": ""
+  },
   "bilibili": [
     {
       "roomId": "B站房间号",

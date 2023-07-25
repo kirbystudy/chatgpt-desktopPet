@@ -8,7 +8,6 @@ ipcMain.handle('ask-open-wallpaper', async (event, someArgument) => {
     try {
         const { msg, URL } = someArgument
 
-        // 配置全局变量
         global.shareVariable = {
             imgUrl: URL
         }
@@ -20,6 +19,7 @@ ipcMain.handle('ask-open-wallpaper', async (event, someArgument) => {
                 fullscreen: true,
                 frame: false,
                 show: false,
+                skipTaskbar: true,  // 是否在任务栏中显示窗口
                 webPreferences: {
                     backgroundThrottling: false,
                     webSecurity: false,
@@ -29,7 +29,7 @@ ipcMain.handle('ask-open-wallpaper', async (event, someArgument) => {
                 }
             })
         }
-        
+
         if (wallpaper) {
             require('@electron/remote/main').enable(wallpaper.webContents)
         }
@@ -39,29 +39,27 @@ ipcMain.handle('ask-open-wallpaper', async (event, someArgument) => {
             '../../renderer/pages/wallpaper/wallWindow.html'
         ))
 
-        // 沉于桌面图标之下图层
         attach(wallpaper)
         wallpaper.show()
         refresh()
 
         return 'ok'
     } catch (error) {
-        console.error('询问打开壁纸时出错：', error)
+        console.error('Error asking to open wallpaper', error)
         return 'error'
     }
 
 })
 
-// 暴露壁纸窗口数组给全局对象
 global.wallpaperHandle = wallpaper
 
-ipcMain.on('ask-close-wallpaper', () => {
+ipcMain.handle('ask-close-wallpaper', () => {
     try {
         if (wallpaper) {
             wallpaper.hide()
         }
-        refresh()
+        // refresh()
     } catch (error) {
-        console.error('请求关闭壁纸时出错:', error)
+        console.error('Error requesting to close wallpaper:', error)
     }
 })

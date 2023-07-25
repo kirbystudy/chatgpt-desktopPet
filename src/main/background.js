@@ -5,6 +5,8 @@ const createSettingShow = require('./windows/setting')
 const createScheduleShow = require('./windows/schedule')
 const createChattingShow = require('./windows/chatting')
 const createWallpaper = require('./windows/wallpaper')
+const createCommunityShow = require('./windows/community')
+const createSpeechSynthesisShow = require('./windows/speechSynthesis')
 const createHoverBox = require('./windows/hoverbox')
 const { liveNotify } = require('./modules/liveNotify')
 require('./modules/handle')
@@ -156,9 +158,39 @@ ipcMain.on('Wallpaper', (event, arg) => {
     }
   }
 
-  // 最小化窗口
   if (arg == 'minimize-window') {
     global.wallpaper.minimize()
+  }
+
+  if (arg == 'maximize-window') {
+    if (global.wallpaper.isMaximized()) {
+      global.wallpaper.unmaximize()
+    } else {
+      global.wallpaper.maximize()
+    }
+  }
+
+  if (arg == 'close-window') {
+    global.wallpaper.close()
+  }
+
+})
+
+// ipc监听，打开社区窗口
+ipcMain.on('Community', (event, arg) => {
+  if (arg == 'Open') {
+    if (global.community == null || global.community.isDestroyed()) {
+      global.community = createCommunityShow()
+    }
+  }
+})
+
+// ipc监听，打开VITS语音合成窗口
+ipcMain.on('speechSynthesis', (event, arg) => {
+  if (arg == 'Open') {
+    if (global.speechSynthesis == null || global.speechSynthesis.isDestroyed()) {
+      global.speechSynthesis = createSpeechSynthesisShow()
+    }
   }
 })
 
@@ -214,7 +246,6 @@ ipcMain.on('set-wallpaper', (_, arg) => {
 })
 
 function setWallpaper(wallpaperFile) {
-
   wallpaper.set(wallpaperFile)
 }
 

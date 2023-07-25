@@ -18,12 +18,17 @@ const jsonContent = fs.readFileSync(configPath, 'utf-8')
 // 解析JSON
 const config = JSON.parse(jsonContent)
 
+// 在全局作用域中定义一个变量来跟踪播放状态
+let playAudioing = false
+
 const app = document.getElementById('app')
 const canvas = document.getElementById('canvas')
 const setting = document.getElementById('setting')
 const schedule = document.getElementById('schedule')
 const chatting = document.getElementById('chatting')
 const wallpaper = document.getElementById('wallpaper')
+const community = document.getElementById('community')
+const speechSynthesis = document.getElementById('speechSynthesis')
 const hide = document.getElementById('hide')
 
 const control_btn = document.querySelector('.control_btn')
@@ -74,6 +79,14 @@ window.onload = function () {
     ipcRenderer.send('Wallpaper', 'Open')
   })
 
+  community.addEventListener('click', () => {
+    ipcRenderer.send('Community', 'Open')
+  })
+
+  speechSynthesis.addEventListener('click', () => {
+    ipcRenderer.send('speechSynthesis', 'Open')
+  })
+
   hide.addEventListener('click', () => {
     showMessage("右下角有悬浮小球哦~", 3000, true)
     setTimeout(() => {
@@ -117,6 +130,7 @@ function debounce(fn, delay = 300) {
 
 // 初始化live2d模型
 function loadLive2D() {
+  
   loadModel(config.live2d, canvas)
 
   setTimeout(() => {
@@ -228,8 +242,8 @@ function setupLiveNotify() {
   // 启动定时器
   const startTimer = () => {
     if (intervalId === null) {
-      // 使用 setInterval 函数每隔 1分钟 调用 queryLiveNotify 函数
-      intervalId = setInterval(queryLiveNotify, 60000)
+      // 使用 setInterval 函数每隔 5分钟 调用 queryLiveNotify 函数
+      intervalId = setInterval(queryLiveNotify, 300000)
     }
   }
 

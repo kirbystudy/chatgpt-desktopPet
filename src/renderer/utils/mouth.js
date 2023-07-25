@@ -29,6 +29,8 @@ async function loadAudio(buffer, volume) {
 
             // 开始播放
             playing = true
+
+            playAudioing = true
             // run()
             setTimeout(() => {
                 source.start(0)
@@ -37,6 +39,8 @@ async function loadAudio(buffer, volume) {
             source.onended = () => {
                 // 停止播放
                 playing = false
+
+                playAudioing = false
             }
         }).catch(error => {
             console.log(error)
