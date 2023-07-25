@@ -6,7 +6,7 @@ const path = require('path')
 window.$ = window.jQuery = require('../../utils/jquery.min.js')
 
 // 创建弹窗组件实例
-const popupComponent = new PopupComponent();
+const popupComponent = new PopupComponent()
 
 // 读取config.json
 const configPath = path.resolve(__dirname, '../../../../config/config.json')
@@ -66,13 +66,13 @@ feedbackBtn.addEventListener('click', () => {
 
     fetch(`${config.feedBack.url}`, {
       method: 'POST',
-      body: formData
+      body: formData,
     })
-      .then(response => {
+      .then((response) => {
         // 处理响应
         return response.text()
       })
-      .then(response => {
+      .then((response) => {
         if (response == 'SUCCESS') {
           // popupComponent.openPopup('秋蒂桌宠', '感谢您的留言!')
           showMessage('感谢您的留言!', 'success')
@@ -80,10 +80,11 @@ feedbackBtn.addEventListener('click', () => {
         message.value = ''
         wordCount.textContent = 0
       })
-      .catch(error => {
+      .catch((error) => {
         // 处理错误
         console.log(error)
-      }).finally(() => {
+      })
+      .finally(() => {
         lastRequestTime = currentTime
 
         setTimeout(() => {
@@ -98,17 +99,16 @@ window.onload = function () {
   var package = require('../../../../package.json')
   const app_version = document.getElementById('app_version')
   app_version.innerText = 'v' + package.version
-
 }
 
-var contentPages = document.getElementsByClassName("setting_page")
-var highlight = document.getElementById("highlight")
+var contentPages = document.getElementsByClassName('setting_page')
+var highlight = document.getElementById('highlight')
 
 // 选项点击事件处理程序
 function handleOptionClick(event) {
   var target = event.target
   var id = target.id
-  var contentId = id.replace("Tab", "")
+  var contentId = id.replace('Tab', '')
 
   // 隐藏所有的内容
   for (var i = 0; i < contentPages.length; i++) {
@@ -123,35 +123,34 @@ function handleOptionClick(event) {
     // 更新选项卡的高亮位置
     var tabWidth = target.offsetWidth
     var tabOffsetLeft = target.offsetLeft
-    highlight.style.left = tabOffsetLeft + "px"
-    highlight.style.width = tabWidth + "px"
+    highlight.style.left = tabOffsetLeft + 'px'
+    highlight.style.width = tabWidth + 'px'
 
     // 存储选中的选项
-    localStorage.setItem("selectedOption", id)
+    localStorage.setItem('selectedOption', id)
   }
 }
 
 // 添加点击事件委托到选项父容器
-var selection = document.querySelector(".selection")
-selection.addEventListener("click", function (event) {
-  if (event.target.classList.contains("selection_bar")) {
+var selection = document.querySelector('.selection')
+selection.addEventListener('click', function (event) {
+  if (event.target.classList.contains('selection_bar')) {
     handleOptionClick(event)
   }
 })
 
 // 检查是否有选中的选项并恢复状态
-var selectedOption = localStorage.getItem("selectedOption")
+var selectedOption = localStorage.getItem('selectedOption')
 if (selectedOption === null) {
-  var versionInfoTab = document.getElementById("versionInfoTab");
-  var versionInfoContent = document.getElementById("versionInfo");
+  var versionInfoTab = document.getElementById('versionInfoTab')
+  var versionInfoContent = document.getElementById('versionInfo')
   if (versionInfoTab && versionInfoContent) {
-    versionInfoTab.classList.add('active');
-    versionInfoContent.classList.add('active');
+    versionInfoTab.classList.add('active')
+    versionInfoContent.classList.add('active')
   }
-
 } else {
   var selectedTab = document.getElementById(selectedOption)
-  var contentId = selectedOption.replace("Tab", "")
+  var contentId = selectedOption.replace('Tab', '')
   var content = document.getElementById(contentId)
 
   if (selectedTab && content && highlight) {
@@ -159,8 +158,8 @@ if (selectedOption === null) {
     content.classList.add('active')
     var tabWidth = selectedTab.offsetWidth
     var tabOffsetLeft = selectedTab.offsetLeft
-    highlight.style.left = tabOffsetLeft + "px"
-    highlight.style.width = tabWidth + "px"
+    highlight.style.left = tabOffsetLeft + 'px'
+    highlight.style.width = tabWidth + 'px'
   }
 }
 
@@ -188,7 +187,7 @@ ipcRenderer.on('togglePowerStatus', (event, isEnabled) => {
   // 打开提示消息框
   // popupComponent.openPopup('秋蒂桌宠', message)
   showMessage(message, 'success')
-});
+})
 
 // 切换开关状态的函数
 function toggleSwitch() {
@@ -210,7 +209,6 @@ function updateToggleStatus() {
 }
 
 /* ----------------------------- 开机自启动 ----------------------------- */
-
 
 /* ----------------------------- Bilibili 直播通知 ----------------------------- */
 
@@ -246,7 +244,6 @@ function updateLiveToggleStatus() {
 
 /* ----------------------------- Bilibili 直播通知 ----------------------------- */
 
-
 /* ----------------------------- 音频控制 ----------------------------- */
 
 const volumeControl = document.getElementById('volumeControl')
@@ -261,3 +258,52 @@ volumeControl.addEventListener('input', () => {
 })
 
 /* ----------------------------- 音频控制 ----------------------------- */
+
+/* ----------------------------- 上传本地模型文件 ----------------------------- */
+
+const uploadFile = document.getElementById('uploadFile')
+const localModelSelect = document.getElementById('localModelSelect')
+const xAxis = document.getElementById('xAxis')
+const yAxis = document.getElementById('yAxis')
+const scaling = document.getElementById('scaling')
+const updateModelBtn = document.getElementById('updateModelBtn')
+
+const localxAxis = localStorage.getItem('xAxis')
+const localyAxis = localStorage.getItem('yAxis')
+const localScaling = localStorage.getItem('scaling')
+
+if(localxAxis && localyAxis && localScaling) {
+  xAxis.value = localxAxis
+  yAxis.value = localyAxis
+  scaling.value = localScaling
+} 
+
+uploadFile.addEventListener('click', () => {
+  localModelSelect.value = null
+  localModelSelect.click()
+})
+
+localModelSelect.addEventListener('change', (event) => {
+  let selectedModel = event.target.files[0]
+  let modelUrl = selectedModel.path
+
+  // 更新path属性值
+  config.live2d.path = modelUrl
+
+  // 将更新后的JSON数据写回文件
+  fs.writeFileSync(configPath, JSON.stringify(config, null, 2))
+})
+
+updateModelBtn.addEventListener('click', () => {
+  config.live2d.x = xAxis.value
+  config.live2d.y = yAxis.value
+  config.live2d.scale = scaling.value
+
+  localStorage.setItem('xAxis', xAxis.value)
+  localStorage.setItem('yAxis', yAxis.value)
+  localStorage.setItem('scaling', scaling.value)
+
+  fs.writeFileSync(configPath, JSON.stringify(config, null, 2))
+})
+
+/* ----------------------------- 上传本地模型文件 ----------------------------- */

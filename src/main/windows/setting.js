@@ -24,7 +24,7 @@ function createSettingShow() {
 
     // 加载本地文件
     settings.loadFile(path.join(__dirname, '../../renderer/pages/setting/setting.html'))
-
+    
     // 监听closed事件后执行 
     settings.on('closed', () => { settings = null })
 

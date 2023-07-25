@@ -296,16 +296,17 @@ input:checked+.slider:before {
   transform: scale(0.98);
 }
 
-.feedback_commit {
-  width: 100px;
-  height: 50px;
+.update-model {
+  width: 80px;
+  height: 40px;
   background-color: #4F7cff;
-  line-height: 50px;
+  line-height: 40px;
   text-align: center;
-  border-radius: 8px;
+  border-radius: 6px;
   margin-right: 10px;
   cursor: pointer;
   position: absolute;
+  font-size: 14px;
   right: 0;
 }
 
@@ -352,4 +353,43 @@ input:checked+.slider:before {
 
 .param::after {
   content: '%';
+}
+
+.model-box {
+  position: absolute;
+  width: 100px;
+  height: 40px;
+  line-height: 40px;
+  text-align: center;
+  right: 20px;
+  border-radius: 6px;
+  color: #fff;
+  background-color: #4F7cff;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.model-box:active {
+  transform: scale(0.98);
+}
+
+.inputFile {
+  display: none;
+}
+
+.inputText {
+  position: absolute;
+  width: 60px;
+  height: 30px;
+  right: 20px;
+  border-radius: 6px;
+  outline: none;
+  border: 1px solid #464646;
+  border-bottom: 2px solid #464646;
+  padding-left: 10px;
+  font-size: 14px;
+}
+
+.inputText:focus {
+  border-bottom: 2px solid #4299b1;
 }

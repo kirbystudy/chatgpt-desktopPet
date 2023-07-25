@@ -16,7 +16,8 @@
     <div class="selection">
       <div class="highlight" id="highlight"></div>
       <div class="selection_bar" id="versionInfoTab">版本信息</div>
-      <div class="selection_bar" id="modelSettingTab">功能设置</div>
+      <div class="selection_bar" id="domainSettingTab">功能设置</div>
+      <div class="selection_bar" id="modelSettingTab">模型设置</div>
     </div>
 
     <div class="setting_page" id="versionInfo">
@@ -49,7 +50,7 @@
       </div>
     </div>
 
-    <div class="setting_page" id="modelSetting">
+    <div class="setting_page" id="domainSetting">
       <div class="setting_box">
         <div class="setting_header">
           <h3>功能设置</h3>
@@ -75,6 +76,41 @@
           <input type="range" min="0" max="1" step="0.01" class="volume_control" id="volumeControl">
           <span class="param"></span>
         </div>
+      </div>
+    </div>
+
+    <div class="setting_page" id="modelSetting">
+      <div class="setting_box">
+        <div class="setting_header">
+          <h3>模型设置</h3>
+        </div>
+
+        <div class="container_box">
+          <span style="position: absolute; top: 15px;">选择本地模型文件 </span>
+          <div style="position: absolute; bottom: 10px; color: crimson; font-size: 12px;">注意：请选择模型文件后缀为model/model3.json</div>
+          <div class="model-box" id="uploadFile">选择文件</div>
+          <input id="localModelSelect" type="file" class="inputFile">
+        </div>
+
+        <div class="container_box">
+          <span>X轴方向平移</span>
+          <input id="xAxis" type="text" class="inputText" value="0">
+        </div>
+
+        <div class="container_box">
+          <span>Y轴方向平移</span>
+          <input id="yAxis" type="text" class="inputText" value="60">
+        </div>
+        
+        <div class="container_box">
+          <span>缩放比例</span>
+          <input id="scaling" type="text" class="inputText" value="0.15">
+        </div>
+
+        <div class="setting_bottom">
+          <div class="update-model" id="updateModelBtn">更新</div>
+        </div>
+
       </div>
     </div>
 
