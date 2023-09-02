@@ -211,6 +211,11 @@ async function getTextHash() {
         return
     }
 
+    if(textElement.value.length > 500) {
+        showMessage('文本内容不得超过500个字符左右', 'warning')
+        return
+    }
+
 
     const text = textElement.value
     const title = inputRoleElement.value

@@ -1,4 +1,4 @@
-const { BrowserWindow, Menu } = require('electron')
+const { BrowserWindow, Menu, shell } = require('electron')
 const path = require('path')
 
 let community = null
@@ -23,7 +23,12 @@ function createCommunityShow() {
     Menu.setApplicationMenu(null)
 
     // 加载本地文件
-    community.loadURL('http://qiudi.natapp1.cc/')
+    community.loadURL('http://nnfan.natapp1.cc')
+
+    community.webContents.on('new-window', (event, url) => {
+        event.preventDefault()
+        shell.openExternal(url)
+      })
 
     // 监听closed事件后执行 
     community.on('closed', () => { community = null })
